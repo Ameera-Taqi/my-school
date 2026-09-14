@@ -1,0 +1,83 @@
+@if (stage) {
+  <app-breadcrumb [items]="[
+    { label: 'الطلاب', route: '/students' },
+    { label: stage.name }
+  ]"></app-breadcrumb>
+
+  <app-page-header [title]="stage.name" [subtitle]="'عدد الفصول: ' + (stage.classCount ?? 0) + ' | عدد الطلاب: ' + (stage.studentCount ?? 0)">
+    @if ('classes.create' | hasPermission) {
+      <button mat-flat-button color="primary" (click)="openClassDialog()">
+        <mat-icon>add</mat-icon>
+        إضافة فصل
+      </button>
+    }
+  </app-page-header>
+
+  <div class="flow-hint">
+    <mat-icon>info</mat-icon>
+    <span>الخطوة 1: أضف فصلاً لهذه المرحلة — الخطوة 2: اضغط «عرض الطلاب» لإضافة الطلاب داخل كل فصل</span>
+  </div>
+}
+
+@if (loading) {
+  <div class="classes-grid" aria-busy="true">
+    @for (i of skeletonCards; track i) {
+      <mat-card class="class-card skeleton-card">
+        <span class="skeleton sk-title"></span>
+        <span class="skeleton sk-line"></span>
+        <span class="skeleton sk-line short"></span>
+        <span class="skeleton sk-bar"></span>
+        <div class="sk-footer"><span class="skeleton sk-btn"></span><span class="skeleton sk-icon"></span><span class="skeleton sk-icon"></span></div>
+      </mat-card>
+    }
+  </div>
+} @else if (classes.length === 0) {
+  <div class="data-card">
+    <app-empty-state icon="class" title="لا توجد فصول في هذه المرحلة بعد" description="أضف أول فصل لهذه المرحلة ثم سجّل الطلاب داخله.">
+      @if ('classes.create' | hasPermission) {
+        <button mat-flat-button color="primary" (click)="openClassDialog()"><mat-icon>add</mat-icon> إضافة أول فصل</button>
+      }
+    </app-empty-state>
+  </div>
+} @else {
+  <div class="classes-grid">
+    @for (cls of classes; track cls.id) {
+      <mat-card class="class-card" [class.clickable]="'students.view' | hasPermission"
+        [routerLink]="('students.view' | hasPermission) ? ['/students/classes', cls.id] : null"
+        [attr.tabindex]="('students.view' | hasPermission) ? 0 : null"
+        [attr.role]="('students.view' | hasPermission) ? 'link' : null">
+        <div class="card-head">
+          <span class="class-icon"><mat-icon>class</mat-icon></span>
+          <h3>{{ cls.name }}</h3>
+        </div>
+        <div class="class-meta">
+          <span class="chip info"><mat-icon class="chip-icon">people</mat-icon> {{ cls.studentCount ?? 0 }} طالب</span>
+          <span class="chip neutral"><mat-icon class="chip-icon">event_seat</mat-icon> الطاقة {{ cls.capacity }}</span>
+        </div>
+        <div class="capacity-bar" [matTooltip]="fillPercent(cls) + '% من الطاقة الاستيعابية'">
+          <span [style.width.%]="fillPercent(cls)" [class.full]="fillPercent(cls) >= 100"></span>
+        </div>
+        @if (cls.notes) {
+          <p class="notes">{{ cls.notes }}</p>
+        }
+        <div class="card-footer">
+          @if ('students.view' | hasPermission) {
+            <button mat-flat-button color="primary" [routerLink]="['/students/classes', cls.id]" (click)="$event.stopPropagation()">
+              <mat-icon>people</mat-icon>
+              عرض الطلاب
+            </button>
+          }
+          <span class="spacer"></span>
+          <div class="row-actions">
+            @if ('classes.update' | hasPermission) {
+              <button mat-icon-button matTooltip="تعديل" (click)="openClassDialog(cls); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
+            }
+            @if ('classes.delete' | hasPermission) {
+              <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteClass(cls); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>
+            }
+          </div>
+        </div>
+      </mat-card>
+    }
+  </div>
+}

@@ -1,0 +1,100 @@
+@if (schoolClass) {
+  <app-breadcrumb [items]="[
+    { label: 'الطلاب', route: '/students' },
+    { label: schoolClass.academicStageName ?? '', route: '/students/stages/' + schoolClass.academicStageId },
+    { label: schoolClass.name }
+  ]"></app-breadcrumb>
+
+  <app-page-header [title]="'فصل ' + schoolClass.name" [subtitle]="'المرحلة: ' + (schoolClass.academicStageName ?? '')">
+    @if ('students.create' | hasPermission) {
+      <button mat-flat-button color="primary" (click)="openStudentDialog()">
+        <mat-icon>person_add</mat-icon>
+        إضافة طالب
+      </button>
+    }
+  </app-page-header>
+
+  <div class="class-summary">
+    <div class="summary-item">
+      <mat-icon>people</mat-icon>
+      <div><span class="value">{{ total }}</span><span class="label">طالب مسجّل</span></div>
+    </div>
+    <div class="summary-item">
+      <mat-icon>event_seat</mat-icon>
+      <div><span class="value">{{ schoolClass.capacity }}</span><span class="label">الطاقة الاستيعابية</span></div>
+    </div>
+    <div class="summary-item capacity">
+      <div class="capacity-bar"><span [style.width.%]="capacityPercent" [class.full]="capacityPercent >= 100"></span></div>
+      <span class="label">{{ capacityPercent }}% من الطاقة</span>
+    </div>
+  </div>
+}
+
+<div class="data-card">
+  <div class="list-toolbar">
+    <app-search-field placeholder="ابحث بالاسم أو الرقم المدني أو رقم ولي الأمر" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    @if (!loading) {
+      <span class="toolbar-count">@if (query) { {{ filteredCount }} من {{ total }} طالب } @else { {{ total }} طالب }</span>
+    }
+  </div>
+
+  @if (loading) {
+    <app-table-skeleton [rows]="6" [columns]="5"></app-table-skeleton>
+  } @else if (total === 0) {
+    <app-empty-state icon="person_off" title="لا يوجد طلاب في هذا الفصل بعد" description="أضف أول طالب لبدء تسجيل الحضور والدرجات لهذا الفصل.">
+      @if ('students.create' | hasPermission) {
+        <button mat-flat-button color="primary" (click)="openStudentDialog()"><mat-icon>person_add</mat-icon> إضافة أول طالب</button>
+      }
+    </app-empty-state>
+  } @else if (filteredCount === 0) {
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد طالباً يطابق «' + query + '».'" [compact]="true"></app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="fullName" matSortDirection="asc">
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
+          <td mat-cell *matCellDef="let row" class="name-cell">
+            <span class="avatar" [class.female]="row.gender === 'FEMALE'">{{ row.fullName?.charAt(0) }}</span>
+            <div class="name-text">
+              <span class="name">{{ row.fullName }}</span>
+              <span class="sub">{{ genderLabels[row.gender ?? ''] || '—' }} · {{ row.birthDate | appDate }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="civilId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الرقم المدني</th>
+          <td mat-cell *matCellDef="let row"><code>{{ row.civilId }}</code></td>
+        </ng-container>
+        <ng-container matColumnDef="guardianPhone">
+          <th mat-header-cell *matHeaderCellDef>رقم ولي الأمر</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.guardianPhone) { <a class="phone" [href]="'tel:' + row.guardianPhone" dir="ltr">{{ row.guardianPhone }}</a> } @else { — }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class]="'chip ' + statusChip(row.status)">{{ statusLabels[row.status ?? ''] || row.status }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            <div class="row-actions">
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="viewStudent(row); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+              @if ('students.update' | hasPermission) {
+                <button mat-icon-button matTooltip="تعديل" (click)="openStudentDialog(row); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
+              }
+              @if ('students.delete' | hasPermission) {
+                <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteStudent(row); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>
+              }
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable" (click)="viewStudent(row)"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

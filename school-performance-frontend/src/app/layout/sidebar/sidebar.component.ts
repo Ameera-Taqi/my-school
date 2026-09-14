@@ -1,0 +1,44 @@
+import { Component, Input, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { SidebarSection } from '../../core/models';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { LayoutService } from '../../shared/services/layout.service';
+import { LanguageService } from '../../core/services/language.service';
+
+@Component({
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [RouterModule, MatIconModule, MatTooltipModule, TranslatePipe],
+  templateUrl: './sidebar.component.html',
+  styleUrl: './sidebar.component.scss'
+})
+export class SidebarComponent {
+  @Input() sections: SidebarSection[] = [];
+  @Input() mini = false;
+
+  readonly layout = inject(LayoutService);
+  readonly lang = inject(LanguageService);
+  private readonly router = inject(Router);
+
+  isOpen(section: SidebarSection): boolean {
+    // Never hide the section that contains the current page.
+    if (this.containsActive(section)) return true;
+    return this.layout.isSectionOpen(section.titleKey);
+  }
+
+  toggle(section: SidebarSection): void {
+    if (this.mini) return;
+    this.layout.toggleSection(section.titleKey);
+  }
+
+  containsActive(section: SidebarSection): boolean {
+    const url = this.router.url;
+    return section.items.some(item => url === item.route || url.startsWith(item.route + '/'));
+  }
+
+  tooltipPosition(): 'left' | 'right' {
+    return this.lang.direction() === 'rtl' ? 'left' : 'right';
+  }
+}

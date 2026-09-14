@@ -1,0 +1,104 @@
+<app-page-header title="حضور الطلاب" subtitle="تسجيل ومتابعة حضور الطلاب حسب المرحلة والفصل"></app-page-header>
+
+
+<mat-card class="filters-card">
+  <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+    <mat-label>التاريخ</mat-label>
+    <input matInput [matDatepicker]="studentDate" [formControl]="studentFilters.controls.date">
+    <mat-datepicker-toggle matIconSuffix [for]="studentDate"></mat-datepicker-toggle>
+    <mat-datepicker #studentDate></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+    <mat-label>المرحلة</mat-label>
+    <mat-select [formControl]="studentFilters.controls.stageId">
+      @for (s of stages; track s.id) {
+        <mat-option [value]="s.id">{{ s.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+    <mat-label>الفصل</mat-label>
+    <mat-select [formControl]="studentFilters.controls.classId">
+      @for (c of classes; track c.id) {
+        <mat-option [value]="c.id">{{ c.name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <div class="filter-actions">
+    <button mat-stroked-button type="button" (click)="resetStudentFilters()">
+      <mat-icon>restart_alt</mat-icon>
+      إعادة ضبط
+    </button>
+    <button mat-flat-button color="primary" (click)="loadStudents()">
+      <mat-icon>search</mat-icon>
+      عرض
+    </button>
+  </div>
+</mat-card>
+
+<div class="data-card">
+  @if (loadingStudents) {
+    <app-table-skeleton [rows]="6" [columns]="4"></app-table-skeleton>
+  } @else if (!studentRecords.length) {
+    <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" description="اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور الطلاب."></app-empty-state>
+  } @else {
+    <div class="list-toolbar">
+      <div class="summary-chips">
+        <span class="chip neutral">{{ studentRecords.length }} طالب</span>
+        @for (s of statusOptions; track s) {
+          <span class="chip" [class]="'chip ' + statusChip(s)"><mat-icon class="chip-icon">{{ statusIcon(s) }}</mat-icon> {{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
+        }
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table mat-table [dataSource]="studentRecords">
+        <ng-container matColumnDef="personName">
+          <th mat-header-cell *matHeaderCellDef>اسم الطالب</th>
+          <td mat-cell *matCellDef="let row" class="name">{{ row.personName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="className">
+          <th mat-header-cell *matHeaderCellDef>الفصل</th>
+          <td mat-cell *matCellDef="let row">{{ row.className || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>الحالة</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class]="'chip ' + statusChip(row.status)"><mat-icon class="chip-icon">{{ statusIcon(row.status) }}</mat-icon> {{ statusLabels[row.status] }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">تسجيل الحالة</th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            <mat-button-toggle-group class="status-group" [value]="row.status" (change)="setStatus(row, $event.value)" hideSingleSelectionIndicator aria-label="حالة الحضور">
+              @for (s of statusOptions; track s) {
+                <mat-button-toggle [value]="s" [class]="'toggle-' + statusChip(s)" [matTooltip]="statusLabels[s]">
+                  <mat-icon>{{ statusIcon(s) }}</mat-icon>
+                  <span class="toggle-label">{{ statusLabels[s] }}</span>
+                </mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="studentCols"></tr>
+        <tr mat-row *matRowDef="let row; columns: studentCols;"></tr>
+      </table>
+    </div>
+    <div class="save-row">
+      <button mat-stroked-button color="primary" type="button" matTooltip="تصدير سجل حضور الطلاب كملف PDF" (click)="exportStudentsPdf()" [disabled]="exportingStudentsPdf">
+        @if (exportingStudentsPdf) {
+          <mat-spinner diameter="20"></mat-spinner> جاري التصدير...
+        } @else {
+          <ng-container><mat-icon>picture_as_pdf</mat-icon> تصدير PDF</ng-container>
+        }
+      </button>
+      @if ('attendance.manage' | hasPermission) {
+        <button mat-flat-button color="primary" (click)="saveStudents()">
+          <mat-icon>save</mat-icon>
+          حفظ الحضور
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<div #pdfExportRoot class="pdf-export-root" dir="rtl" lang="ar"></div>

@@ -1,0 +1,37 @@
+<nav class="sidebar" [class.mini]="mini" aria-label="القائمة الرئيسية">
+  <a class="sidebar-brand" routerLink="/dashboard" [matTooltip]="mini ? ('sidebar.brand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
+    <span class="brand-icon"><mat-icon>school</mat-icon></span>
+    <span class="brand-text">{{ 'sidebar.brand' | translate }}</span>
+  </a>
+
+  <div class="sidebar-scroll">
+    @for (section of sections; track section.titleKey) {
+      <div class="sidebar-section" [class.open]="isOpen(section)" [class.has-active]="containsActive(section)">
+        <button type="button" class="section-title" (click)="toggle(section)" [attr.aria-expanded]="isOpen(section)" [disabled]="mini">
+          <span class="section-label">{{ section.titleKey | translate }}</span>
+          <span class="section-divider"></span>
+          <mat-icon class="section-chevron">expand_more</mat-icon>
+        </button>
+        <ul [attr.aria-hidden]="!isOpen(section) && !mini">
+          @for (item of section.items; track item.route) {
+            <li>
+              <a [routerLink]="item.route" routerLinkActive="active"
+                 [matTooltip]="mini ? (item.labelKey | translate) : ''"
+                 [matTooltipPosition]="tooltipPosition()"
+                 matTooltipShowDelay="200">
+                <mat-icon>{{ item.icon }}</mat-icon>
+                <span class="item-label">{{ item.labelKey | translate }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  <button type="button" class="collapse-btn hide-mobile" (click)="layout.toggleCollapsed()"
+          [matTooltip]="mini ? ('sidebar.expand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
+    <mat-icon>{{ mini ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right' }}</mat-icon>
+    <span class="item-label">{{ 'sidebar.collapse' | translate }}</span>
+  </button>
+</nav>

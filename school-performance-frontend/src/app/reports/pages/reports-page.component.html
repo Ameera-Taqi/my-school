@@ -1,0 +1,145 @@
+<app-page-header title="التقارير" subtitle="تقارير إدارية وأكاديمية"></app-page-header>
+
+<div class="cards-grid">
+  @for (card of reportCards; track card.type) {
+    <button type="button" class="report-card" (click)="selectReport(card.type)" [class.selected]="selectedReport === card.type" [attr.aria-pressed]="selectedReport === card.type">
+      <span class="report-icon" [style.background]="card.bg" [style.color]="card.color"><mat-icon>{{ card.icon }}</mat-icon></span>
+      <span class="report-name">{{ reportLabels[card.type] }}</span>
+      @if (selectedReport === card.type) { <mat-icon class="check">check_circle</mat-icon> }
+    </button>
+  }
+</div>
+
+@if (!selectedReport) {
+  <div class="data-card">
+    <app-empty-state icon="assessment" title="اختر نوع التقرير" description="اختر أحد التقارير أعلاه لتحديد الفلاتر وعرض النتائج أو تصديرها كملف PDF." [compact]="true"></app-empty-state>
+  </div>
+}
+
+@if (selectedReport) {
+  <div class="data-card filters-panel">
+    <h3 class="section-title"><mat-icon>filter_alt</mat-icon> فلاتر {{ reportLabels[selectedReport] }}</h3>
+    <form [formGroup]="filters" class="filters-form">
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>من تاريخ</mat-label>
+        <input matInput [matDatepicker]="fromPicker" formControlName="dateFrom">
+        <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>إلى تاريخ</mat-label>
+        <input matInput [matDatepicker]="toPicker" formControlName="dateTo">
+        <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>المرحلة</mat-label>
+        <mat-select formControlName="stage">
+          <mat-option value="">الكل</mat-option>
+          <mat-option value="العاشر">العاشر</mat-option>
+          <mat-option value="الحادي عشر">الحادي عشر</mat-option>
+          <mat-option value="الثاني عشر">الثاني عشر</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>الفصل</mat-label>
+        <input matInput formControlName="className" placeholder="مثال: 10-أ">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>الحالة</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">الكل</mat-option>
+          <mat-option value="ACTIVE">نشط</mat-option>
+          <mat-option value="COMPLETED">مكتمل</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="filter-actions">
+        <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
+          <mat-icon>restart_alt</mat-icon>
+          إعادة ضبط
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="generateReport()" [disabled]="loading">
+          @if (loading) {
+            <mat-spinner diameter="20"></mat-spinner> جاري الإنشاء...
+          } @else {
+            <ng-container><mat-icon>visibility</mat-icon> عرض التقرير</ng-container>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
+@if (loading) {
+  <div class="data-card results-panel">
+    <div class="skeleton-head">
+      <span class="skeleton sk-title"></span>
+      <span class="skeleton sk-btn"></span>
+    </div>
+    <div class="summary-grid">
+      @for (i of [0, 1, 2, 3]; track i) { <span class="skeleton sk-summary"></span> }
+    </div>
+    <app-table-skeleton [rows]="6" [columns]="5"></app-table-skeleton>
+  </div>
+}
+
+@if (reportResult && !loading) {
+  <div class="data-card results-panel">
+    <div class="results-header">
+      <div class="report-title-bar">
+        <div class="title-icon"><mat-icon>summarize</mat-icon></div>
+        <div>
+          <h3>{{ reportResult.title }}</h3>
+          <p class="meta">
+            <mat-icon>update</mat-icon> تاريخ الإنشاء: {{ reportResult.generatedAt | appDate:'withTime' }}
+            <span class="chip neutral demo-chip">بيانات تجريبية</span>
+          </p>
+        </div>
+      </div>
+      <button mat-stroked-button color="primary" type="button" matTooltip="تصدير التقرير كملف PDF" (click)="exportPdf()" [disabled]="exportingPdf">
+        @if (exportingPdf) {
+          <mat-spinner diameter="20"></mat-spinner> جاري التصدير...
+        } @else {
+          <ng-container><mat-icon>picture_as_pdf</mat-icon> تصدير PDF</ng-container>
+        }
+      </button>
+    </div>
+
+    @if (reportResult.summary.length) {
+      <div class="summary-grid">
+        @for (item of reportResult.summary; track item.label) {
+          <div class="summary-card">
+            <span class="summary-value">{{ item.value }}</span>
+            <span class="summary-label">{{ item.label }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    @if (reportResult.rows.length === 0) {
+      <app-empty-state icon="search_off" title="لا توجد بيانات مطابقة" description="لا توجد بيانات مطابقة للفلاتر المحددة. جرّب توسيع نطاق التاريخ أو إزالة بعض الفلاتر." [compact]="true"></app-empty-state>
+    } @else {
+      <div class="table-scroll">
+        <table mat-table [dataSource]="reportResult.rows">
+          @for (col of displayedColumns; track col) {
+            <ng-container [matColumnDef]="col">
+              <th mat-header-cell *matHeaderCellDef>{{ reportResult.columnLabels[col] }}</th>
+              <td mat-cell *matCellDef="let row">
+                @if (cellChip(row, col); as chip) {
+                  <span class="chip" [class]="'chip ' + chip">{{ cellValue(row, col) }}</span>
+                } @else {
+                  {{ cellValue(row, col) }}
+                }
+              </td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+      <div class="rows-count">{{ reportResult.rows.length }} سجل</div>
+    }
+  </div>
+}
+
+<div #pdfExportRoot class="pdf-export-root" dir="rtl" lang="ar"></div>

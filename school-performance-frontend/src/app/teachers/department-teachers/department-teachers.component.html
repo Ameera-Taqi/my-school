@@ -1,0 +1,101 @@
+@if (department) {
+  <app-breadcrumb [items]="[
+    { label: 'المعلمون', route: '/teachers' },
+    { label: department.name }
+  ]"></app-breadcrumb>
+
+  <app-page-header [title]="department.name" [subtitle]="department.description || 'إدارة معلمي القسم وحسابات دخولهم'">
+    @if ('teachers.manage' | hasPermission) {
+      <button mat-flat-button color="primary" (click)="openTeacherDialog()">
+        <mat-icon>person_add</mat-icon>
+        إضافة معلم
+      </button>
+    }
+  </app-page-header>
+}
+
+<div class="data-card">
+  <div class="list-toolbar">
+    <app-search-field placeholder="ابحث بالاسم أو رقم الموظف أو التخصص" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    @if (!loading) {
+      <span class="toolbar-count">
+        @if (query) { {{ filteredCount }} من {{ total }} معلم } @else { {{ total }} معلم @if (headsCount) { · {{ headsCount }} رئيس قسم } }
+      </span>
+    }
+  </div>
+
+  @if (loading) {
+    <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
+  } @else if (total === 0) {
+    <app-empty-state icon="person_off" title="لا يوجد معلمون في هذا القسم بعد" description="عند إضافة معلم يُنشأ له حساب دخول تلقائياً ويُربط بهذا القسم.">
+      @if ('teachers.manage' | hasPermission) {
+        <button mat-flat-button color="primary" (click)="openTeacherDialog()"><mat-icon>person_add</mat-icon> إضافة أول معلم</button>
+      }
+    </app-empty-state>
+  } @else if (filteredCount === 0) {
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد معلماً يطابق «' + query + '».'" [compact]="true"></app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="fullName" matSortDirection="asc">
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
+          <td mat-cell *matCellDef="let row" class="name-cell">
+            <span class="avatar" [class.head]="isHead(row)">{{ row.fullName?.replace('أ. ', '')?.charAt(0) }}</span>
+            <div class="name-text">
+              <span class="name">{{ row.fullName }}</span>
+              <span class="sub">@if (row.username) { <code class="tiny">{{ row.username }}</code> } @else { بدون حساب دخول }</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="employeeNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>رقم الموظف</th>
+          <td mat-cell *matCellDef="let row"><code>{{ row.employeeNumber }}</code></td>
+        </ng-container>
+        <ng-container matColumnDef="specialization">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>التخصص</th>
+          <td mat-cell *matCellDef="let row">{{ row.specialization || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>الدور</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class.info]="isHead(row)" [class.neutral]="!isHead(row)">
+              @if (isHead(row)) { <mat-icon class="chip-icon">star</mat-icon> }
+              {{ roleLabel(row) }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="contact">
+          <th mat-header-cell *matHeaderCellDef>التواصل</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="contact">
+              @if (row.email) { <a [href]="'mailto:' + row.email" class="contact-link" dir="ltr">{{ row.email }}</a> }
+              @if (row.phone) { <a [href]="'tel:' + row.phone" class="contact-link" dir="ltr">{{ row.phone }}</a> }
+              @if (!row.email && !row.phone) { — }
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class.success]="row.active" [class.danger]="!row.active">{{ row.active ? 'نشط' : 'غير نشط' }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            <div class="row-actions">
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="viewTeacher(row); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+              @if ('teachers.manage' | hasPermission) {
+                <button mat-icon-button matTooltip="تعديل" (click)="openTeacherDialog(row); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
+                <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteTeacher(row); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>
+              }
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable" (click)="viewTeacher(row)"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

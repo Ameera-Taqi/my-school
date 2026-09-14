@@ -1,0 +1,98 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.class-card {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 0.85rem 0.9rem 0.5rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover, &:focus-visible {
+    border-color: var(--sp-primary-mid);
+    box-shadow: 0 4px 14px rgba(26, 35, 126, 0.12);
+    transform: translateY(-1px);
+  }
+
+  &.selected {
+    border-color: var(--sp-primary-mid);
+    background: var(--sp-primary-bg);
+    box-shadow: 0 2px 8px rgba(57, 73, 171, 0.15);
+  }
+}
+
+.card-body {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.card-icon {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sp-primary-light); color: var(--sp-primary);
+  mat-icon { font-size: 24px; width: 24px; height: 24px; }
+}
+
+.card-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.class-card h3 {
+  margin: 0;
+  color: var(--sp-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.meta {
+  margin: 0.15rem 0 0;
+  color: var(--sp-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--sp-border);
+}
+
+.skeleton-card {
+  display: flex; align-items: center; gap: 0.65rem; cursor: default; min-height: 92px;
+  &:hover { transform: none; box-shadow: var(--sp-shadow); border-color: var(--sp-border); }
+}
+.s-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.s-lines { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+.s-line { height: 12px; width: 70%; }
+.s-line.short { width: 45%; }
+
+.roster-card { margin-top: 1.25rem; }
+
+.toolbar-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--sp-primary);
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+.name-cell { display: flex; align-items: center; gap: 0.7rem; }
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sp-info-bg); color: var(--sp-info); font-weight: 700;
+}
+.name { font-weight: 600; }
+.phone { color: var(--sp-text); text-decoration: none; font-variant-numeric: tabular-nums; &:hover { color: var(--sp-primary-mid); } }

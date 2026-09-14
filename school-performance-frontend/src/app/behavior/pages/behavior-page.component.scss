@@ -1,0 +1,22 @@
+.toolbar-search { flex: 1; max-width: 440px; }
+.actions-cell { width: 1%; white-space: nowrap; }
+
+.name-cell { display: flex; align-items: center; gap: 0.7rem; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sp-primary-light); color: var(--sp-primary); font-weight: 700;
+  &.success { background: var(--sp-success-bg); color: var(--sp-success); }
+  &.danger { background: var(--sp-danger-bg); color: var(--sp-danger); }
+  &.warning { background: var(--sp-warning-bg); color: var(--sp-warning); }
+}
+.name { font-weight: 600; }
+.chip-icon { font-size: 14px; width: 14px; height: 14px; }
+.nowrap { white-space: nowrap; }
+.clamp-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--sp-text-muted);
+}

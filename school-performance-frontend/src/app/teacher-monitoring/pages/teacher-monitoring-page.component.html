@@ -1,0 +1,152 @@
+<app-page-header
+  [title]="'متابعة المعلمين'"
+  [subtitle]="departmentScope.isScoped() ? 'متابعة معلمي ' + departmentScope.departmentName() : 'متابعة أداء المعلمين وتقييم الزيارات الصفية'">
+</app-page-header>
+
+<mat-card class="filters-card">
+  <form [formGroup]="filters" class="filters-form">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>حالة المتابعة</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="">الكل</mat-option>
+        @for (s of statusOptions; track s) {
+          <mat-option [value]="s">{{ statusLabels[s] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>بحث</mat-label>
+      <input matInput formControlName="search" placeholder="اسم المعلم أو المادة">
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
+        <mat-icon>restart_alt</mat-icon>
+        إعادة ضبط
+      </button>
+      <button mat-flat-button color="primary" type="button" (click)="load()" [disabled]="loading">
+        @if (loading) {
+          <ng-container><mat-spinner diameter="20"></mat-spinner> بحث</ng-container>
+        } @else {
+          <ng-container><mat-icon>search</mat-icon> بحث</ng-container>
+        }
+      </button>
+    </div>
+  </form>
+</mat-card>
+
+@if (!loading) {
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon>groups</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.total }}</span>
+        <span class="stat-label">معلمين</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="success">verified</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.excellent }}</span>
+        <span class="stat-label">أداء جيد / ممتاز</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="warning">warning</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.needsFollowUp }}</span>
+        <span class="stat-label">يحتاج متابعة</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>star</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.avgScore }}</span>
+        <span class="stat-label">متوسط التقييم / 5</span>
+      </div>
+    </mat-card>
+  </div>
+}
+
+<div class="data-card">
+  <div class="list-toolbar">
+    <span class="toolbar-title"><mat-icon>fact_check</mat-icon> سجل المتابعة</span>
+    @if (!loading) {
+      <span class="toolbar-count">{{ total }} معلم</span>
+    }
+  </div>
+
+  @if (loading) {
+    <app-table-skeleton [rows]="6" [columns]="8"></app-table-skeleton>
+  } @else if (total === 0) {
+    <app-empty-state [icon]="hasFilters ? 'search_off' : 'groups'" title="لا توجد نتائج مطابقة للبحث" description="جرّب تعديل حالة المتابعة أو كلمة البحث." [compact]="true">
+      @if (hasFilters) {
+        <button mat-stroked-button (click)="resetFilters()"><mat-icon>restart_alt</mat-icon> إعادة ضبط الفلاتر</button>
+      }
+    </app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="teacherName" matSortDirection="asc">
+        <ng-container matColumnDef="teacherName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="name-cell">
+              <span class="avatar">{{ r.teacherName?.replace('أ. ', '')?.charAt(0) }}</span>
+              <span class="name">{{ r.teacherName }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="departmentName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>القسم</th>
+          <td mat-cell *matCellDef="let r">{{ r.departmentName || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المادة</th>
+          <td mat-cell *matCellDef="let r">{{ r.subject }}</td>
+        </ng-container>
+        <ng-container matColumnDef="attendanceRate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحضور</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="rate-cell">
+              <span class="rate-bar"><span class="rate-fill" [class]="'rate-fill ' + rateClass(r.attendanceRate)" [style.width.%]="r.attendanceRate"></span></span>
+              <span class="rate-value">{{ r.attendanceRate }}%</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="lessonPlanRate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>خطط الدروس</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="rate-cell">
+              <span class="rate-bar"><span class="rate-fill" [class]="'rate-fill ' + rateClass(r.lessonPlanRate)" [style.width.%]="r.lessonPlanRate"></span></span>
+              <span class="rate-value">{{ r.lessonPlanRate }}%</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="evaluationScore">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>التقييم</th>
+          <td mat-cell *matCellDef="let r"><strong>{{ r.evaluationScore }}</strong> <span class="muted">/ 5</span></td>
+        </ng-container>
+        <ng-container matColumnDef="lastVisitDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>آخر زيارة</th>
+          <td mat-cell *matCellDef="let r">{{ r.lastVisitDate | appDate }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="chip" [class]="'chip ' + chipClass(r.status)">{{ statusLabel(r.status) }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="actions-cell">
+            <div class="row-actions">
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="tableCols"></tr>
+        <tr mat-row *matRowDef="let row; columns: tableCols;" class="clickable" (click)="view(row)"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

@@ -1,0 +1,83 @@
+<app-page-header title="تسجيل الحضور" subtitle="تسجيل حضور طلاب فصلك"></app-page-header>
+
+<div class="filters">
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>التاريخ</mat-label>
+    <input matInput [matDatepicker]="picker" [formControl]="form.controls.date">
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>الفصل</mat-label>
+    <mat-select [formControl]="form.controls.className">
+      @for (c of classNames; track c) {
+        <mat-option [value]="c">{{ c }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <div class="filter-actions">
+    <button mat-stroked-button type="button" (click)="resetFilters()">
+      <mat-icon>restart_alt</mat-icon>
+      إعادة ضبط
+    </button>
+    <button mat-flat-button color="primary" type="button" (click)="load()">
+      <mat-icon>search</mat-icon>
+      عرض
+    </button>
+  </div>
+</div>
+
+<div class="data-card">
+  @if (loading) {
+    <app-table-skeleton [rows]="8" [columns]="2"></app-table-skeleton>
+  } @else if (rows.length) {
+    <div class="list-toolbar">
+      <span class="toolbar-title"><mat-icon>fact_check</mat-icon> {{ form.controls.className.value }}</span>
+      <span class="toolbar-count summary">
+        <span>{{ rows.length }} طالب</span>
+        <span class="chip present">{{ statusLabels['PRESENT'] }} {{ countOf('PRESENT') }}</span>
+        <span class="chip absent">{{ statusLabels['ABSENT'] }} {{ countOf('ABSENT') }}</span>
+        <span class="chip late">{{ statusLabels['LATE'] }} {{ countOf('LATE') }}</span>
+      </span>
+    </div>
+    <div class="table-scroll sheet-scroll">
+      <table mat-table [dataSource]="rows" class="attendance-table">
+        <ng-container matColumnDef="studentName">
+          <th mat-header-cell *matHeaderCellDef>الطالب</th>
+          <td mat-cell *matCellDef="let r; let i = index">
+            <div class="name-cell">
+              <span class="avatar">{{ r.studentName?.charAt(0) }}</span>
+              <span class="name">{{ r.studentName }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>الحالة</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-button-toggle-group
+              class="status-chips"
+              hideSingleSelectionIndicator
+              [value]="r.status"
+              (change)="setStatus(r, $event.value)">
+              @for (s of statusOptions; track s) {
+                <mat-button-toggle [value]="s" [class]="statusClass(s)">
+                  {{ statusLabels[s] }}
+                </mat-button-toggle>
+              }
+            </mat-button-toggle-group>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="cols; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: cols;" [class]="'row-' + row.status.toLowerCase()"></tr>
+      </table>
+    </div>
+    <div class="sheet-footer">
+      <button mat-flat-button color="primary" type="button" (click)="save()">
+        <mat-icon>save</mat-icon>
+        حفظ الحضور
+      </button>
+    </div>
+  } @else {
+    <app-empty-state icon="event_busy" title="لم يتم اختيار فصل بعد" description="اختر الفصل ثم اضغط «عرض» لبدء تسجيل الحضور."></app-empty-state>
+  }
+</div>

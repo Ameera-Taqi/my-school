@@ -1,0 +1,68 @@
+<app-page-header title="التنبيهات" subtitle="تنبيهات مهمة تتطلب المتابعة"></app-page-header>
+
+<div class="data-card">
+  <div class="list-toolbar">
+    <app-search-field placeholder="ابحث بالعنوان أو النوع أو الخطورة أو الحالة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    @if (!loading) {
+      <span class="toolbar-count">
+        @if (query) { {{ filteredCount }} من {{ total }} تنبيه } @else { {{ total }} تنبيه @if (newCount) { · {{ newCount }} جديد } }
+      </span>
+    }
+  </div>
+
+  @if (loading) {
+    <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
+  } @else if (total === 0) {
+    <app-empty-state icon="notifications_off" title="لا توجد تنبيهات" description="كل شيء على ما يرام. ستظهر هنا التنبيهات التي تتطلب متابعة."></app-empty-state>
+  } @else if (filteredCount === 0) {
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد تنبيهاً يطابق «' + query + '».'" [compact]="true"></app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="alertDate" matSortDirection="desc">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>العنوان</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="title-cell">
+              <span class="type-icon" [class]="'type-icon ' + severityChip(r.severity)"><mat-icon>{{ typeIcon(r.alertType) }}</mat-icon></span>
+              <span class="name">{{ r.title }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="alertType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>النوع</th>
+          <td mat-cell *matCellDef="let r">{{ typeLabels[r.alertType] }}</td>
+        </ng-container>
+        <ng-container matColumnDef="alertDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>التاريخ</th>
+          <td mat-cell *matCellDef="let r" class="nowrap">{{ r.alertDate | appDate }}</td>
+        </ng-container>
+        <ng-container matColumnDef="severity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الخطورة</th>
+          <td mat-cell *matCellDef="let r"><span class="chip" [class]="'chip ' + severityChip(r.severity)">{{ severityLabels[r.severity] }}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="chip" [class]="'chip ' + statusChip(r.status)">
+              @if (r.status === 'REVIEWED') { <mat-icon class="chip-icon">check</mat-icon> }
+              {{ statusLabels[r.status] }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="actions-cell">
+            <div class="row-actions">
+              @if (r.status === 'NEW') {
+                <button mat-icon-button class="success" matTooltip="تحديد كتمت المراجعة" (click)="markReviewed(r)"><mat-icon>task_alt</mat-icon></button>
+              }
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="cols"></tr>
+        <tr mat-row *matRowDef="let row; columns: cols;" [class.reviewed]="row.status === 'REVIEWED'"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

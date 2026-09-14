@@ -1,0 +1,266 @@
+<app-page-header title="إعدادات النظام" subtitle="إدارة إعدادات المدرسة والنظام العام">
+  <button mat-stroked-button type="button" matTooltip="إرجاع جميع الإعدادات إلى القيم الافتراضية" (click)="resetDefaults()" [disabled]="loading || saving">
+    <mat-icon>restart_alt</mat-icon>
+    استعادة الافتراضي
+  </button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="loading || saving">
+    @if (saving) {
+      <mat-spinner diameter="20"></mat-spinner> جاري الحفظ...
+    } @else {
+      <ng-container><mat-icon>save</mat-icon> حفظ الإعدادات</ng-container>
+    }
+  </button>
+</app-page-header>
+
+@if (loading) {
+  <div class="settings-skeleton">
+    <div class="sk-tabs">
+      @for (i of [0, 1, 2, 3, 4]; track i) { <span class="skeleton sk-tab"></span> }
+    </div>
+    <div class="data-card settings-card">
+      <span class="skeleton sk-title"></span>
+      <div class="fields-grid">
+        @for (i of [0, 1, 2, 3, 4, 5]; track i) { <span class="skeleton sk-field"></span> }
+      </div>
+    </div>
+  </div>
+} @else {
+  <form [formGroup]="form" class="settings-form">
+    <mat-tab-group animationDuration="200ms" class="settings-tabs">
+      <!-- معلومات المدرسة -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">school</mat-icon>
+          معلومات المدرسة
+          @if (tabHasError('school')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+        </ng-template>
+        <div class="data-card settings-card" formGroupName="school">
+          <h3 class="section-title"><span class="section-icon"><mat-icon>badge</mat-icon></span> البيانات الأساسية</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>اسم المدرسة</mat-label>
+              <input matInput formControlName="name" autocomplete="off">
+              <mat-error>اسم المدرسة مطلوب</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>رمز المدرسة</mat-label>
+              <input matInput formControlName="code" autocomplete="off" dir="ltr">
+              <mat-error>رمز المدرسة مطلوب</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-row">
+              <mat-label>العنوان</mat-label>
+              <input matInput formControlName="address" autocomplete="off">
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <h3 class="section-title"><span class="section-icon"><mat-icon>contact_phone</mat-icon></span> بيانات التواصل والإدارة</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>رقم الهاتف</mat-label>
+              <input matInput formControlName="phone" autocomplete="off" dir="ltr">
+              <mat-icon matSuffix>call</mat-icon>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>البريد الإلكتروني</mat-label>
+              <input matInput type="email" formControlName="email" autocomplete="off" dir="ltr">
+              <mat-icon matSuffix>mail</mat-icon>
+              <mat-error>صيغة البريد الإلكتروني غير صحيحة</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-row">
+              <mat-label>اسم مدير المدرسة</mat-label>
+              <input matInput formControlName="principalName" autocomplete="off">
+              <mat-icon matSuffix>person</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- الإعدادات الأكاديمية -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">menu_book</mat-icon>
+          أكاديمي
+          @if (tabHasError('academic')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+        </ng-template>
+        <div class="data-card settings-card" formGroupName="academic">
+          <h3 class="section-title"><span class="section-icon"><mat-icon>calendar_month</mat-icon></span> العام الدراسي</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>العام الدراسي</mat-label>
+              <input matInput formControlName="year" placeholder="2025-2026" autocomplete="off" dir="ltr">
+              <mat-error>العام الدراسي مطلوب</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>الفصل الدراسي الحالي</mat-label>
+              <mat-select formControlName="currentTerm">
+                @for (t of termOptions; track t) {
+                  <mat-option [value]="t">{{ t }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>الفصل الدراسي مطلوب</mat-error>
+            </mat-form-field>
+          </div>
+
+          <h3 class="section-title"><span class="section-icon"><mat-icon>grading</mat-icon></span> التقييم والدرجات</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>درجة النجاح (%)</mat-label>
+              <input matInput type="number" formControlName="passMark" min="0" max="100">
+              <mat-hint>بين 0 و 100</mat-hint>
+              @if (form.controls.academic.controls.passMark.hasError('required')) { <mat-error>درجة النجاح مطلوبة</mat-error> }
+              @if (form.controls.academic.controls.passMark.hasError('min') || form.controls.academic.controls.passMark.hasError('max')) { <mat-error>يجب أن تكون بين 0 و 100</mat-error> }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>الدرجة الكاملة</mat-label>
+              <input matInput type="number" formControlName="maxGrade" min="1">
+              @if (form.controls.academic.controls.maxGrade.hasError('required')) { <mat-error>الدرجة الكاملة مطلوبة</mat-error> }
+              @if (form.controls.academic.controls.maxGrade.hasError('min')) { <mat-error>يجب أن تكون 1 على الأقل</mat-error> }
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- الحضور -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">how_to_reg</mat-icon>
+          الحضور
+          @if (tabHasError('attendance')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+        </ng-template>
+        <div class="data-card settings-card" formGroupName="attendance">
+          <h3 class="section-title"><span class="section-icon"><mat-icon>schedule</mat-icon></span> قواعد الحضور والانصراف</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>اعتبار التأخر بعد (دقيقة)</mat-label>
+              <input matInput type="number" formControlName="lateAfterMinutes" min="1">
+              @if (form.controls.attendance.controls.lateAfterMinutes.hasError('required')) { <mat-error>هذا الحقل مطلوب</mat-error> }
+              @if (form.controls.attendance.controls.lateAfterMinutes.hasError('min')) { <mat-error>يجب أن يكون 1 على الأقل</mat-error> }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>تنبيه الغياب بعد (أيام)</mat-label>
+              <input matInput type="number" formControlName="absentAlertThreshold" min="1">
+              @if (form.controls.attendance.controls.absentAlertThreshold.hasError('required')) { <mat-error>هذا الحقل مطلوب</mat-error> }
+              @if (form.controls.attendance.controls.absentAlertThreshold.hasError('min')) { <mat-error>يجب أن يكون 1 على الأقل</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <h3 class="section-title"><span class="section-icon"><mat-icon>rule</mat-icon></span> خيارات الاحتساب</h3>
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <strong>احتساب التأخر جزئياً</strong>
+                <p>اعتبار الطالب المتأخر حاضراً جزئياً في التقارير</p>
+              </div>
+              <mat-slide-toggle formControlName="countLateAsPartial"></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- الإشعارات -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">notifications</mat-icon>
+          الإشعارات
+        </ng-template>
+        <div class="data-card settings-card" formGroupName="notifications">
+          <h3 class="section-title"><span class="section-icon"><mat-icon>send</mat-icon></span> قنوات الإرسال</h3>
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <strong>إشعارات البريد الإلكتروني</strong>
+                <p>إرسال التنبيهات عبر البريد الإلكتروني</p>
+              </div>
+              <mat-slide-toggle formControlName="emailEnabled"></mat-slide-toggle>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <strong>إشعارات الرسائل النصية</strong>
+                <p>إرسال التنبيهات عبر SMS</p>
+              </div>
+              <mat-slide-toggle formControlName="smsEnabled"></mat-slide-toggle>
+            </div>
+          </div>
+
+          <h3 class="section-title"><span class="section-icon"><mat-icon>notifications_active</mat-icon></span> تنبيهات النظام</h3>
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <strong>تنبيهات الغياب</strong>
+                <p>إشعار ولي الأمر عند تجاوز حد الغياب</p>
+              </div>
+              <mat-slide-toggle formControlName="absenceAlerts"></mat-slide-toggle>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <strong>تنبيهات الدرجات</strong>
+                <p>إشعار عند إدخال أو تحديث الدرجات</p>
+              </div>
+              <mat-slide-toggle formControlName="gradeAlerts"></mat-slide-toggle>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-text">
+                <strong>تذكير الاجتماعات</strong>
+                <p>تذكير قبل موعد الاجتماعات المجدولة</p>
+              </div>
+              <mat-slide-toggle formControlName="meetingReminders"></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- النظام -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">tune</mat-icon>
+          النظام
+          @if (tabHasError('system')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+        </ng-template>
+        <div class="data-card settings-card" formGroupName="system">
+          <h3 class="section-title"><span class="section-icon"><mat-icon>language</mat-icon></span> العرض واللغة</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>تنسيق التاريخ</mat-label>
+              <mat-select formControlName="dateFormat">
+                @for (f of dateFormatOptions; track f.value) {
+                  <mat-option [value]="f.value">{{ f.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>تنسيق التاريخ مطلوب</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>اللغة الافتراضية</mat-label>
+              <mat-select formControlName="defaultLanguage">
+                @for (l of languageOptions; track l.value) {
+                  <mat-option [value]="l.value">{{ l.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>اللغة الافتراضية مطلوبة</mat-error>
+            </mat-form-field>
+          </div>
+
+          <h3 class="section-title"><span class="section-icon"><mat-icon>security</mat-icon></span> الجلسة والأمان</h3>
+          <div class="fields-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>مهلة الجلسة (دقيقة)</mat-label>
+              <input matInput type="number" formControlName="sessionTimeoutMinutes" min="5">
+              <mat-hint>5 دقائق على الأقل</mat-hint>
+              @if (form.controls.system.controls.sessionTimeoutMinutes.hasError('required')) { <mat-error>مهلة الجلسة مطلوبة</mat-error> }
+              @if (form.controls.system.controls.sessionTimeoutMinutes.hasError('min')) { <mat-error>يجب أن تكون 5 دقائق على الأقل</mat-error> }
+            </mat-form-field>
+          </div>
+          <div class="toggle-list">
+            <div class="toggle-row maintenance-row" [class.on]="form.controls.system.controls.maintenanceMode.value">
+              <div class="toggle-text">
+                <strong><mat-icon class="inline-icon">engineering</mat-icon> وضع الصيانة</strong>
+                <p>تعطيل دخول المستخدمين مؤقتاً باستثناء المدير</p>
+              </div>
+              <mat-slide-toggle formControlName="maintenanceMode" color="warn"></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+}

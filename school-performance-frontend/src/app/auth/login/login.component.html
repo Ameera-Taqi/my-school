@@ -1,0 +1,69 @@
+<div class="login-page">
+  <div class="login-art" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="art-content">
+      <mat-icon class="art-icon">school</mat-icon>
+      <h2>نظام مؤشر الأداء المدرسي الذكي</h2>
+      <p>منصة واحدة لمتابعة الطلاب والمعلمين والأداء المدرسي، بصلاحيات مرنة لكل دور.</p>
+      <ul class="art-points">
+        <li><mat-icon>check_circle</mat-icon> متابعة الحضور والسلوك والدرجات</li>
+        <li><mat-icon>check_circle</mat-icon> لوحات تحكم لرؤساء الأقسام والإدارة</li>
+        <li><mat-icon>check_circle</mat-icon> تقويم مدرسي وتنبيهات ذكية</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="login-side">
+    <mat-card class="login-card">
+      <div class="login-header">
+        <span class="logo-badge"><mat-icon>school</mat-icon></span>
+        <h1>تسجيل الدخول</h1>
+        <p>أدخل بيانات حسابك للمتابعة</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>اسم المستخدم</mat-label>
+          <input matInput formControlName="username" autocomplete="username" dir="ltr" cdkFocusInitial>
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error>اسم المستخدم مطلوب</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>كلمة المرور</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password" dir="ltr">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="hidePassword ? 'إظهار كلمة المرور' : 'إخفاء كلمة المرور'">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error>كلمة المرور مطلوبة</mat-error>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="remember">تذكر اسم المستخدم</mat-checkbox>
+        </div>
+
+        @if (errorMessage) {
+          <div class="error-banner" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit" [disabled]="loading">
+          @if (loading) {
+            <mat-spinner diameter="22"></mat-spinner>
+          } @else {
+            <ng-container><mat-icon>login</mat-icon> تسجيل الدخول</ng-container>
+          }
+        </button>
+      </form>
+
+      <p class="help-text">نسيت كلمة المرور؟ تواصل مع مدير النظام لإعادة تعيينها.</p>
+    </mat-card>
+    <p class="copyright">© {{ year }} نظام مؤشر الأداء المدرسي الذكي</p>
+  </div>
+</div>

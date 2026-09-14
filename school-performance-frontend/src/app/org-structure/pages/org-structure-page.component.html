@@ -1,0 +1,128 @@
+<app-page-header title="الهيكل التنظيمي" subtitle="يتحدّث تلقائياً مع بيانات المستخدمين والأدوار والأقسام">
+  <mat-button-toggle-group class="view-toggle" [value]="view" (change)="view = $event.value" hideSingleSelectionIndicator>
+    <mat-button-toggle value="chart" matTooltip="مخطط شجري"><mat-icon>account_tree</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="list" matTooltip="قائمة بالمستويات"><mat-icon>view_agenda</mat-icon></mat-button-toggle>
+  </mat-button-toggle-group>
+  <button mat-stroked-button type="button" (click)="load()" [disabled]="loading"><mat-icon>refresh</mat-icon> تحديث</button>
+</app-page-header>
+
+<!-- Legend + counts -->
+<div class="org-legend">
+  @for (level of levels; track level.key) {
+    <span class="legend-item"><span class="legend-dot" [style.background]="level.color"></span>{{ level.label }}</span>
+  }
+  @if (data) {
+    <span class="legend-spacer"></span>
+    <span class="legend-count"><mat-icon>groups</mat-icon> {{ data.totalPeople }} شخص · {{ data.departments.length }} قسم</span>
+  }
+</div>
+
+@if (loading) {
+  <div class="org-skeleton">
+    <span class="skeleton node"></span>
+    <div class="row"><span class="skeleton node"></span><span class="skeleton node"></span></div>
+    <div class="row"><span class="skeleton dept"></span><span class="skeleton dept"></span><span class="skeleton dept"></span><span class="skeleton dept"></span></div>
+  </div>
+} @else if (!data || isEmpty) {
+  <app-empty-state icon="account_tree" title="لا يوجد هيكل بعد" description="أضف مدير المدرسة والأقسام والمعلمين من صفحات المستخدمين والمعلمين ليظهر الهيكل هنا.">
+    @if ('users.manage' | hasPermission) { <a mat-flat-button color="primary" routerLink="/users"><mat-icon>manage_accounts</mat-icon> المستخدمون</a> }
+  </app-empty-state>
+} @else {
+  <div class="org" [class.list-view]="view === 'list'">
+
+    <!-- Level 1: school manager -->
+    <section class="level level-manager">
+      <div class="level-label">مدير المدرسة</div>
+      <div class="nodes">
+        @for (p of data.managers; track p.id) {
+          <ng-container *ngTemplateOutlet="personCard; context: { $implicit: p, level: 'manager' }"></ng-container>
+        } @empty {
+          <div class="node placeholder"><mat-icon>person_off</mat-icon><span>لم يُعيَّن مدير مدرسة بعد</span></div>
+        }
+      </div>
+    </section>
+
+    <!-- Level 2: assistant managers -->
+    @if (data.assistantManagers.length) {
+      <div class="connector"></div>
+      <section class="level level-assistant">
+        <div class="level-label">المدراء المساعدون</div>
+        <div class="nodes">
+          @for (p of data.assistantManagers; track p.id) {
+            <ng-container *ngTemplateOutlet="personCard; context: { $implicit: p, level: 'assistant' }"></ng-container>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Level 3 + 4: departments (head + teachers) -->
+    <div class="connector"></div>
+    <section class="level level-departments">
+      <div class="level-label">رؤساء الأقسام والمعلمون</div>
+      <div class="departments">
+        @for (dept of data.departments; track dept.id) {
+          <article class="department" [class.inactive]="!dept.active" [class.collapsed]="isCollapsed(dept)">
+            <header class="dept-head" (click)="toggleDepartment(dept)">
+              <mat-icon class="dept-icon">domain</mat-icon>
+              <div class="dept-title">
+                <strong>{{ dept.name }}</strong>
+                <span>{{ dept.teachers.length }} معلم{{ dept.head ? ' · رئيس قسم' : ' · بدون رئيس' }}</span>
+              </div>
+              <a mat-icon-button [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة القسم" (click)="$event.stopPropagation()"><mat-icon>open_in_new</mat-icon></a>
+              <mat-icon class="chevron">expand_more</mat-icon>
+            </header>
+
+            <div class="dept-body">
+              @if (dept.head) {
+                <ng-container *ngTemplateOutlet="personCard; context: { $implicit: dept.head, level: 'head' }"></ng-container>
+              } @else {
+                <div class="node placeholder small"><mat-icon>person_add</mat-icon><span>لا يوجد رئيس قسم</span></div>
+              }
+              @if (dept.teachers.length) {
+                <div class="teachers">
+                  @for (t of dept.teachers; track t.id) {
+                    <ng-container *ngTemplateOutlet="personCard; context: { $implicit: t, level: 'teacher' }"></ng-container>
+                  }
+                </div>
+              } @else {
+                <p class="no-teachers">لا يوجد معلمون في هذا القسم</p>
+              }
+            </div>
+          </article>
+        }
+
+        @if (data.unassignedHeads.length || data.unassignedTeachers.length) {
+          <article class="department unassigned">
+            <header class="dept-head">
+              <mat-icon class="dept-icon">help_outline</mat-icon>
+              <div class="dept-title"><strong>بدون قسم</strong><span>{{ data.unassignedHeads.length + data.unassignedTeachers.length }} شخص</span></div>
+            </header>
+            <div class="dept-body">
+              @for (p of data.unassignedHeads; track p.id) {
+                <ng-container *ngTemplateOutlet="personCard; context: { $implicit: p, level: 'head' }"></ng-container>
+              }
+              <div class="teachers">
+                @for (t of data.unassignedTeachers; track t.id) {
+                  <ng-container *ngTemplateOutlet="personCard; context: { $implicit: t, level: 'teacher' }"></ng-container>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <p class="generated">آخر تحديث: {{ data.generatedAt | appDate:'withTime' }}</p>
+  </div>
+}
+
+<ng-template #personCard let-p let-level="level">
+  <button type="button" class="node person" [class]="'node person lvl-' + level" [class.inactive]="!p.active" (click)="showPerson(p)" [matTooltip]="p.roleName + (p.specialization ? ' · ' + p.specialization : '')">
+    <span class="avatar">{{ initials(p.fullName) }}</span>
+    <span class="person-text">
+      <span class="name">{{ p.fullName }}</span>
+      <span class="meta">{{ level === 'teacher' ? (p.specialization || p.roleName) : p.roleName }}</span>
+    </span>
+    @if (!p.active) { <span class="chip danger tiny">موقوف</span> }
+  </button>
+</ng-template>

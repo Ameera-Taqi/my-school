@@ -1,0 +1,135 @@
+<app-page-header title="الدرجات" subtitle="كشف درجات الطلاب — أضف أعمدة التقييم وأدخل الدرجات مباشرة"></app-page-header>
+
+<mat-card class="filters-card">
+  <form [formGroup]="filters" class="filters-form">
+    <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-label>الفصل</mat-label>
+      <mat-select formControlName="className">
+        @for (c of classNames; track c) {
+          <mat-option [value]="c">{{ c }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-stroked-button type="button" (click)="resetFilters()">
+        <mat-icon>restart_alt</mat-icon>
+        إعادة ضبط
+      </button>
+      <button mat-flat-button color="primary" type="button" (click)="loadSheet()" [disabled]="loading">
+        @if (loading) {
+          <ng-container><mat-spinner diameter="20"></mat-spinner> عرض الكشف</ng-container>
+        } @else {
+          <ng-container><mat-icon>table_view</mat-icon> عرض الكشف</ng-container>
+        }
+      </button>
+    </div>
+  </form>
+</mat-card>
+
+@if (loading) {
+  <div class="data-card">
+    <app-table-skeleton [rows]="8" [columns]="4"></app-table-skeleton>
+  </div>
+} @else if (sheetLoaded && sheet) {
+  <div class="data-card">
+    <div class="list-toolbar">
+      <div class="sheet-info">
+        <mat-icon>grading</mat-icon>
+        <span>{{ sheet.className }}</span>
+        <span class="dot">•</span>
+        <span>{{ sheet.subject }}</span>
+        <span class="dot">•</span>
+        <span>{{ sheet.term }}</span>
+      </div>
+      <div class="sheet-actions">
+        <button mat-stroked-button color="primary" type="button" (click)="addColumn()">
+          <mat-icon>view_column</mat-icon>
+          إضافة عمود
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="saveSheet()" [disabled]="saving">
+          @if (saving) {
+            <ng-container><mat-spinner diameter="20"></mat-spinner> حفظ الكشف</ng-container>
+          } @else {
+            <ng-container><mat-icon>save</mat-icon> حفظ الكشف</ng-container>
+          }
+        </button>
+      </div>
+    </div>
+
+    @if (!sheet.columns.length) {
+      <app-empty-state icon="view_column" title="لا توجد أعمدة درجات بعد" description="اضغط «إضافة عمود» لتحديد عنوان التقييم والدرجة الكاملة." [compact]="true">
+        <button mat-stroked-button color="primary" type="button" (click)="addColumn()"><mat-icon>view_column</mat-icon> إضافة عمود</button>
+      </app-empty-state>
+    }
+
+    <div class="table-scroll sheet-scroll" [class.has-columns]="sheet.columns.length">
+      <table mat-table [dataSource]="sheet.entries" class="grade-sheet-table">
+        <ng-container matColumnDef="studentName" sticky>
+          <th mat-header-cell *matHeaderCellDef>اسم الطالب</th>
+          <td mat-cell *matCellDef="let row" class="student-cell">{{ row.studentName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="className">
+          <th mat-header-cell *matHeaderCellDef>الفصل</th>
+          <td mat-cell *matCellDef="let row">{{ row.className }}</td>
+        </ng-container>
+
+        @for (col of sheet.columns; track col.id) {
+          <ng-container [matColumnDef]="col.id">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="grade-col-header">
+                <span class="grade-col-title">{{ col.title }}</span>
+                <small class="grade-col-max">من {{ col.maxScore }}</small>
+                <div class="grade-col-actions row-actions">
+                  <button mat-icon-button type="button" matTooltip="تعديل العمود" (click)="editColumn(col)" aria-label="تعديل العمود">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" class="danger" matTooltip="حذف العمود" (click)="removeColumn(col)" aria-label="حذف العمود">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <div class="score-input-wrap" [class.invalid]="isScoreInvalid(row, col)">
+                <input
+                  class="score-input"
+                  type="number"
+                  [min]="0"
+                  [max]="col.maxScore"
+                  [value]="scoreValue(row, col.id)"
+                  (input)="setScore(row, col, $event)"
+                  [attr.aria-label]="col.title + ' لـ ' + row.studentName">
+                <span class="score-suffix">/ {{ col.maxScore }}</span>
+              </div>
+            </td>
+          </ng-container>
+        }
+
+        <ng-container matColumnDef="total" stickyEnd>
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="grade-col-header total-header">
+              <span class="grade-col-title">المجموع</span>
+              @if (sheet.columns.length) {
+                <small class="grade-col-max">من {{ rowTotalMax() }}</small>
+              }
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div class="total-cell">
+              <strong>{{ rowTotal(row) }}</strong>
+              <span class="score-suffix">/ {{ rowTotalMax() }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+} @else if (!sheetLoaded) {
+  <div class="data-card">
+    <app-empty-state icon="grading" title="لم يتم عرض الكشف بعد" description="اختر الفصل ثم اضغط «عرض الكشف» لبدء إدخال الدرجات."></app-empty-state>
+  </div>
+}

@@ -1,0 +1,242 @@
+$blue: #1a237e;
+$blue-mid: #3949ab;
+$blue-bg: #f0f2fa;
+
+/* ── الشريط العلوي ── */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1.5rem;
+  min-height: 64px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e8eaf6;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header .header-start {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.app-header .menu-btn { color: $blue; }
+.app-header .hide-desktop-960 { display: none; }
+
+.app-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $blue;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* سويتش اللغة — في الشريط العلوي */
+.app-header .header-lang {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #e8eaf6;
+  background: #fafbff;
+}
+
+.app-header .header-lang .lang-icon {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 18px !important;
+  color: $blue-mid;
+}
+
+.app-header .header-lang .lang-option {
+  font-size: 0.75rem;
+  color: #9e9e9e;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.app-header .header-lang .lang-option.active {
+  color: $blue;
+  font-weight: 700;
+}
+
+.app-header .header-lang .lang-toggle {
+  transform: scale(0.85);
+}
+
+/* ── زر المستخدم ── */
+.app-header .user-trigger {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.app-header .user-trigger:hover {
+  background: $blue-bg;
+}
+
+.app-header .user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: $blue;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.app-header .user-trigger-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.app-header .user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #212121;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-header .user-role {
+  font-size: 0.75rem;
+  color: #757575;
+}
+
+.app-header .chevron.mat-icon {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
+  color: #9e9e9e;
+}
+
+/* ── القائمة المنبثقة ── */
+.mat-mdc-menu-panel.user-menu-panel {
+  --mat-menu-item-icon-size: 22px;
+  --mat-menu-item-spacing: 12px;
+  min-width: 280px !important;
+  max-width: 320px !important;
+  border-radius: 10px !important;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+/* بطاقة الملف الشخصي */
+.mat-mdc-menu-panel.user-menu-panel .menu-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1rem 1.15rem;
+  background: linear-gradient(135deg, #1a237e 0%, #303f9f 100%);
+  color: #fff;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .menu-profile-greeting {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .menu-profile-name {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #fff;
+}
+
+/* الفاصل */
+.mat-mdc-menu-panel.user-menu-panel mat-divider {
+  margin: 0;
+  border-color: #eeeeee;
+}
+
+/* عناصر القائمة */
+.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item {
+  min-height: 48px;
+  font-size: 0.9rem;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item .mat-icon {
+  color: $blue-mid;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item:not([disabled]):hover {
+  background: $blue-bg;
+}
+
+/* تسجيل الخروج */
+.mat-mdc-menu-panel.user-menu-panel .menu-logout .mat-icon,
+.mat-mdc-menu-panel.user-menu-panel .menu-logout span {
+  color: #d32f2f;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .menu-logout:not([disabled]):hover {
+  background: #fce4ec;
+}
+
+.mat-mdc-menu-panel.user-menu-panel .menu-profile-role {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+/* ── جوال ── */
+@media (max-width: 959px) {
+  .app-header { padding: 0.5rem 0.75rem; }
+  .app-header .hide-desktop-960 { display: inline-flex; }
+  .app-header .header-title { font-size: 0.95rem; }
+}
+
+@media (max-width: 768px) {
+  .app-header .header-title { display: none; }
+
+  .app-header .header-lang .lang-option {
+    display: none;
+  }
+
+  .app-header .header-lang {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .app-header .user-trigger-info,
+  .app-header .chevron {
+    display: none;
+  }
+
+  .app-header .user-trigger {
+    padding: 0.25rem;
+    border-radius: 50%;
+  }
+}

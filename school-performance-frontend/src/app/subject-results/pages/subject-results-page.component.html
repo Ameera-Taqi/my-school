@@ -1,0 +1,175 @@
+<app-page-header
+  [title]="'نتائج الطلاب حسب المادة'"
+  [subtitle]="departmentScope.isScoped() ? 'عرض نتائج طلاب ' + departmentScope.departmentName() : 'عرض وتحليل درجات الطلاب لكل مادة دراسية'">
+</app-page-header>
+
+<mat-card class="filters-card">
+  <form [formGroup]="filters" class="filters-form">
+    @if (!departmentScope.isScoped()) {
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>المادة</mat-label>
+        <mat-select formControlName="subject">
+          @for (s of subjects; track s) {
+            <mat-option [value]="s">{{ s }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>المرحلة</mat-label>
+      <mat-select formControlName="stage">
+        <mat-option value="">كل المراحل</mat-option>
+        @for (s of stages; track s) {
+          <mat-option [value]="s">{{ s }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>الفصل</mat-label>
+      <mat-select formControlName="className">
+        <mat-option value="">كل الفصول</mat-option>
+        @for (c of classes; track c) {
+          <mat-option [value]="c">{{ c }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>الفصل الدراسي</mat-label>
+      <mat-select formControlName="term">
+        <mat-option value="">الكل</mat-option>
+        @for (t of terms; track t) {
+          <mat-option [value]="t">{{ t }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>بحث بالاسم</mat-label>
+      <input matInput formControlName="search" placeholder="اسم الطالب">
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
+        <mat-icon>restart_alt</mat-icon>
+        إعادة ضبط
+      </button>
+      <button mat-flat-button color="primary" type="button" (click)="search()" [disabled]="loading">
+        @if (loading) {
+          <ng-container><mat-spinner diameter="20"></mat-spinner> عرض النتائج</ng-container>
+        } @else {
+          <ng-container><mat-icon>search</mat-icon> عرض النتائج</ng-container>
+        }
+      </button>
+    </div>
+  </form>
+</mat-card>
+
+@if (searched && !loading) {
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon>groups</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.total }}</span>
+        <span class="stat-label">عدد الطلاب</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>percent</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.average }}%</span>
+        <span class="stat-label">متوسط الدرجات</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="success">check_circle</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.passRate }}%</span>
+        <span class="stat-label">نسبة النجاح</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon class="danger">cancel</mat-icon>
+      <div>
+        <span class="stat-value">{{ stats.failCount }}</span>
+        <span class="stat-label">راسبون</span>
+      </div>
+    </mat-card>
+  </div>
+}
+
+<div class="data-card">
+  <div class="list-toolbar">
+    <span class="toolbar-title"><mat-icon>grading</mat-icon> نتائج الطلاب</span>
+    @if (searched && !loading) {
+      <span class="toolbar-count">{{ total }} نتيجة</span>
+    }
+  </div>
+
+  @if (loading) {
+    <app-table-skeleton [rows]="6" [columns]="8"></app-table-skeleton>
+  } @else if (!searched) {
+    <app-empty-state icon="filter_alt" title="اختر المادة لعرض النتائج" description="حدّد المادة والمرحلة والفصل ثم اضغط «عرض النتائج»." [compact]="true"></app-empty-state>
+  } @else if (total === 0) {
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة للفلاتر المحددة" description="جرّب تعديل الفلاتر أو كلمة البحث." [compact]="true">
+      <button mat-stroked-button (click)="resetFilters()"><mat-icon>restart_alt</mat-icon> إعادة ضبط الفلاتر</button>
+    </app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="studentName" matSortDirection="asc">
+        <ng-container matColumnDef="studentName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="name-cell">
+              <span class="avatar">{{ r.studentName?.charAt(0) }}</span>
+              <span class="name">{{ r.studentName }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="className">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الفصل</th>
+          <td mat-cell *matCellDef="let r">{{ r.className }}</td>
+        </ng-container>
+        <ng-container matColumnDef="stageName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المرحلة</th>
+          <td mat-cell *matCellDef="let r">{{ r.stageName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الدرجة</th>
+          <td mat-cell *matCellDef="let r"><strong>{{ r.score }}</strong> <span class="muted">/ {{ r.maxScore }}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="percentage">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>النسبة</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="rate-cell">
+              <span class="rate-bar"><span class="rate-fill" [class]="'rate-fill ' + chipClass(r.gradeLevel)" [style.width.%]="r.percentage"></span></span>
+              <span class="rate-value">{{ r.percentage }}%</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="gradeLevel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>التقدير</th>
+          <td mat-cell *matCellDef="let r">
+            <span class="chip" [class]="'chip ' + chipClass(r.gradeLevel)">{{ gradeLabel(r.gradeLevel) }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="teacherName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
+          <td mat-cell *matCellDef="let r">{{ r.teacherName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="examDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>تاريخ الاختبار</th>
+          <td mat-cell *matCellDef="let r">{{ r.examDate | appDate }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="actions-cell">
+            <div class="row-actions">
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="cols"></tr>
+        <tr mat-row *matRowDef="let row; columns: cols;" class="clickable" (click)="view(row)"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

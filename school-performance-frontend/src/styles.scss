@@ -1,0 +1,295 @@
+@use '@angular/material' as mat;
+
+// ───────────────────────── Design tokens ─────────────────────────
+:root {
+  --sp-primary: #1a237e;
+  --sp-primary-mid: #3949ab;
+  --sp-primary-light: #e8eaf6;
+  --sp-primary-bg: #f0f2fa;
+  --sp-bg: #f5f7fa;
+  --sp-surface: #ffffff;
+  --sp-border: #e6e8f0;
+  --sp-text: #1f2937;
+  --sp-text-muted: #6b7280;
+  --sp-text-faint: #9ca3af;
+  --sp-success: #2e7d32;
+  --sp-success-bg: #e8f5e9;
+  --sp-warning: #e65100;
+  --sp-warning-bg: #fff3e0;
+  --sp-danger: #c62828;
+  --sp-danger-bg: #ffebee;
+  --sp-info: #1565c0;
+  --sp-info-bg: #e3f2fd;
+  --sp-radius: 12px;
+  --sp-radius-sm: 8px;
+  --sp-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --sp-shadow-md: 0 6px 18px rgba(26, 35, 126, 0.08);
+  --sp-sidebar-width: 272px;
+  --sp-sidebar-mini: 76px;
+}
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Cairo,
+    density: 0,
+  ));
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  direction: rtl;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--sp-bg);
+  color: var(--sp-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--sp-primary-mid); }
+
+.mat-mdc-form-field { direction: rtl; }
+.mat-mdc-dialog-container { direction: rtl; }
+[dir='ltr'] .mat-mdc-form-field,
+[dir='ltr'] .mat-mdc-dialog-container { direction: ltr; }
+
+// ───────────────────────── Surfaces ─────────────────────────
+.mat-mdc-card {
+  border-radius: var(--sp-radius) !important;
+  box-shadow: var(--sp-shadow) !important;
+  border: 1px solid var(--sp-border);
+}
+
+.mat-mdc-dialog-surface {
+  border-radius: var(--sp-radius) !important;
+}
+
+.mat-mdc-dialog-title {
+  font-weight: 700 !important;
+  color: var(--sp-primary) !important;
+}
+
+// ───────────────────────── Tables ─────────────────────────
+.table-container,
+.data-card {
+  background: var(--sp-surface);
+  border-radius: var(--sp-radius);
+  border: 1px solid var(--sp-border);
+  box-shadow: var(--sp-shadow);
+  overflow: hidden;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table { min-width: 640px; }
+
+table.mat-mdc-table {
+  width: 100%;
+  background: transparent;
+
+  .mat-mdc-header-row {
+    background: #f8f9fc;
+    height: 48px;
+  }
+
+  .mat-mdc-header-cell {
+    font-weight: 700;
+    color: var(--sp-text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.2px;
+    border-bottom-color: var(--sp-border);
+    white-space: nowrap;
+  }
+
+  .mat-mdc-row {
+    height: 54px;
+    transition: background 0.15s;
+    border-bottom-color: var(--sp-border);
+  }
+
+  .mat-mdc-row:hover { background: var(--sp-primary-bg); }
+  .mat-mdc-row.clickable { cursor: pointer; }
+  .mat-mdc-cell { border-bottom-color: var(--sp-border); }
+  .mat-mdc-row:last-child .mat-mdc-cell { border-bottom: none; }
+}
+
+.mat-mdc-paginator {
+  border-top: 1px solid var(--sp-border);
+  background: #fafbfe;
+}
+
+// Toolbar above a table: search on one side, filters/actions on the other
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--sp-border);
+  background: var(--sp-surface);
+
+  .toolbar-count {
+    color: var(--sp-text-muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+
+// Row actions: icon buttons, delete tinted red
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  white-space: nowrap;
+
+  .mat-mdc-icon-button {
+    --mdc-icon-button-state-layer-size: 36px;
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+    color: var(--sp-text-muted);
+
+    .mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    &:hover { color: var(--sp-primary-mid); background: var(--sp-primary-bg); }
+    &.danger:hover { color: var(--sp-danger); background: var(--sp-danger-bg); }
+    &.success:hover { color: var(--sp-success); background: var(--sp-success-bg); }
+  }
+}
+
+code, .mono {
+  font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  background: #f3f4f8;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #374151;
+}
+
+// ───────────────────────── Chips / status ─────────────────────────
+.chip,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.6;
+  background: var(--sp-info-bg);
+  color: var(--sp-info);
+  white-space: nowrap;
+
+  &.success, &.active, &.approved, &.completed, &.present, &.excellent { background: var(--sp-success-bg); color: var(--sp-success); }
+  &.warning, &.pending, &.in_review, &.in_progress, &.late, &.transferred, &.needs_follow_up, &.good { background: var(--sp-warning-bg); color: var(--sp-warning); }
+  &.danger, &.inactive, &.rejected, &.absent, &.suspended, &.critical, &.overdue, &.cancelled { background: var(--sp-danger-bg); color: var(--sp-danger); }
+  &.neutral { background: #f3f4f6; color: #4b5563; }
+}
+
+// ───────────────────────── States ─────────────────────────
+.loading,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--sp-text-muted);
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #eceef3;
+  border-radius: 6px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    animation: sp-shimmer 1.4s infinite;
+  }
+}
+
+@keyframes sp-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+// Info banner used on some pages
+.flow-hint,
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--sp-primary-light);
+  color: var(--sp-primary-mid);
+  padding: 0.75rem 1rem;
+  border-radius: var(--sp-radius-sm);
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+}
+
+// ───────────────────────── Toasts ─────────────────────────
+.mat-mdc-snack-bar-container {
+  &.toast-success .mdc-snackbar__surface { background: #1b5e20; }
+  &.toast-error .mdc-snackbar__surface { background: #b71c1c; }
+  &.toast-info .mdc-snackbar__surface { background: var(--sp-primary); }
+  .mdc-snackbar__label { font-family: 'Cairo', sans-serif; font-weight: 500; }
+  .mat-mdc-snack-bar-action { color: #fff; font-weight: 700; }
+}
+
+// ───────────────────────── Buttons ─────────────────────────
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-unelevated-button .mat-icon,
+.mat-mdc-outlined-button .mat-icon {
+  margin-inline-end: 4px;
+}
+
+// ───────────────────────── Responsive helpers ─────────────────────────
+.hide-mobile { @media (max-width: 767px) { display: none !important; } }
+.hide-desktop { @media (min-width: 768px) { display: none !important; } }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 599px) {
+  .mat-mdc-dialog-container { max-width: 100vw !important; }
+  .cdk-overlay-pane.mat-mdc-dialog-panel { max-width: calc(100vw - 16px) !important; }
+}
+
+// Focus ring for keyboard users
+:focus-visible { outline: 2px solid var(--sp-primary-mid); outline-offset: 2px; }
+
+// Teacher attendance status menu (rendered in the overlay, so styled globally)
+.status-menu .mat-mdc-menu-item { min-height: 44px; }
+.status-menu .menu-text { display: flex; flex-direction: column; line-height: 1.2; strong { font-size: 0.9rem; } small { font-size: 0.72rem; color: var(--sp-text-muted); } }
+.status-menu .menu-icon.success { color: var(--sp-success); }
+.status-menu .menu-icon.danger { color: var(--sp-danger); }
+.status-menu .menu-icon.warning { color: var(--sp-warning); }
+.status-menu .menu-icon.info { color: var(--sp-info); }
+.status-menu .mat-mdc-menu-item.selected { background: var(--sp-primary-bg); }

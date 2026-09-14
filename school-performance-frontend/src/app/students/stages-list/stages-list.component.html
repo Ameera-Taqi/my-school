@@ -1,0 +1,35 @@
+<app-page-header title="الطلاب" subtitle="اختر المرحلة الدراسية لعرض الفصول والطلاب"></app-page-header>
+
+@if (loading) {
+  <div class="stages-grid" aria-busy="true">
+    @for (i of skeletonCards; track i) {
+      <mat-card class="stage-card skeleton-card">
+        <span class="skeleton sk-icon"></span>
+        <span class="skeleton sk-title"></span>
+        <div class="sk-stats"><span class="skeleton sk-chip"></span><span class="skeleton sk-chip"></span></div>
+        <span class="skeleton sk-btn"></span>
+      </mat-card>
+    }
+  </div>
+} @else if (stages.length === 0) {
+  <div class="data-card">
+    <app-empty-state icon="school" title="لا توجد مراحل دراسية" description="لم تُضف أي مرحلة دراسية بعد. أضف المراحل من قاعدة البيانات لتظهر هنا."></app-empty-state>
+  </div>
+} @else {
+  <div class="stages-grid">
+    @for (stage of stages; track stage.id) {
+      <mat-card class="stage-card clickable" [routerLink]="['/students/stages', stage.id]" tabindex="0" role="link" [attr.aria-label]="'عرض المرحلة ' + stage.name">
+        <div class="card-icon"><mat-icon>school</mat-icon></div>
+        <h3>{{ stage.name }}</h3>
+        <div class="stats">
+          <span class="chip neutral"><mat-icon class="chip-icon">class</mat-icon> {{ stage.classCount ?? 0 }} فصل</span>
+          <span class="chip info"><mat-icon class="chip-icon">people</mat-icon> {{ stage.studentCount ?? 0 }} طالب</span>
+        </div>
+        <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/students/stages', stage.id]" (click)="$event.stopPropagation()">
+          عرض المرحلة
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </mat-card>
+    }
+  </div>
+}

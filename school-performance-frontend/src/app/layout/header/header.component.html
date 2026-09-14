@@ -1,0 +1,64 @@
+<header class="app-header">
+  <div class="header-start">
+    <button mat-icon-button type="button" class="menu-btn hide-desktop-960" (click)="layout.toggleDrawer()" [attr.aria-label]="'menu.openNav' | translate">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <h2 class="header-title">{{ 'app.title' | translate }}</h2>
+  </div>
+
+  <div class="header-actions">
+    <div class="header-lang" [attr.aria-label]="'menu.language' | translate">
+      <mat-icon class="lang-icon">language</mat-icon>
+      <span class="lang-option" [class.active]="!langService.isEnglish()">{{ 'menu.lang.ar' | translate }}</span>
+      <mat-slide-toggle
+        class="lang-toggle"
+        [checked]="langService.isEnglish()"
+        (change)="onLanguageToggle($event.checked)"
+        color="primary">
+      </mat-slide-toggle>
+      <span class="lang-option" [class.active]="langService.isEnglish()">{{ 'menu.lang.en' | translate }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="user-trigger"
+      [matMenuTriggerFor]="userMenu"
+      [attr.aria-label]="'menu.greeting' | translate">
+      <span class="user-avatar">{{ initials() }}</span>
+      <span class="user-trigger-info">
+        <span class="user-name">{{ fullName() || username() }}</span>
+        <span class="user-role">{{ roleLine() }}</span>
+      </span>
+      <mat-icon class="chevron">keyboard_arrow_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" panelClass="user-menu-panel" [xPosition]="menuPosition()">
+      <div class="menu-profile" (click)="$event.stopPropagation()">
+        <span class="menu-profile-greeting">{{ 'menu.greeting' | translate }}</span>
+        <span class="menu-profile-name">{{ fullName() }}</span>
+        <span class="menu-profile-role">{{ roleLine() }}</span>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <button mat-menu-item type="button" (click)="goToDashboard()">
+        <mat-icon>dashboard</mat-icon>
+        <span>{{ 'menu.dashboard' | translate }}</span>
+      </button>
+
+      @if (canOpenSettings()) {
+        <a mat-menu-item routerLink="/settings">
+          <mat-icon>settings</mat-icon>
+          <span>{{ 'menu.settings' | translate }}</span>
+        </a>
+      }
+
+      <mat-divider></mat-divider>
+
+      <button mat-menu-item type="button" class="menu-logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>{{ 'menu.logout' | translate }}</span>
+      </button>
+    </mat-menu>
+  </div>
+</header>

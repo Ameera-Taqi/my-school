@@ -1,0 +1,104 @@
+<app-page-header title="ربط الصلاحيات بالأدوار" subtitle="حدّد ما يستطيع كل دور رؤيته وفعله في النظام"></app-page-header>
+
+<div class="rp-layout">
+  <!-- Role picker -->
+  <aside class="roles-panel data-card">
+    <div class="panel-title">الأدوار</div>
+    <ul class="roles-list">
+      @for (role of roles; track role.id) {
+        <li>
+          <button type="button" class="role-item" [class.active]="role.id === form.controls.roleId.value" (click)="onRoleChange(role.id!)">
+            <span class="role-avatar">{{ role.roleName.charAt(0) }}</span>
+            <span class="role-text">
+              <span class="role-name">{{ role.roleName }}</span>
+              <span class="role-key">{{ role.roleKey }}</span>
+            </span>
+            @if (role.active === false) { <span class="chip danger">معطّل</span> }
+          </button>
+        </li>
+      }
+    </ul>
+  </aside>
+
+  <!-- Permissions -->
+  <section class="perms-panel">
+    @if (selectedRole) {
+      <div class="summary-card data-card">
+        <div class="summary-main">
+          <div>
+            <h3>{{ selectedRole.roleName }}</h3>
+            <p>{{ selectedRole.description || 'صلاحيات هذا الدور' }}</p>
+          </div>
+          <div class="summary-count">
+            <span class="count">{{ grantedCount }}<small>/{{ totalCount }}</small></span>
+            <span class="count-label">صلاحية ممنوحة</span>
+          </div>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="grantedPercent"></mat-progress-bar>
+        <div class="summary-tools">
+          <app-search-field placeholder="ابحث عن صلاحية..." (search)="onSearch($event)" class="perm-search"></app-search-field>
+          <div class="bulk">
+            <button mat-stroked-button type="button" (click)="selectAll()" [disabled]="loading"><mat-icon>done_all</mat-icon> تحديد الكل</button>
+            <button mat-stroked-button type="button" (click)="clearAll()" [disabled]="loading"><mat-icon>remove_done</mat-icon> إلغاء الكل</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
+    } @else if (!selectedRole) {
+      <app-empty-state icon="admin_panel_settings" title="اختر دوراً" description="اختر دوراً من القائمة لعرض صلاحياته وتعديلها."></app-empty-state>
+    } @else if (visibleModules.length === 0) {
+      <app-empty-state icon="search_off" title="لا توجد صلاحيات مطابقة" [description]="'لم نجد صلاحية تطابق «' + query + '».'" [compact]="true"></app-empty-state>
+    } @else {
+      <div class="permissions-grid">
+        @for (module of visibleModules; track module) {
+          <mat-card class="module-card" [class.all-on]="isModuleFullyChecked(permissionsByModule[module])">
+            <div class="module-header">
+              <mat-checkbox
+                [checked]="isModuleFullyChecked(permissionsByModule[module])"
+                [indeterminate]="isModuleIndeterminate(permissionsByModule[module])"
+                (change)="toggleModule(permissionsByModule[module], $event.checked)"
+                matTooltip="تحديد / إلغاء كل صلاحيات هذه الوحدة">
+              </mat-checkbox>
+              <mat-icon class="module-icon">{{ moduleIcon(module) }}</mat-icon>
+              <span class="module-name">{{ module }}</span>
+              <span class="module-count">{{ moduleGranted(module) }}/{{ permissionsByModule[module].length }}</span>
+            </div>
+            <div class="permission-list">
+              @for (perm of visiblePermissions(module); track perm.permissionId) {
+                <label class="perm-row" [class.changed]="isChanged(perm.permissionId)" [class.on]="isChecked(perm.permissionId)">
+                  <mat-checkbox
+                    [checked]="isChecked(perm.permissionId)"
+                    (change)="togglePermission(perm.permissionId, $event.checked)">
+                  </mat-checkbox>
+                  <span class="perm-text">
+                    <span class="perm-name">{{ perm.permissionName }}</span>
+                    <code class="perm-key">{{ perm.permissionKey }}</code>
+                  </span>
+                  @if (isChanged(perm.permissionId)) { <span class="changed-dot" matTooltip="غير محفوظ"></span> }
+                </label>
+              }
+            </div>
+          </mat-card>
+        }
+      </div>
+    }
+  </section>
+</div>
+
+<!-- Sticky save bar, only when there is something to save -->
+@if (isDirty && !loading) {
+  <div class="save-bar">
+    <div class="save-bar-inner">
+      <mat-icon class="save-icon">edit_note</mat-icon>
+      <span class="save-text">{{ changesCount }} تغيير غير محفوظ في «{{ selectedRole?.roleName }}»</span>
+      <span class="spacer"></span>
+      <button mat-button type="button" (click)="discard()" [disabled]="saving">تراجع</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving">
+        @if (saving) { <mat-spinner diameter="18"></mat-spinner> } @else { <ng-container><mat-icon>save</mat-icon> حفظ الصلاحيات</ng-container> }
+      </button>
+    </div>
+  </div>
+}

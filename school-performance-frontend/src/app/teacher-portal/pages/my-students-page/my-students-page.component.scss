@@ -1,0 +1,10 @@
+.toolbar-search { flex: 1; max-width: 440px; }
+
+.name-cell { display: flex; align-items: center; gap: 0.7rem; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sp-info-bg); color: var(--sp-info); font-weight: 700;
+}
+.name { font-weight: 600; }
+.phone { color: var(--sp-text); text-decoration: none; font-variant-numeric: tabular-nums; &:hover { color: var(--sp-primary-mid); } }

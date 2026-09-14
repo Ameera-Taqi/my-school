@@ -1,0 +1,72 @@
+<app-page-header title="إدارة الصلاحيات" subtitle="إدارة صلاحيات النظام بشكل مرن">
+  <button mat-flat-button color="primary" (click)="openDialog()">
+    <mat-icon>add</mat-icon>
+    إضافة صلاحية
+  </button>
+</app-page-header>
+
+<div class="data-card">
+  <div class="list-toolbar">
+    <app-search-field placeholder="ابحث بمفتاح الصلاحية أو اسمها أو الوحدة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    @if (!loading) {
+      <span class="toolbar-count">
+        @if (query) { {{ filteredCount }} من {{ total }} صلاحية } @else { {{ total }} صلاحية }
+      </span>
+    }
+  </div>
+
+  @if (loading) {
+    <app-table-skeleton [rows]="6" [columns]="6"></app-table-skeleton>
+  } @else if (total === 0) {
+    <app-empty-state icon="verified_user" title="لا توجد صلاحيات بعد" description="أضف أول صلاحية لبدء التحكم في ما يستطيع كل دور فعله.">
+      <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة صلاحية</button>
+    </app-empty-state>
+  } @else if (filteredCount === 0) {
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد صلاحية تطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="moduleName" matSortDirection="asc">
+        <ng-container matColumnDef="permissionKey">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>مفتاح الصلاحية</th>
+          <td mat-cell *matCellDef="let row"><code>{{ row.permissionKey }}</code></td>
+        </ng-container>
+
+        <ng-container matColumnDef="permissionName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الصلاحية</th>
+          <td mat-cell *matCellDef="let row" class="name">{{ row.permissionName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="moduleName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الوحدة</th>
+          <td mat-cell *matCellDef="let row"><span class="chip info">{{ row.moduleName }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>الوصف</th>
+          <td mat-cell *matCellDef="let row" class="muted">{{ row.description || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class.success]="row.active" [class.danger]="!row.active">{{ row.active ? 'نشط' : 'غير نشط' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            <div class="row-actions">
+              <button mat-icon-button matTooltip="تعديل" (click)="openDialog(row)"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button class="danger" matTooltip="حذف" (click)="deletePermission(row)"><mat-icon>delete</mat-icon></button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+  }
+</div>

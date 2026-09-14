@@ -1,0 +1,22 @@
+@if (config) {
+  <app-page-header [title]="config.titleKey | translate" [subtitle]="config.subtitleKey | translate"></app-page-header>
+
+  <mat-card class="welcome-card">
+    <mat-icon>home</mat-icon>
+    <p>{{ config.welcomeKey | translate }}</p>
+  </mat-card>
+
+  <app-dashboard-calendar></app-dashboard-calendar>
+
+  @if (quickLinks.length) {
+    <h3 class="links-title">{{ 'sectionHome.quickLinks' | translate }}</h3>
+    <div class="links-grid">
+      @for (item of quickLinks; track item.route) {
+        <a [routerLink]="item.route" class="link-card">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.labelKey | translate }}</span>
+        </a>
+      }
+    </div>
+  }
+}

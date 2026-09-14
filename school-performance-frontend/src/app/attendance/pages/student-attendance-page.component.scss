@@ -1,0 +1,68 @@
+.tab-icon { margin-inline-end: 0.35rem; font-size: 1.1rem; width: 1.1rem; height: 1.1rem; vertical-align: middle; }
+
+.filters-card {
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+
+.filter-field { min-width: 180px; flex: 1; }
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.summary-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip-icon { font-size: 14px; width: 14px; height: 14px; }
+.name { font-weight: 600; }
+.actions-cell { width: 1%; white-space: nowrap; }
+
+.status-group {
+  --mat-standard-button-toggle-height: 34px;
+  border-radius: 999px;
+  overflow: hidden;
+
+  ::ng-deep .mat-button-toggle-label-content { padding: 0 10px; line-height: 34px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px; }
+  ::ng-deep .mat-button-toggle { color: var(--sp-text-muted); }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  .toggle-success.mat-button-toggle-checked { background: var(--sp-success-bg); color: var(--sp-success); }
+  .toggle-danger.mat-button-toggle-checked { background: var(--sp-danger-bg); color: var(--sp-danger); }
+  .toggle-warning.mat-button-toggle-checked { background: var(--sp-warning-bg); color: var(--sp-warning); }
+  .toggle-info.mat-button-toggle-checked { background: var(--sp-info-bg); color: var(--sp-info); }
+}
+
+@media (max-width: 899px) {
+  .toggle-label { display: none; }
+}
+
+.save-row {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--sp-border);
+  background: #fafbfe;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  mat-spinner { display: inline-block; margin-inline-end: 6px; }
+}
+
+.pdf-export-root {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 794px;
+  max-width: 794px;
+  background: #fff;
+  opacity: 1;
+  pointer-events: none;
+  box-sizing: border-box;
+  overflow: visible;
+}

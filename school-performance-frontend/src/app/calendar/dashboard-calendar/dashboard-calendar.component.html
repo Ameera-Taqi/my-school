@@ -1,0 +1,155 @@
+<mat-card class="calendar-card">
+  <!-- Header: title, month navigation, actions -->
+  <div class="cal-header">
+    <div class="cal-title">
+      <span class="cal-title-icon"><mat-icon>calendar_month</mat-icon></span>
+      <div>
+        <h3>التقويم المدرسي</h3>
+        <span class="cal-subtitle">{{ monthEventCount }} حدث في {{ monthLabel }}</span>
+      </div>
+    </div>
+
+    <div class="cal-nav">
+      <button mat-icon-button type="button" (click)="nextMonth()" matTooltip="الشهر التالي" aria-label="الشهر التالي"><mat-icon>chevron_right</mat-icon></button>
+      <span class="month-label">{{ monthLabel }}</span>
+      <button mat-icon-button type="button" (click)="prevMonth()" matTooltip="الشهر السابق" aria-label="الشهر السابق"><mat-icon>chevron_left</mat-icon></button>
+      <button mat-stroked-button type="button" class="today-btn" (click)="goToToday()" [disabled]="isCurrentMonthShown && isSelectedToday">اليوم</button>
+    </div>
+
+    <div class="cal-actions">
+      @if ('calendar.personal.create' | hasPermission) {
+        <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">
+          <mat-icon>add</mat-icon>
+          إضافة حدث
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="dot public"></span> مدرسي</span>
+    <span class="legend-item"><span class="dot role"></span> اجتماع</span>
+    <span class="legend-item"><span class="dot personal"></span> شخصي</span>
+  </div>
+
+  @if (loading) {
+    <div class="calendar-layout" aria-busy="true">
+      <div class="calendar-main">
+        <div class="weekdays">@for (day of weekDays; track day) { <div class="weekday">{{ day }}</div> }</div>
+        <div class="days-grid">
+          @for (i of skeletonCells; track i) { <span class="skeleton sk-day"></span> }
+        </div>
+      </div>
+      <div class="agenda">
+        <span class="skeleton sk-line w60"></span>
+        <span class="skeleton sk-event"></span>
+        <span class="skeleton sk-event"></span>
+      </div>
+    </div>
+  } @else {
+    <div class="calendar-layout">
+      <!-- Month grid -->
+      <div class="calendar-main">
+        <div class="weekdays">
+          @for (day of weekDays; track day; let i = $index) {
+            <div class="weekday" [class.weekend]="i === 0 || i === 6"><span class="wd-long">{{ day }}</span><span class="wd-short">{{ weekDaysShort[i] }}</span></div>
+          }
+        </div>
+
+        <div class="days-grid">
+          @for (day of calendarDays; track day.date) {
+            <button type="button"
+              class="day-cell"
+              [class.outside]="!day.inMonth"
+              [class.today]="day.isToday"
+              [class.weekend]="day.isWeekend"
+              [class.selected]="selectedDate === day.date"
+              [class.has-events]="hasEvents(day.date)"
+              [attr.aria-label]="day.date"
+              [matTooltip]="dayEventsTitle(day.date)"
+              matTooltipShowDelay="500"
+              (click)="selectDay(day)">
+              <span class="day-number">{{ day.dayNumber }}</span>
+
+              <div class="pills">
+                @for (ev of visiblePills(day.date); track ev.id) {
+                  <span class="pill" [class.continues]="continuesFrom(ev, day.date)" [style.--pill]="eventColor(ev)">
+                    <span class="pill-text">{{ ev.title }}</span>
+                  </span>
+                }
+                @if (overflowCount(day.date) > 0) {
+                  <span class="pill more">+{{ overflowCount(day.date) }}</span>
+                }
+              </div>
+
+              <div class="dots">
+                @for (ev of eventsForDay(day.date).slice(0, 4); track ev.id) {
+                  <span class="dot" [style.background]="eventColor(ev)"></span>
+                }
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Agenda for the selected day -->
+      <aside class="agenda">
+        <div class="agenda-head">
+          <div class="agenda-date">
+            <span class="agenda-day">{{ selectedDate ? selectedDate.slice(8) : '' }}</span>
+            <div class="agenda-text">
+              <strong>{{ isSelectedToday ? 'اليوم' : selectedDayLabel.split(' ')[0] }}</strong>
+              <span>{{ selectedDate | appDate }}</span>
+            </div>
+          </div>
+          @if ('calendar.personal.create' | hasPermission) {
+            <button mat-icon-button type="button" matTooltip="إضافة حدث في هذا اليوم" (click)="openAddDialog()"><mat-icon>add_circle</mat-icon></button>
+          }
+        </div>
+
+        @if (selectedDayEvents.length === 0) {
+          <div class="agenda-empty">
+            <mat-icon>event_available</mat-icon>
+            <p>لا توجد أحداث في هذا اليوم</p>
+          </div>
+        } @else {
+          <ul class="agenda-list">
+            @for (ev of selectedDayEvents; track ev.id) {
+              <li>
+                <button type="button" class="agenda-item" [style.--pill]="eventColor(ev)" (click)="openEventDetail(ev)">
+                  <span class="bar"></span>
+                  <div class="agenda-item-body">
+                    <span class="agenda-item-title">{{ ev.title }}</span>
+                    <span class="agenda-item-meta">
+                      <span class="type">{{ eventTypeLabel(ev) }}</span>
+                      <span class="range">{{ eventDateRange(ev) }}</span>
+                      @if (ev.createdByName && ev.eventType !== 'PERSONAL') { <span class="by">· {{ ev.createdByName }}</span> }
+                    </span>
+                  </div>
+                  <mat-icon class="agenda-arrow">chevron_left</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (upcomingEvents.length) {
+          <div class="agenda-sub">القادم هذا الشهر</div>
+          <ul class="agenda-list compact">
+            @for (ev of upcomingEvents; track ev.id) {
+              <li>
+                <button type="button" class="agenda-item" [style.--pill]="eventColor(ev)" (click)="openEventDetail(ev)">
+                  <span class="bar"></span>
+                  <div class="agenda-item-body">
+                    <span class="agenda-item-title">{{ ev.title }}</span>
+                    <span class="agenda-item-meta"><span class="range">{{ eventDateRange(ev) }}</span></span>
+                  </div>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </aside>
+    </div>
+  }
+</mat-card>
