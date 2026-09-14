@@ -4,7 +4,7 @@
     { label: department.name }
   ]"></app-breadcrumb>
 
-  <app-page-header [title]="department.name" [subtitle]="department.description || 'إدارة معلمي القسم وحسابات دخولهم'">
+  <app-page-header [title]="department.name" [subtitle]="department.description || 'إدارة معلمي الشعبة وحسابات دخولهم'">
     @if ('teachers.manage' | hasPermission) {
       <button mat-flat-button color="primary" (click)="openTeacherDialog()">
         <mat-icon>person_add</mat-icon>
@@ -19,7 +19,7 @@
     <app-search-field placeholder="ابحث بالاسم أو رقم الموظف أو التخصص" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
-        @if (query) { {{ filteredCount }} من {{ total }} معلم } @else { {{ total }} معلم @if (headsCount) { · {{ headsCount }} رئيس قسم } }
+        @if (query) { {{ filteredCount }} من {{ total }} معلم } @else { {{ total }} معلم @if (headsCount) { · {{ headsCount }} رئيس شعبة } }
       </span>
     }
   </div>
@@ -27,7 +27,7 @@
   @if (loading) {
     <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
   } @else if (total === 0) {
-    <app-empty-state icon="person_off" title="لا يوجد معلمون في هذا القسم بعد" description="عند إضافة معلم يُنشأ له حساب دخول تلقائياً ويُربط بهذا القسم.">
+    <app-empty-state icon="person_off" title="لا يوجد معلمون في هذه الشعبة بعد" description="عند إضافة معلم يُنشأ له حساب دخول تلقائياً ويُربط بهذه الشعبة.">
       @if ('teachers.manage' | hasPermission) {
         <button mat-flat-button color="primary" (click)="openTeacherDialog()"><mat-icon>person_add</mat-icon> إضافة أول معلم</button>
       }

@@ -20,7 +20,7 @@ public class TeacherService
     {
         if (!await _db.Departments.AnyAsync(d => d.Id == departmentId))
         {
-            throw new NotFoundException("القسم غير موجود");
+            throw new NotFoundException("الشعبة غير موجودة");
         }
         var teachers = await TeachersWithDetails()
             .Where(t => t.DepartmentId == departmentId)
@@ -35,7 +35,7 @@ public class TeacherService
     public async Task<TeacherDto> CreateAsync(long departmentId, TeacherDto dto)
     {
         var department = await _db.Departments.FindAsync(departmentId)
-            ?? throw new NotFoundException("القسم غير موجود");
+            ?? throw new NotFoundException("الشعبة غير موجودة");
         if (string.IsNullOrWhiteSpace(dto.EmployeeNumber))
         {
             throw new AppException("رقم الموظف مطلوب");

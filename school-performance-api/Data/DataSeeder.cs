@@ -53,6 +53,7 @@ public class DataSeeder
         await SeedSchedulingAsync();             // 15 subjects, class assignments, sample teacher constraints
         await SeedTeacherAttendancePermissionAsync(); // 16 scoped teacher-attendance page permission
         await SeedWingSupervisorAsync();               // 17 wing supervisor role + permission
+        await SeedDepartmentSubjectsAsync();          // 18 each department's subjects (created if missing, linked by name)
         _logger.LogInformation("Database seeding completed");
     }
 
@@ -100,15 +101,15 @@ public class DataSeeder
             new("internal_requests.update", "إدارة الطلبات الداخلية", "إدارة المدرسة", "تعديل وحذف الطلبات الداخلية"),
             new("alerts.view", "عرض التنبيهات", "إدارة المدرسة", "عرض التنبيهات"),
 
-            new("teacher_monitoring.view", "متابعة المعلمين", "رؤساء الأقسام", "متابعة أداء المعلمين"),
-            new("lesson_plans.view", "خطط الدروس", "رؤساء الأقسام", "عرض خطط الدروس"),
-            new("lesson_plans.manage", "إدارة خطط الدروس", "رؤساء الأقسام", "إنشاء وتعديل خطط الدروس"),
+            new("teacher_monitoring.view", "متابعة المعلمين", "رؤساء الشعب", "متابعة أداء المعلمين"),
+            new("lesson_plans.view", "خطط الدروس", "رؤساء الشعب", "عرض خطط الدروس"),
+            new("lesson_plans.manage", "إدارة خطط الدروس", "رؤساء الشعب", "إنشاء وتعديل خطط الدروس"),
             new("class_schedule.view", "جدول الحصص الدراسية", "إدارة المدرسة", "عرض جدول الحصص الأسبوعي"),
             new("class_schedule.manage", "إدارة جدول الحصص", "إدارة المدرسة", "إضافة وتعديل جدول الحصص"),
-            new("subject_results.view", "نتائج الطلاب حسب المادة", "رؤساء الأقسام", "عرض نتائج الطلاب"),
-            new("academic_notes.view", "الملاحظات الأكاديمية", "رؤساء الأقسام", "عرض الملاحظات الأكاديمية"),
-            new("resource_bank.view", "بنك الملفات التعليمية", "رؤساء الأقسام", "الوصول لبنك الملفات"),
-            new("resource_bank.manage", "إدارة بنك الملفات", "رؤساء الأقسام", "رفع وإدارة الملفات التعليمية"),
+            new("subject_results.view", "نتائج الطلاب حسب المادة", "رؤساء الشعب", "عرض نتائج الطلاب"),
+            new("academic_notes.view", "الملاحظات الأكاديمية", "رؤساء الشعب", "عرض الملاحظات الأكاديمية"),
+            new("resource_bank.view", "بنك الملفات التعليمية", "رؤساء الشعب", "الوصول لبنك الملفات"),
+            new("resource_bank.manage", "إدارة بنك الملفات", "رؤساء الشعب", "رفع وإدارة الملفات التعليمية"),
 
             new("my_classes.view", "فصولي", "المعلمين", "عرض الفصول الدراسية"),
             new("my_students.view", "طلابي", "المعلمين", "عرض طلاب الفصل"),
@@ -125,8 +126,8 @@ public class DataSeeder
             new("permissions.manage", "إدارة الصلاحيات", "النظام والصلاحيات", "إضافة وتعديل الصلاحيات"),
             new("role_permissions.manage", "ربط الصلاحيات بالأدوار", "النظام والصلاحيات", "إدارة صلاحيات الأدوار"),
             new("settings.view", "إعدادات النظام", "النظام والصلاحيات", "الوصول لإعدادات النظام"),
-            new("departments.view", "عرض الأقسام", "النظام والصلاحيات", "عرض الأقسام الأكاديمية"),
-            new("departments.manage", "إدارة الأقسام", "النظام والصلاحيات", "إدارة الأقسام الأكاديمية")
+            new("departments.view", "عرض الشعب", "النظام والصلاحيات", "عرض الشعب الأكاديمية"),
+            new("departments.manage", "إدارة الشعب", "النظام والصلاحيات", "إدارة الشعب الأكاديمية")
         };
 
         var permissions = defs.Select(d => new Permission
@@ -140,7 +141,7 @@ public class DataSeeder
             admin,
             new Role { RoleKey = "SCHOOL_MANAGER", RoleName = "مدير المدرسة", Description = "مدير المدرسة", Active = true },
             new Role { RoleKey = "ASSISTANT_MANAGER", RoleName = "مدير مساعد", Description = "مدير مساعد", Active = true },
-            new Role { RoleKey = "DEPARTMENT_HEAD", RoleName = "رئيس قسم", Description = "رئيس قسم أكاديمي", Active = true },
+            new Role { RoleKey = "DEPARTMENT_HEAD", RoleName = "رئيس شعبة", Description = "رئيس شعبة أكاديمية", Active = true },
             new Role { RoleKey = "TEACHER", RoleName = "معلم", Description = "معلم", Active = true });
         await _db.SaveChangesAsync();
 
@@ -190,8 +191,8 @@ public class DataSeeder
             new("internal_requests.update", "إدارة الطلبات الداخلية", "إدارة المدرسة", "تعديل وحذف الطلبات الداخلية"),
             new("meetings.create", "إدارة الاجتماعات", "الإدارة العليا", "إنشاء وتعديل الاجتماعات"),
             new("tasks.create", "إدارة المهام", "الإدارة العليا", "إنشاء وتعديل المهام"),
-            new("lesson_plans.manage", "إدارة خطط الدروس", "رؤساء الأقسام", "إنشاء وتعديل خطط الدروس"),
-            new("resource_bank.manage", "إدارة بنك الملفات", "رؤساء الأقسام", "رفع وإدارة الملفات التعليمية")
+            new("lesson_plans.manage", "إدارة خطط الدروس", "رؤساء الشعب", "إنشاء وتعديل خطط الدروس"),
+            new("resource_bank.manage", "إدارة بنك الملفات", "رؤساء الشعب", "رفع وإدارة الملفات التعليمية")
         };
         var admin = await FindRoleAsync("ADMIN");
         foreach (var def in newPerms)
@@ -219,16 +220,22 @@ public class DataSeeder
             return;
         }
         _db.Departments.AddRange(
-            new Department { Code = "MATH", Name = "قسم الرياضيات", Description = "قسم الرياضيات والعلوم الحسابية", Active = true },
-            new Department { Code = "SCIENCE", Name = "قسم العلوم", Description = "قسم العلوم الطبيعية", Active = true },
-            new Department { Code = "ARABIC", Name = "قسم اللغة العربية", Description = "قسم اللغة العربية وآدابها", Active = true },
-            new Department { Code = "ENGLISH", Name = "قسم اللغة الإنجليزية", Description = "قسم اللغة الإنجليزية", Active = true },
-            new Department { Code = "BIO", Name = "قسم الأحياء", Description = "قسم الأحياء", Active = true },
-            new Department { Code = "GEO", Name = "قسم الجيولوجيا", Description = "قسم الجيولوجيا", Active = true },
-            new Department { Code = "PHY", Name = "قسم الفيزياء", Description = "قسم الفيزياء", Active = true },
-            new Department { Code = "CHEM", Name = "قسم الكيمياء", Description = "قسم الكيمياء", Active = true },
-            new Department { Code = "PHIL", Name = "قسم الفلسفة", Description = "قسم الفلسفة", Active = true },
-            new Department { Code = "SOC", Name = "قسم الاجتماعيات", Description = "قسم الاجتماعيات", Active = true });
+            new Department { Code = "MATH", Name = "شعبة الرياضيات", Description = "شعبة الرياضيات والعلوم الحسابية", Active = true },
+            new Department { Code = "ARABIC", Name = "شعبة اللغة العربية", Description = "شعبة اللغة العربية وآدابها", Active = true },
+            new Department { Code = "ENGLISH", Name = "شعبة اللغة الإنجليزية", Description = "شعبة اللغة الإنجليزية", Active = true },
+            new Department { Code = "BIOGEO", Name = "شعبة الأحياء والجيولوجيا", Description = "شعبة الأحياء والجيولوجيا", Active = true },
+            new Department { Code = "PHYCHEM", Name = "شعبة الفيزياء والكيمياء", Description = "شعبة الفيزياء والكيمياء", Active = true },
+            new Department { Code = "PHILPSY", Name = "شعبة الفلسفة وعلم النفس", Description = "شعبة الفلسفة وعلم النفس", Active = true },
+            new Department { Code = "SOC", Name = "شعبة الاجتماعيات", Description = "شعبة الاجتماعيات", Active = true },
+            new Department { Code = "FR", Name = "شعبة اللغة الفرنسية", Description = "شعبة اللغة الفرنسية", Active = true },
+            new Department { Code = "HISTGEOG", Name = "شعبة التاريخ والجغرافيا", Description = "شعبة التاريخ والجغرافيا", Active = true },
+            new Department { Code = "PE", Name = "شعبة التربية البدنية", Description = "شعبة التربية البدنية", Active = true },
+            new Department { Code = "ART", Name = "شعبة التربية الفنية", Description = "شعبة التربية الفنية", Active = true },
+            new Department { Code = "CS", Name = "شعبة الحاسوب", Description = "شعبة الحاسوب", Active = true },
+            new Department { Code = "MUSIC", Name = "شعبة التربية الموسيقية", Description = "شعبة التربية الموسيقية", Active = true },
+            new Department { Code = "ISLAM", Name = "شعبة التربية الإسلامية", Description = "شعبة التربية الإسلامية", Active = true },
+            new Department { Code = "LIB", Name = "شعبة المكتبات", Description = "شعبة المكتبات", Active = true },
+            new Department { Code = "TRAFFIC", Name = "شعبة التوعية المرورية", Description = "شعبة التوعية المرورية", Active = true });
         await _db.SaveChangesAsync();
     }
 
@@ -428,7 +435,7 @@ public class DataSeeder
                 ("T-1002", "أ. مريم الزهراني", "mariam@school.om", "96891110002", "رياضيات", "MATH", "mariam"),
                 ("T-1003", "أ. فاطمة العمانية", "fatima@school.om", "96891110003", "لغة عربية", "ARABIC", null),
                 ("T-1004", "أ. خالد البلوشي", "khalid@school.om", "96891110004", "لغة إنجليزية", "ENGLISH", null),
-                ("T-1005", "أ. نورة السعيدي", "noura@school.om", "96891110005", "علوم", "SCIENCE", null),
+                ("T-1005", "أ. نورة السعيدي", "noura@school.om", "96891110005", "أحياء", "BIOGEO", null),
                 ("T-1006", "أ. محمد السعيدي", "manager@school.om", "96891110006", "إحصاء", "MATH", "manager")
             };
             foreach (var def in teacherDefs)
@@ -540,7 +547,7 @@ public class DataSeeder
         board.TargetRoles.Add(new MeetingTargetRole { RoleKey = "SCHOOL_MANAGER", Meeting = board });
         var heads = new Meeting
         {
-            Title = "اجتماع رؤساء الأقسام", MeetingDate = new DateTime(2026, 6, 15, 9, 0, 0), Attendees = "رؤساء الأقسام",
+            Title = "اجتماع رؤساء الشعب", MeetingDate = new DateTime(2026, 6, 15, 9, 0, 0), Attendees = "رؤساء الشعب",
             Agenda = "مراجعة خطط الدروس", Minutes = "—", FollowUpTasks = "تحديث الخطط", OrganizerId = admin?.Id, Status = MeetingStatus.COMPLETED
         };
         heads.TargetRoles.Add(new MeetingTargetRole { RoleKey = "DEPARTMENT_HEAD", Meeting = heads });
@@ -549,7 +556,7 @@ public class DataSeeder
 
         _db.Tasks.AddRange(
             new TaskItem { Title = "إعداد تقرير الحضور الشهري", Description = "تجميع بيانات الحضور لشهر يونيو", Assignee = "المدير المساعد", DueDate = new DateOnly(2026, 6, 25), Priority = TaskPriority.HIGH, Status = Entities.TaskStatus.IN_PROGRESS, MeetingId = board.Id, CreatedById = admin?.Id },
-            new TaskItem { Title = "مراجعة خطط الدروس", Description = "مراجعة خطط الأسبوع القادم", Assignee = "رئيس قسم الرياضيات", DueDate = new DateOnly(2026, 6, 22), Priority = TaskPriority.MEDIUM, Status = Entities.TaskStatus.NEW, CreatedById = admin?.Id },
+            new TaskItem { Title = "مراجعة خطط الدروس", Description = "مراجعة خطط الأسبوع القادم", Assignee = "رئيس شعبة الرياضيات", DueDate = new DateOnly(2026, 6, 22), Priority = TaskPriority.MEDIUM, Status = Entities.TaskStatus.NEW, CreatedById = admin?.Id },
             new TaskItem { Title = "متابعة طلبات الصيانة", Description = "متابعة الطلبات المفتوحة", Assignee = "مسؤول الصيانة", DueDate = new DateOnly(2026, 6, 20), Priority = TaskPriority.HIGH, Status = Entities.TaskStatus.OVERDUE, CreatedById = admin?.Id });
         await _db.SaveChangesAsync();
     }
@@ -580,7 +587,7 @@ public class DataSeeder
         var subjects = new Dictionary<string, Subject>
         {
             ["MATH"] = new() { Name = "رياضيات", Code = "MATH", Color = "#1976d2" },
-            ["SCI"] = new() { Name = "علوم", Code = "SCI", Color = "#2e7d32" },
+            ["SCI"] = new() { Name = "أحياء", Code = "BIO", Color = "#2e7d32" },
             ["AR"] = new() { Name = "لغة عربية", Code = "AR", Color = "#6a1b9a" },
             ["EN"] = new() { Name = "لغة إنجليزية", Code = "EN", Color = "#ef6c00" },
             ["STAT"] = new() { Name = "إحصاء", Code = "STAT", Color = "#00838f" }
@@ -617,7 +624,7 @@ public class DataSeeder
 
     private async Task SeedTeacherAttendancePermissionAsync()
     {
-        var permission = await EnsurePermissionAsync(new PermissionDef("teacher_attendance.view", "حضور المعلمين", "إدارة المدرسة", "عرض حضور وانصراف المعلمين حسب النطاق (الإدارة: الجميع، رئيس القسم: قسمه، المعلم: نفسه)"));
+        var permission = await EnsurePermissionAsync(new PermissionDef("teacher_attendance.view", "حضور المعلمين", "إدارة المدرسة", "عرض حضور وانصراف المعلمين حسب النطاق (الإدارة: الجميع، رئيس الشعبة: شعبته، المعلم: نفسه)"));
         foreach (var roleKey in new[] { "ADMIN", "SCHOOL_MANAGER", "ASSISTANT_MANAGER", "DEPARTMENT_HEAD", "TEACHER" })
         {
             var role = await FindRoleAsync(roleKey);
@@ -650,6 +657,50 @@ public class DataSeeder
         }
         var admin = await FindRoleAsync("ADMIN");
         if (admin != null) await GrantIfMissingAsync(admin, permission);
+    }
+
+    // ---- 18. Department subjects ----------------------------------------------------------------------
+    // Every department owns a fixed list of subjects (المواد التابعة للشعبة). Idempotent: creates the subject
+    // when it does not exist and links an existing unlinked subject of the same name to its department.
+    private async Task SeedDepartmentSubjectsAsync()
+    {
+        var plan = new (string Dept, string Subject, string Code, string Color)[]
+        {
+            ("MATH", "رياضيات", "MATH", "#1976d2"), ("MATH", "إحصاء", "STAT", "#00838f"),
+            ("ARABIC", "لغة عربية", "AR", "#6a1b9a"),
+            ("ENGLISH", "لغة إنجليزية", "EN", "#ef6c00"),
+            ("BIOGEO", "أحياء", "BIO", "#2e7d32"), ("BIOGEO", "جيولوجيا", "GEO", "#795548"),
+            ("PHYCHEM", "فيزياء", "PHY", "#283593"), ("PHYCHEM", "كيمياء", "CHEM", "#ad1457"),
+            ("HISTGEOG", "تاريخ", "HIST", "#8d6e63"), ("HISTGEOG", "جغرافيا", "GEOG", "#00695c"),
+            ("PHILPSY", "فلسفة", "PHIL", "#5d4037"), ("PHILPSY", "علم النفس", "PSY", "#7b1fa2"),
+            ("SOC", "اجتماعيات", "SOC", "#f9a825"),
+            ("FR", "لغة فرنسية", "FR", "#3949ab"),
+            ("PE", "تربية بدنية", "PE", "#43a047"),
+            ("ART", "تربية فنية", "ART", "#e64a19"),
+            ("CS", "حاسوب", "CS", "#0277bd"),
+            ("MUSIC", "تربية موسيقية", "MUSIC", "#c2185b"),
+            ("ISLAM", "تربية إسلامية", "ISLAM", "#2e7d32"),
+            ("LIB", "مكتبات", "LIB", "#6d4c41"),
+            ("TRAFFIC", "توعية مرورية", "TRAFFIC", "#f57c00")
+        };
+        var departments = await _db.Departments.ToDictionaryAsync(d => d.Code);
+        var subjects = await _db.Subjects.ToListAsync();
+        foreach (var (deptCode, name, code, color) in plan)
+        {
+            if (!departments.TryGetValue(deptCode, out var dept)) continue;
+            var subject = subjects.FirstOrDefault(x => x.Name == name);
+            if (subject == null)
+            {
+                subject = new Subject { Name = name, Code = code, Color = color, Active = true, DepartmentId = dept.Id };
+                _db.Subjects.Add(subject);
+                subjects.Add(subject);
+            }
+            else if (subject.DepartmentId == null)
+            {
+                subject.DepartmentId = dept.Id;
+            }
+        }
+        await _db.SaveChangesAsync();
     }
 
     // ---- helpers ------------------------------------------------------------------------------------

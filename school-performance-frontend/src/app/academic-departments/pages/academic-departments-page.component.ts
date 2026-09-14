@@ -14,9 +14,10 @@ import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
 import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmService } from '../../shared/services/confirm.service';
 import { DetailDialogService } from '../../shared/services/detail-dialog.service';
-import { AcademicDepartmentMockService } from '../services/academic-department-mock.service';
-import { AcademicDepartmentFormDialogComponent } from '../academic-department-form-dialog/academic-department-form-dialog.component';
-import { AcademicDepartment } from '../../core/models';
+import { RouterModule } from '@angular/router';
+import { DepartmentApiService } from '../../departments/services/department-api.service';
+import { DepartmentFormDialogComponent } from '../../departments/department-form-dialog/department-form-dialog.component';
+import { Department } from '../../core/models';
 
 @Component({
   selector: 'app-academic-departments-page',
@@ -24,13 +25,13 @@ import { AcademicDepartment } from '../../core/models';
   imports: [
     MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
     MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent,
-    HasPermissionPipe
+    HasPermissionPipe, RouterModule
   ],
   templateUrl: './academic-departments-page.component.html',
   styleUrl: './academic-departments-page.component.scss'
 })
 export class AcademicDepartmentsPageComponent implements OnInit, AfterViewInit {
-  private readonly service = inject(AcademicDepartmentMockService);
+  private readonly service = inject(DepartmentApiService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
@@ -42,7 +43,7 @@ export class AcademicDepartmentsPageComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) set sortRef(s: MatSort | undefined) { this.sort = s; this.attachTableControls(); }
   sort?: MatSort;
 
-  readonly dataSource = new MatTableDataSource<AcademicDepartment>([]);
+  readonly dataSource = new MatTableDataSource<Department>([]);
   loading = true;
   query = '';
   cols = ['name', 'headName', 'teacherCount', 'subjects', 'actions'];
@@ -52,7 +53,7 @@ export class AcademicDepartmentsPageComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource.filterPredicate = (d, filter) =>
-      [d.name, d.headName, d.subjects].join(' ').toLowerCase().includes(filter);
+      [d.name, d.code, d.headName ?? '', (d.subjects ?? []).join(' ')].join(' ').toLowerCase().includes(filter);
     this.load();
   }
 
@@ -76,40 +77,41 @@ export class AcademicDepartmentsPageComponent implements OnInit, AfterViewInit {
     this.paginator?.firstPage();
   }
 
-  subjectList(d: AcademicDepartment): string[] {
-    return (d.subjects ?? '').split(/[،,]/).map(s => s.trim()).filter(Boolean);
+  subjectList(d: Department): string[] {
+    return d.subjects ?? [];
   }
 
-  openDialog(d?: AcademicDepartment): void {
-    const ref = this.dialog.open(AcademicDepartmentFormDialogComponent, { width: '520px', maxWidth: '95vw', direction: 'rtl', data: d ?? null });
-    ref.afterClosed().subscribe((result: AcademicDepartment | undefined) => {
+  openDialog(d?: Department): void {
+    const ref = this.dialog.open(DepartmentFormDialogComponent, { width: '480px', maxWidth: '95vw', direction: 'rtl', data: d ?? null });
+    ref.afterClosed().subscribe((result: Department | undefined) => {
       if (!result) return;
       const req$ = d?.id ? this.service.update(d.id, result) : this.service.create(result);
       req$.subscribe({
-        next: () => { this.toast.success(d?.id ? 'تم تحديث القسم' : 'تمت إضافة القسم'); this.load(); },
+        next: () => { this.toast.success(d?.id ? 'تم تحديث الشعبة' : 'تمت إضافة الشعبة'); this.load(); },
         error: (e) => this.toast.fromError(e)
       });
     });
   }
 
-  view(d: AcademicDepartment): void {
+  view(d: Department): void {
     this.details.open({
       title: d.name,
-      subtitle: 'قسم دراسي',
+      subtitle: 'شعبة دراسية · ' + d.code,
       icon: 'account_tree',
       fields: [
-        { label: 'رئيس القسم', value: d.headName },
-        { label: 'عدد المعلمين', value: d.teacherCount, chip: 'info' },
-        { label: 'المواد التابعة', value: d.subjects }
+        { label: 'رئيس الشعبة', value: d.headName || 'لا يوجد رئيس شعبة' },
+        { label: 'عدد المعلمين', value: d.teacherCount ?? 0, chip: 'info' },
+        { label: 'المواد التابعة', value: (d.subjects ?? []).join('، ') || '—' },
+        { label: 'الوصف', value: d.description || '—' }
       ]
     });
   }
 
-  delete(d: AcademicDepartment): void {
+  delete(d: Department): void {
     if (!d.id) return;
-    this.confirm.deleteConfirmed(d.name, 'القسم').subscribe(() => {
+    this.confirm.deleteConfirmed(d.name, 'الشعبة').subscribe(() => {
       this.service.delete(d.id!).subscribe({
-        next: () => { this.toast.success('تم حذف القسم'); this.load(); },
+        next: () => { this.toast.success('تم حذف الشعبة'); this.load(); },
         error: (e) => this.toast.fromError(e)
       });
     });

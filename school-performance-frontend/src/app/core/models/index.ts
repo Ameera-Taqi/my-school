@@ -122,6 +122,10 @@ export interface Department {
   description?: string;
   active?: boolean;
   teacherCount?: number;
+  /** Computed by the API from roles, same rule as the org chart. */
+  headName?: string | null;
+  /** Distinct subjects taught by the department's teachers. */
+  subjects?: string[];
 }
 
 export interface SidebarItem {

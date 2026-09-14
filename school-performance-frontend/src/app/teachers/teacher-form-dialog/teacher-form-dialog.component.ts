@@ -28,7 +28,7 @@ export interface TeacherFormDialogData {
   template: `
     <h2 mat-dialog-title>{{ data.teacher ? 'تعديل معلم' : 'إضافة معلم' }}</h2>
     <mat-dialog-content>
-      <p class="context-hint">القسم: <strong>{{ data.departmentName }}</strong></p>
+      <p class="context-hint">الشعبة: <strong>{{ data.departmentName }}</strong></p>
       <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>اسم المعلم</mat-label>
@@ -64,14 +64,14 @@ export interface TeacherFormDialogData {
           </mat-form-field>
           <div class="toggle-row">
             <mat-slide-toggle formControlName="active">نشط</mat-slide-toggle>
-            <mat-checkbox class="department-head-check" formControlName="departmentHead">رئيس قسم</mat-checkbox>
+            <mat-checkbox class="department-head-check" formControlName="departmentHead">رئيس شعبة</mat-checkbox>
             <mat-checkbox class="department-head-check" formControlName="wingSupervisor" matTooltip="يمنحه قائمة «مشرف الجناح» وصلاحية تسجيل حضور الطلاب">مشرف جناح</mat-checkbox>
           </div>
         </div>
         @if (!data.teacher) {
           <div class="info-banner compact">
             <mat-icon>info</mat-icon>
-            <span>سيُنشأ حساب دخول تلقائياً بدور <strong>{{ form.controls.departmentHead.value ? 'رئيس قسم' : 'معلم' }}</strong>، وستظهر بيانات الدخول بعد الحفظ.</span>
+            <span>سيُنشأ حساب دخول تلقائياً بدور <strong>{{ form.controls.departmentHead.value ? 'رئيس شعبة' : 'معلم' }}</strong>، وستظهر بيانات الدخول بعد الحفظ.</span>
           </div>
         }
       </form>

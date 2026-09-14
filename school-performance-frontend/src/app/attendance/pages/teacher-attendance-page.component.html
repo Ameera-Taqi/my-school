@@ -4,7 +4,7 @@
 </app-page-header>
 
 @if (scope?.scope === 'NONE') {
-  <div class="data-card"><app-empty-state icon="lock" title="لا يوجد نطاق عرض لحسابك" description="حسابك غير مرتبط بمعلم أو قسم. تواصل مع مدير النظام."></app-empty-state></div>
+  <div class="data-card"><app-empty-state icon="lock" title="لا يوجد نطاق عرض لحسابك" description="حسابك غير مرتبط بمعلم أو شعبة. تواصل مع مدير النظام."></app-empty-state></div>
 } @else {
   <mat-tab-group animationDuration="150ms">
     <!-- Day view -->
@@ -58,7 +58,7 @@
                 <td mat-cell *matCellDef="let row" class="name">{{ row.personName }}</td>
               </ng-container>
               <ng-container matColumnDef="department">
-                <th mat-header-cell *matHeaderCellDef>القسم</th>
+                <th mat-header-cell *matHeaderCellDef>الشعبة</th>
                 <td mat-cell *matCellDef="let row">{{ row.className || '—' }}</td>
               </ng-container>
               <ng-container matColumnDef="status">

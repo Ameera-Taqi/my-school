@@ -125,7 +125,7 @@ public class UserService
     {
         if (HasTeacherRole(roles) && departmentId == null)
         {
-            throw new AppException("يجب تحديد القسم للمعلم");
+            throw new AppException("يجب تحديد الشعبة للمعلم");
         }
     }
 
@@ -134,7 +134,7 @@ public class UserService
         if (HasTeacherRole(roles))
         {
             var department = await _db.Departments.FindAsync(departmentId!.Value)
-                ?? throw new NotFoundException("القسم غير موجود");
+                ?? throw new NotFoundException("الشعبة غير موجودة");
 
             var teacher = await _db.Teachers.FirstOrDefaultAsync(t => t.UserId == user.Id);
             if (teacher == null)

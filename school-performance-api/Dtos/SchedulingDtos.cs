@@ -10,6 +10,8 @@ public class SubjectDto
     public string? Code { get; set; }
     public string? Color { get; set; }
     public bool? Active { get; set; }
+    public long? DepartmentId { get; set; }
+    public string? DepartmentName { get; set; }
 }
 
 public class AssignmentDto

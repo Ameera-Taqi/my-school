@@ -130,7 +130,7 @@ public class TeacherMonitoringService
         "EXCELLENT" => "أداء متميز خلال الزيارة الصفية",
         "GOOD" => "يُنصح بمتابعة خطة الأسبوع القادم",
         "NEEDS_FOLLOW_UP" => "تم التنبيه بضرورة تحسين إنجاز الخطط",
-        _ => "اجتماع متابعة مجدول مع رئيس القسم"
+        _ => "اجتماع متابعة مجدول مع رئيس الشعبة"
     };
 
     private record Metrics(int ClassesCount, int AttendanceRate, int LessonPlanRate, double EvaluationScore, DateOnly LastVisitDate, string Status);

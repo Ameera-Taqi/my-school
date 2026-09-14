@@ -41,7 +41,7 @@ const DAY_KEYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDA
       }
       @if (canAttendance) {
         <mat-card class="day-card">
-          <div class="card-head"><h3><mat-icon>fingerprint</mat-icon> {{ scope?.scope === 'DEPARTMENT' ? 'حضور معلمي القسم اليوم' : 'حضوري اليوم' }}</h3><a mat-button routerLink="/attendance/teachers">التفاصيل</a></div>
+          <div class="card-head"><h3><mat-icon>fingerprint</mat-icon> {{ scope?.scope === 'DEPARTMENT' ? 'حضور معلمي الشعبة اليوم' : 'حضوري اليوم' }}</h3><a mat-button routerLink="/attendance/teachers">التفاصيل</a></div>
           @if (loading) { <div class="sk"><span class="skeleton line"></span><span class="skeleton line"></span></div> }
           @else if (scope?.scope === 'SELF' && mine) {
             <div class="self-row">

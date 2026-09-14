@@ -75,14 +75,14 @@ import { DepartmentApiService } from '../../departments/services/department-api.
 
           @if (isTeacherRole) {
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>القسم</mat-label>
+              <mat-label>الشعبة</mat-label>
               <mat-select formControlName="departmentId">
                 @for (dept of departments; track dept.id) {
                   <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
                 }
               </mat-select>
-              <mat-hint>سيُنشأ ملف معلم مرتبط بهذا القسم تلقائياً</mat-hint>
-              <mat-error>القسم مطلوب للمعلم</mat-error>
+              <mat-hint>سيُنشأ ملف معلم مرتبط بهذه الشعبة تلقائياً</mat-hint>
+              <mat-error>الشعبة مطلوبة للمعلم</mat-error>
             </mat-form-field>
           }
 

@@ -60,7 +60,7 @@ export class DepartmentsListComponent implements OnInit {
 
       request$.subscribe({
         next: () => {
-          this.toast.success(department?.id ? 'تم تحديث القسم' : 'تمت إضافة القسم');
+          this.toast.success(department?.id ? 'تم تحديث الشعبة' : 'تمت إضافة الشعبة');
           this.load();
         },
         error: (e) => this.toast.fromError(e)

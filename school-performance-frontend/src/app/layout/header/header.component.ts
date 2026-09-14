@@ -60,7 +60,7 @@ export class HeaderComponent {
     return this.langService.translate(`role.${roleKey}`);
   });
 
-  /** Role, plus department for department heads: "رئيس قسم · قسم الرياضيات". */
+  /** Role, plus department for department heads: "رئيس شعبة · شعبة الرياضيات". */
   readonly roleLine = computed(() => {
     const dept = this.departmentName();
     return dept ? `${this.primaryRoleLabel()} · ${dept}` : this.primaryRoleLabel();

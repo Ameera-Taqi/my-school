@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +20,8 @@ import { OrgDepartment, OrgPerson, OrgStructure, OrgStructureApiService } from '
   templateUrl: './org-structure-page.component.html',
   styleUrl: './org-structure-page.component.scss'
 })
-export class OrgStructurePageComponent implements OnInit {
+export class OrgStructurePageComponent implements OnInit, AfterViewInit {
+  @ViewChild('deptArea') deptArea?: ElementRef<HTMLElement>;
   private readonly api = inject(OrgStructureApiService);
   private readonly toast = inject(ToastService);
   private readonly details = inject(DetailDialogService);
@@ -29,12 +30,16 @@ export class OrgStructurePageComponent implements OnInit {
   data: OrgStructure | null = null;
   /** 'chart' = tree with connectors, 'list' = stacked levels (better on phones). */
   view: 'chart' | 'list' = 'chart';
-  collapsed = new Set<number>();
+  /** Departments are laid out in visual rows; each row has its own collapse toggle. */
+  private static readonly CARD_MIN = 250;
+  private static readonly GAP = 16;
+  columns = 3;
+  collapsedRows = new Set<number>();
 
   readonly levels = [
     { key: 'manager', label: 'مدير المدرسة', color: 'var(--org-manager)' },
     { key: 'assistant', label: 'مدير مساعد', color: 'var(--org-assistant)' },
-    { key: 'head', label: 'رئيس قسم', color: 'var(--org-head)' },
+    { key: 'head', label: 'رئيس شعبة', color: 'var(--org-head)' },
     { key: 'teacher', label: 'معلم', color: 'var(--org-teacher)' }
   ];
 
@@ -45,7 +50,7 @@ export class OrgStructurePageComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.api.get().subscribe({
-      next: (data) => { this.data = data; this.loading = false; },
+      next: (data) => { this.data = data; this.loading = false; setTimeout(() => this.measureColumns()); },
       error: (e) => { this.loading = false; this.toast.fromError(e); }
     });
   }
@@ -69,13 +74,34 @@ export class OrgStructurePageComponent implements OnInit {
     return parts.length > 1 ? parts[0].charAt(0) + parts[1].charAt(0) : (parts[0]?.charAt(0) ?? '?');
   }
 
-  toggleDepartment(dept: OrgDepartment): void {
-    if (this.collapsed.has(dept.id)) this.collapsed.delete(dept.id);
-    else this.collapsed.add(dept.id);
+  ngAfterViewInit(): void {
+    this.measureColumns();
   }
 
-  isCollapsed(dept: OrgDepartment): boolean {
-    return this.collapsed.has(dept.id);
+  @HostListener('window:resize')
+  measureColumns(): void {
+    const width = this.deptArea?.nativeElement.clientWidth ?? 0;
+    const cols = width ? Math.max(1, Math.floor((width + OrgStructurePageComponent.GAP) / (OrgStructurePageComponent.CARD_MIN + OrgStructurePageComponent.GAP))) : 3;
+    if (cols !== this.columns) { this.columns = cols; this.collapsedRows.clear(); }
+  }
+
+  /** Department cards plus a pseudo-card for people without a department, chunked into visual rows. */
+  get departmentRows(): (OrgDepartment | null)[][] {
+    if (!this.data) return [];
+    const items: (OrgDepartment | null)[] = [...this.data.departments];
+    if (this.data.unassignedHeads.length || this.data.unassignedTeachers.length) items.push(null);
+    const rows: (OrgDepartment | null)[][] = [];
+    for (let i = 0; i < items.length; i += this.columns) rows.push(items.slice(i, i + this.columns));
+    return rows;
+  }
+
+  toggleRow(index: number): void {
+    if (this.collapsedRows.has(index)) this.collapsedRows.delete(index);
+    else this.collapsedRows.add(index);
+  }
+
+  isRowCollapsed(index: number): boolean {
+    return this.collapsedRows.has(index);
   }
 
   showPerson(person: OrgPerson): void {

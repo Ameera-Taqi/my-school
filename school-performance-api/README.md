@@ -41,7 +41,7 @@ docker compose up --build -d
 |----------|-------------|-------|
 | admin | admin123 | Admin |
 | manager | manager123 | مدير المدرسة |
-| salem | salem123 | رئيس قسم |
+| salem | salem123 | رئيس شعبة |
 | mariam | mariam123 | معلم |
 
 ## API Endpoints
@@ -59,8 +59,8 @@ docker compose up --build -d
 | GET/PUT/DELETE | /api/classes/{id} | إدارة الفصول |
 | GET/POST | /api/classes/{id}/students | طلاب الفصل |
 | GET/PUT/DELETE | /api/students/{id} | إدارة الطلاب |
-| GET/POST/PUT/DELETE | /api/departments | إدارة الأقسام |
-| GET/POST | /api/departments/{id}/teachers | معلمو القسم |
+| GET/POST/PUT/DELETE | /api/departments | إدارة الشعب |
+| GET/POST | /api/departments/{id}/teachers | معلمو الشعبة |
 | GET/PUT/DELETE | /api/teachers/{id} | إدارة المعلمين |
 | GET/POST/PUT/DELETE | /api/calendar/events | تقويم الأحداث |
 | GET | /api/teacher-monitoring | متابعة المعلمين |
@@ -69,7 +69,7 @@ docker compose up --build -d
 | GET/PUT | /api/attendance/students?classId=&date= | حضور طلاب فصل في يوم |
 | GET/PUT | /api/attendance/teachers?date= | حضور المعلمين في يوم |
 | GET | /api/attendance/summary?date= | ملخص حضور اليوم |
-| GET | /api/org-structure | الهيكل التنظيمي (يُبنى من المستخدمين والأدوار والأقسام) |
+| GET | /api/org-structure | الهيكل التنظيمي (يُبنى من المستخدمين والأدوار والشعب) |
 | GET/POST/PUT/DELETE | /api/subjects | المواد الدراسية |
 | GET/POST/PUT/DELETE | /api/schedule/assignments?classId= | تكليفات الفصل (مادة + معلم + حصص/أسبوع) |
 | GET/POST/DELETE | /api/schedule/constraints?teacherId= | قيود توفر المعلمين |

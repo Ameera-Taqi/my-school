@@ -8,6 +8,10 @@ public class DepartmentDto
     public string? Description { get; set; }
     public bool? Active { get; set; }
     public long TeacherCount { get; set; }
+    /// <summary>Name of the teacher whose account holds a DEPARTMENT_HEAD role (same rule as the org chart).</summary>
+    public string? HeadName { get; set; }
+    /// <summary>Distinct subjects taught by this department's teachers (from class-subject assignments).</summary>
+    public List<string> Subjects { get; set; } = new();
 }
 
 public class TeacherDto

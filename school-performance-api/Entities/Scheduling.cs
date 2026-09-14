@@ -8,6 +8,9 @@ public class Subject : BaseEntity
     /// <summary>Hex color used for the timetable cell.</summary>
     public string? Color { get; set; }
     public bool Active { get; set; } = true;
+    /// <summary>Owning department (المواد التابعة للشعبة); null when not assigned yet.</summary>
+    public long? DepartmentId { get; set; }
+    public Department? Department { get; set; }
 }
 
 /// <summary>"Class X studies subject Y with teacher Z for N periods a week."</summary>

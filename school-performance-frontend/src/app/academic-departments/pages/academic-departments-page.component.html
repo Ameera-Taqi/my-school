@@ -1,15 +1,15 @@
-<app-page-header title="الأقسام الدراسية" subtitle="إدارة الأقسام الأكاديمية وموادها">
+<app-page-header title="الشعب الدراسية" subtitle="الشعب الفعلية للمدرسة كما تظهر في الهيكل التنظيمي">
   @if ('departments.manage' | hasPermission) {
-    <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة قسم</button>
+    <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة شعبة</button>
   }
 </app-page-header>
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث باسم القسم أو رئيس القسم أو المادة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    <app-search-field placeholder="ابحث باسم الشعبة أو رمزها أو رئيس الشعبة أو المادة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
-        @if (query) { {{ filteredCount }} من {{ total }} قسم } @else { {{ total }} قسم }
+        @if (query) { {{ filteredCount }} من {{ total }} شعبة } @else { {{ total }} شعبة }
       </span>
     }
   </div>
@@ -17,27 +17,27 @@
   @if (loading) {
     <app-table-skeleton [rows]="5" [columns]="5"></app-table-skeleton>
   } @else if (total === 0) {
-    <app-empty-state icon="account_tree" title="لا توجد أقسام دراسية بعد" description="أضف أول قسم دراسي لتنظيم المواد والمعلمين.">
+    <app-empty-state icon="account_tree" title="لا توجد شعب دراسية بعد" description="أضف أول شعبة دراسية لتنظيم المواد والمعلمين.">
       @if ('departments.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة قسم</button>
+        <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة شعبة</button>
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {
-    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد قسماً يطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد شعبة تطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
   } @else {
     <div class="table-scroll">
       <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc">
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم القسم</th>
-          <td mat-cell *matCellDef="let r" class="name">{{ r.name }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الشعبة</th>
+          <td mat-cell *matCellDef="let r" class="name">{{ r.name }} <span class="code-tag" dir="ltr">{{ r.code }}</span></td>
         </ng-container>
         <ng-container matColumnDef="headName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>رئيس القسم</th>
-          <td mat-cell *matCellDef="let r">{{ r.headName || '—' }}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>رئيس الشعبة</th>
+          <td mat-cell *matCellDef="let r">@if (r.headName) { {{ r.headName }} } @else { <span class="muted">لا يوجد رئيس شعبة</span> }</td>
         </ng-container>
         <ng-container matColumnDef="teacherCount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>عدد المعلمين</th>
-          <td mat-cell *matCellDef="let r"><span class="chip info"><mat-icon class="chip-icon">person</mat-icon> {{ r.teacherCount }}</span></td>
+          <td mat-cell *matCellDef="let r"><span class="chip info"><mat-icon class="chip-icon">person</mat-icon> {{ r.teacherCount ?? 0 }}</span></td>
         </ng-container>
         <ng-container matColumnDef="subjects">
           <th mat-header-cell *matHeaderCellDef>المواد</th>
@@ -53,6 +53,7 @@
           <td mat-cell *matCellDef="let r" class="actions-cell">
             <div class="row-actions">
               <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+              <a mat-icon-button matTooltip="معلمو الشعبة" [routerLink]="['/teachers/departments', r.id]" (click)="$event.stopPropagation()"><mat-icon>groups</mat-icon></a>
               @if ('departments.manage' | hasPermission) {
                 <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
                 <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>

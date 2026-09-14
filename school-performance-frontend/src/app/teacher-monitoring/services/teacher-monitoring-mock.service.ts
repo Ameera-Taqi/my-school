@@ -13,7 +13,7 @@ const MOCK: TeacherMonitoringRecord[] = [
   {
     id: 1,
     teacherName: 'أ. سالم الحربي',
-    departmentName: 'قسم الرياضيات',
+    departmentName: 'شعبة الرياضيات',
     subject: 'رياضيات',
     classesCount: 4,
     attendanceRate: 98,
@@ -28,7 +28,7 @@ const MOCK: TeacherMonitoringRecord[] = [
   {
     id: 2,
     teacherName: 'أ. مريم العتيبي',
-    departmentName: 'قسم العلوم',
+    departmentName: 'شعبة العلوم',
     subject: 'أحياء',
     classesCount: 3,
     attendanceRate: 96,
@@ -43,7 +43,7 @@ const MOCK: TeacherMonitoringRecord[] = [
   {
     id: 3,
     teacherName: 'أ. يوسف القحطاني',
-    departmentName: 'قسم اللغة العربية',
+    departmentName: 'شعبة اللغة العربية',
     subject: 'لغة عربية',
     classesCount: 5,
     attendanceRate: 91,
@@ -58,7 +58,7 @@ const MOCK: TeacherMonitoringRecord[] = [
   {
     id: 4,
     teacherName: 'أ. نورة الشمري',
-    departmentName: 'قسم اللغة الإنجليزية',
+    departmentName: 'شعبة اللغة الإنجليزية',
     subject: 'إنجليزي',
     classesCount: 4,
     attendanceRate: 94,
@@ -73,7 +73,7 @@ const MOCK: TeacherMonitoringRecord[] = [
   {
     id: 5,
     teacherName: 'أ. فهد الدوسري',
-    departmentName: 'قسم الرياضيات',
+    departmentName: 'شعبة الرياضيات',
     subject: 'إحصاء',
     classesCount: 3,
     attendanceRate: 85,
@@ -83,7 +83,7 @@ const MOCK: TeacherMonitoringRecord[] = [
     status: 'CRITICAL',
     strengths: 'خبرة في المادة',
     improvements: 'الالتزام بالحضور، إعداد الدروس، متابعة الطلاب',
-    notes: 'اجتماع متابعة مجدول مع رئيس القسم'
+    notes: 'اجتماع متابعة مجدول مع رئيس الشعبة'
   }
 ];
 

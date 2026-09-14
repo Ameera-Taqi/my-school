@@ -22,19 +22,19 @@ import { Department } from '../../core/models';
     PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent
   ],
   template: `
-    <app-page-header title="الأقسام" subtitle="إدارة الأقسام الأكاديمية">
+    <app-page-header title="الشعب" subtitle="إدارة الشعب الأكاديمية">
       <button mat-flat-button color="primary" (click)="addSample()">
         <mat-icon>add</mat-icon>
-        إضافة قسم (تجريبي)
+        إضافة شعبة (تجريبية)
       </button>
     </app-page-header>
 
     <div class="data-card">
       <div class="list-toolbar">
-        <app-search-field placeholder="ابحث بالرمز أو اسم القسم" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+        <app-search-field placeholder="ابحث بالرمز أو اسم الشعبة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
         @if (!loading) {
           <span class="toolbar-count">
-            @if (query) { {{ filteredCount }} من {{ total }} قسم } @else { {{ total }} قسم }
+            @if (query) { {{ filteredCount }} من {{ total }} شعبة } @else { {{ total }} شعبة }
           </span>
         }
       </div>
@@ -42,11 +42,11 @@ import { Department } from '../../core/models';
       @if (loading) {
         <app-table-skeleton [rows]="5" [columns]="4"></app-table-skeleton>
       } @else if (total === 0) {
-        <app-empty-state icon="domain" title="لا توجد أقسام بعد" description="أضف أول قسم لبدء تنظيم المعلمين والمواد.">
-          <button mat-flat-button color="primary" (click)="addSample()"><mat-icon>add</mat-icon> إضافة قسم (تجريبي)</button>
+        <app-empty-state icon="domain" title="لا توجد شعب بعد" description="أضف أول شعبة لبدء تنظيم المعلمين والمواد.">
+          <button mat-flat-button color="primary" (click)="addSample()"><mat-icon>add</mat-icon> إضافة شعبة (تجريبية)</button>
         </app-empty-state>
       } @else if (filteredCount === 0) {
-        <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد قسماً يطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
+        <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد شعبة تطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
       } @else {
         <div class="table-scroll">
           <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc">
@@ -134,20 +134,20 @@ export class DepartmentListComponent implements OnInit, AfterViewInit {
     const n = this.total + 1;
     this.deptService.create({
       code: `DEPT${n}`,
-      name: `قسم تجريبي ${n}`,
-      description: 'قسم أكاديمي',
+      name: `شعبة تجريبية ${n}`,
+      description: 'شعبة أكاديمية',
       active: true
     }).subscribe({
-      next: () => { this.toast.success('تمت إضافة القسم'); this.load(); },
+      next: () => { this.toast.success('تمت إضافة الشعبة'); this.load(); },
       error: (e) => this.toast.fromError(e)
     });
   }
 
   deleteDept(d: Department): void {
     if (!d.id) return;
-    this.confirm.deleteConfirmed(d.name, 'القسم').subscribe(() => {
+    this.confirm.deleteConfirmed(d.name, 'الشعبة').subscribe(() => {
       this.deptService.delete(d.id!).subscribe({
-        next: () => { this.toast.success('تم حذف القسم'); this.load(); },
+        next: () => { this.toast.success('تم حذف الشعبة'); this.load(); },
         error: (e) => this.toast.fromError(e)
       });
     });

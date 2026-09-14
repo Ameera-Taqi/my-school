@@ -23,15 +23,16 @@ public class ScheduleService
     // ---------------- Subjects ----------------
 
     public async Task<List<SubjectDto>> GetSubjectsAsync() =>
-        (await _db.Subjects.OrderBy(s => s.Name).ToListAsync()).Select(ToDto).ToList();
+        (await _db.Subjects.Include(s => s.Department).OrderBy(s => s.Department != null ? s.Department.Name : "").ThenBy(s => s.Name).ToListAsync()).Select(ToDto).ToList();
 
     public async Task<SubjectDto> CreateSubjectAsync(SubjectDto dto)
     {
         var name = dto.Name.Trim();
         if (await _db.Subjects.AnyAsync(s => s.Name == name)) throw new AppException("المادة موجودة مسبقاً");
-        var subject = new Subject { Name = name, Code = dto.Code?.Trim(), Color = dto.Color, Active = dto.Active ?? true };
+        var subject = new Subject { Name = name, Code = dto.Code?.Trim(), Color = dto.Color, Active = dto.Active ?? true, DepartmentId = await ResolveDepartmentAsync(dto.DepartmentId) };
         _db.Subjects.Add(subject);
         await _db.SaveChangesAsync();
+        await _db.Entry(subject).Reference(x => x.Department).LoadAsync();
         return ToDto(subject);
     }
 
@@ -44,8 +45,17 @@ public class ScheduleService
         subject.Code = dto.Code?.Trim();
         subject.Color = dto.Color;
         if (dto.Active.HasValue) subject.Active = dto.Active.Value;
+        subject.DepartmentId = await ResolveDepartmentAsync(dto.DepartmentId);
         await _db.SaveChangesAsync();
+        await _db.Entry(subject).Reference(x => x.Department).LoadAsync();
         return ToDto(subject);
+    }
+
+    private async Task<long?> ResolveDepartmentAsync(long? departmentId)
+    {
+        if (departmentId == null) return null;
+        if (!await _db.Departments.AnyAsync(d => d.Id == departmentId)) throw new NotFoundException("الشعبة غير موجودة");
+        return departmentId;
     }
 
     public async Task DeleteSubjectAsync(long id)
@@ -373,7 +383,7 @@ public class ScheduleService
     private IQueryable<ScheduleEntry> EntriesQuery() =>
         _db.ScheduleEntries.Include(e => e.SchoolClass).Include(e => e.Subject).Include(e => e.Teacher);
 
-    private static SubjectDto ToDto(Subject s) => new() { Id = s.Id, Name = s.Name, Code = s.Code, Color = s.Color, Active = s.Active };
+    private static SubjectDto ToDto(Subject s) => new() { Id = s.Id, Name = s.Name, Code = s.Code, Color = s.Color, Active = s.Active, DepartmentId = s.DepartmentId, DepartmentName = s.Department?.Name };
 
     private static AssignmentDto ToDto(ClassSubjectAssignment a) => new()
     {

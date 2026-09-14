@@ -19,7 +19,8 @@ import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmService } from '../../shared/services/confirm.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
-import { ClassScheduleEntry, SchoolClass, ScheduleDay, Teacher } from '../../core/models';
+import { DepartmentApiService } from '../../departments/services/department-api.service';
+import { ClassScheduleEntry, SchoolClass, ScheduleDay, Teacher, Department } from '../../core/models';
 import {
   CONSTRAINT_TYPE_LABELS, ScheduleApiService, ScheduleOverview, Subject, SubjectAssignment, TeacherConstraint
 } from '../services/schedule-api.service';
@@ -42,6 +43,7 @@ import {
 export class ClassSchedulePageComponent implements OnInit {
   private readonly api = inject(ScheduleApiService);
   private readonly lookup = inject(AcademicLookupService);
+  private readonly departmentApi = inject(DepartmentApiService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
@@ -55,6 +57,7 @@ export class ClassSchedulePageComponent implements OnInit {
 
   classes: SchoolClass[] = [];
   teachers: Teacher[] = [];
+  departments: Department[] = [];
   subjects: Subject[] = [];
   assignments: SubjectAssignment[] = [];
   constraints: TeacherConstraint[] = [];
@@ -86,10 +89,11 @@ export class ClassSchedulePageComponent implements OnInit {
   get classSummary() { return this.overview?.classes.find(c => c.classId === this.filter.controls.classId.value); }
 
   ngOnInit(): void {
-    forkJoin({ classes: this.lookup.getAllClasses(), teachers: this.lookup.getAllTeachers() }).subscribe({
-      next: ({ classes, teachers }) => {
+    forkJoin({ classes: this.lookup.getAllClasses(), teachers: this.lookup.getAllTeachers(), departments: this.departmentApi.getAll() }).subscribe({
+      next: ({ classes, teachers, departments }) => {
         this.classes = classes;
         this.teachers = teachers;
+        this.departments = departments;
         if (classes.length) this.filter.controls.classId.setValue(classes[0].id!, { emitEvent: false });
         if (teachers.length) this.filter.controls.teacherId.setValue(teachers[0].id!, { emitEvent: false });
         this.loadAll();
@@ -183,7 +187,7 @@ export class ClassSchedulePageComponent implements OnInit {
 
   // ───────── subjects ─────────
   openSubject(subject?: Subject): void {
-    const ref = this.dialog.open(SubjectDialogComponent, { data: subject ?? null, width: '440px', maxWidth: '95vw', direction: 'rtl' });
+    const ref = this.dialog.open(SubjectDialogComponent, { data: { subject: subject ?? null, departments: this.departments }, width: '460px', maxWidth: '95vw', direction: 'rtl' });
     ref.afterClosed().subscribe((result?: Subject) => {
       if (!result) return;
       const req$ = subject?.id ? this.api.updateSubject(subject.id, result) : this.api.createSubject(result);

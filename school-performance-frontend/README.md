@@ -34,7 +34,7 @@ src/app/
 ├── permissions/    # إدارة الصلاحيات وربطها بالأدوار
 ├── students/       # الطلاب
 ├── teachers/       # المعلمون
-└── departments/    # الأقسام
+└── departments/    # الشعب
 ```
 
 ## تخصيص القائمة الجانبية

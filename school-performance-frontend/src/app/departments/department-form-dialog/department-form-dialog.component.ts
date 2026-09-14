@@ -12,19 +12,19 @@ import { Department } from '../../core/models';
   standalone: true,
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDialogModule],
   template: `
-    <h2 mat-dialog-title>{{ data ? 'تعديل قسم' : 'إضافة قسم' }}</h2>
+    <h2 mat-dialog-title>{{ data ? 'تعديل شعبة' : 'إضافة شعبة' }}</h2>
     <mat-dialog-content>
       <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
         <div class="two-col">
           <mat-form-field appearance="outline">
-            <mat-label>رمز القسم</mat-label>
+            <mat-label>رمز الشعبة</mat-label>
             <input matInput formControlName="code" placeholder="MATH" [readonly]="!!data" cdkFocusInitial autocomplete="off" dir="ltr">
-            <mat-error>رمز القسم مطلوب</mat-error>
+            <mat-error>رمز الشعبة مطلوب</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>اسم القسم</mat-label>
-            <input matInput formControlName="name" placeholder="قسم الرياضيات" autocomplete="off">
-            <mat-error>اسم القسم مطلوب</mat-error>
+            <mat-label>اسم الشعبة</mat-label>
+            <input matInput formControlName="name" placeholder="شعبة الرياضيات" autocomplete="off">
+            <mat-error>اسم الشعبة مطلوب</mat-error>
           </mat-form-field>
         </div>
         <mat-form-field appearance="outline" class="full-width">
@@ -36,7 +36,7 @@ import { Department } from '../../core/models';
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'إضافة القسم' }}
+        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الشعبة' }}
       </button>
     </mat-dialog-actions>
   `,

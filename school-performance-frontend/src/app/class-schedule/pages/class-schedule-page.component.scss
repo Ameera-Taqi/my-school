@@ -71,3 +71,5 @@
 .desc { margin-inline-start: 0.4rem; }
 .loads { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem 1.25rem; }
 .load-row { display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem; .load-name { font-weight: 600; } .load-nums { font-size: 0.75rem; color: var(--sp-text-muted); } mat-progress-bar { border-radius: 999px; } &.over .load-nums { color: var(--sp-danger); font-weight: 600; } }
+
+.dept-tag { font-size: 0.7rem; color: var(--sp-primary-mid); background: var(--sp-primary-bg); border-radius: 999px; padding: 0.05rem 0.5rem; white-space: nowrap; &.none { color: var(--sp-text-muted); background: transparent; border: 1px dashed var(--sp-border); } }

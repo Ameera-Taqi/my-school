@@ -127,6 +127,7 @@
                 <span class="swatch" [style.background]="s.color || '#90a4ae'"></span>
                 <span class="subject-name">{{ s.name }}</span>
                 @if (s.code) { <code>{{ s.code }}</code> }
+                @if (s.departmentName) { <span class="dept-tag">{{ s.departmentName }}</span> } @else { <span class="dept-tag none">بدون شعبة</span> }
                 @if (canManage()) {
                   <span class="row-actions">
                     <button mat-icon-button type="button" matTooltip="تعديل" (click)="openSubject(s)"><mat-icon>edit</mat-icon></button>

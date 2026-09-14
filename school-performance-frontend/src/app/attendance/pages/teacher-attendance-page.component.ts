@@ -84,7 +84,7 @@ export class TeacherAttendancePageComponent implements OnInit {
 
   get title(): string {
     switch (this.scope?.scope) {
-      case 'DEPARTMENT': return `حضور معلمي ${this.scope.departmentName ?? 'القسم'}`;
+      case 'DEPARTMENT': return `حضور معلمي ${this.scope.departmentName ?? 'الشعبة'}`;
       case 'SELF': return 'حضوري وانصرافي';
       case 'ALL': return 'حضور وانصراف المعلمين';
       default: return 'حضور المعلمين';
@@ -93,7 +93,7 @@ export class TeacherAttendancePageComponent implements OnInit {
 
   get subtitle(): string {
     switch (this.scope?.scope) {
-      case 'DEPARTMENT': return `تظهر لك سجلات معلمي قسمك فقط (${this.scope.teachersCount} معلم)`;
+      case 'DEPARTMENT': return `تظهر لك سجلات معلمي شعبتك فقط (${this.scope.teachersCount} معلم)`;
       case 'SELF': return 'تظهر لك سجلات حضورك أنت فقط';
       case 'ALL': return this.scope?.canRecord ? 'تسجيل ومتابعة حضور جميع المعلمين' : 'متابعة حضور جميع المعلمين';
       default: return 'لا يوجد نطاق عرض لحسابك';
@@ -274,8 +274,8 @@ export class TeacherAttendancePageComponent implements OnInit {
     const data: AttendancePdfData = {
       title: this.title,
       date: this.formatDate(this.filters.controls.date.value),
-      subtitle: this.scope?.scope === 'DEPARTMENT' ? `القسم: ${this.scope.departmentName ?? ''}` : undefined,
-      columns: [{ key: 'personName', label: 'اسم المعلم' }, { key: 'department', label: 'القسم' }, { key: 'status', label: 'الحالة' }, { key: 'checkIn', label: 'الحضور' }, { key: 'presence', label: 'التواجد' }, { key: 'checkOut', label: 'الانصراف' }, { key: 'hours', label: 'ساعات الدوام' }],
+      subtitle: this.scope?.scope === 'DEPARTMENT' ? `الشعبة: ${this.scope.departmentName ?? ''}` : undefined,
+      columns: [{ key: 'personName', label: 'اسم المعلم' }, { key: 'department', label: 'الشعبة' }, { key: 'status', label: 'الحالة' }, { key: 'checkIn', label: 'الحضور' }, { key: 'presence', label: 'التواجد' }, { key: 'checkOut', label: 'الانصراف' }, { key: 'hours', label: 'ساعات الدوام' }],
       rows: this.records.map(r => ({ personName: r.personName, department: r.className ?? '—', status: this.statusLabels[r.status] ?? r.status, checkIn: r.checkInTime ?? '—', presence: r.presenceTime ?? '—', checkOut: r.checkOutTime ?? '—', hours: this.formatMinutes(r.presenceMinutes ?? this.presenceOf(r)) })),
       summary: this.statusOptions.map(s => ({ label: this.statusLabels[s], value: String(this.countByStatus(s)) })).concat([{ label: 'الإجمالي', value: String(this.records.length) }])
     };

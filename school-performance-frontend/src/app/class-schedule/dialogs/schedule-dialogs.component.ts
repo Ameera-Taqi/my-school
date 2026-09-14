@@ -7,7 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { ClassScheduleEntry, ScheduleDay, Teacher } from '../../core/models';
+import { ClassScheduleEntry, Department, ScheduleDay, Teacher } from '../../core/models';
 import { CONSTRAINT_TYPE_LABELS, GenerateResult, Subject, SubjectAssignment, TeacherConstraint, TeacherConstraintType } from '../services/schedule-api.service';
 
 export const DAY_OPTIONS: { key: ScheduleDay; label: string }[] = [
@@ -104,6 +104,8 @@ export class ScheduleSlotDialogComponent {
 }
 
 // ───────────────────────── Subject ─────────────────────────
+export interface SubjectDialogData { subject: Subject | null; departments: Department[]; }
+
 @Component({
   selector: 'app-subject-dialog',
   standalone: true,
@@ -116,6 +118,14 @@ export class ScheduleSlotDialogComponent {
           <mat-label>اسم المادة</mat-label>
           <input matInput formControlName="name" cdkFocusInitial autocomplete="off">
           <mat-error>اسم المادة مطلوب</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>الشعبة التابعة لها</mat-label>
+          <mat-select formControlName="departmentId">
+            <mat-option [value]="null">— بدون شعبة —</mat-option>
+            @for (d of data.departments; track d.id) { <mat-option [value]="d.id">{{ d.name }}</mat-option> }
+          </mat-select>
+          <mat-hint>تظهر المادة ضمن مواد هذه الشعبة في صفحة الشعب الدراسية</mat-hint>
         </mat-form-field>
         <div class="two-col">
           <mat-form-field appearance="outline">
@@ -137,18 +147,19 @@ export class ScheduleSlotDialogComponent {
   styles: [SHARED_STYLES]
 })
 export class SubjectDialogComponent {
-  readonly data: Subject | null = inject(MAT_DIALOG_DATA);
+  readonly data: SubjectDialogData = inject(MAT_DIALOG_DATA);
   readonly ref = inject(MatDialogRef<SubjectDialogComponent>);
   private readonly fb = inject(FormBuilder);
-  form = this.fb.nonNullable.group({
-    name: [this.data?.name ?? '', Validators.required],
-    code: [this.data?.code ?? ''],
-    color: [this.data?.color ?? '#1976d2']
+  form = this.fb.group({
+    name: [this.data.subject?.name ?? '', Validators.required],
+    departmentId: [this.data.subject?.departmentId ?? null as number | null],
+    code: [this.data.subject?.code ?? ''],
+    color: [this.data.subject?.color ?? '#1976d2']
   });
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     const v = this.form.getRawValue();
-    this.ref.close({ ...this.data, name: v.name.trim(), code: v.code.trim() || undefined, color: v.color, active: this.data?.active ?? true } as Subject);
+    this.ref.close({ ...this.data.subject, name: (v.name ?? '').trim(), departmentId: v.departmentId ?? null, code: (v.code ?? '').trim() || undefined, color: v.color ?? undefined, active: this.data.subject?.active ?? true } as Subject);
   }
 }
 

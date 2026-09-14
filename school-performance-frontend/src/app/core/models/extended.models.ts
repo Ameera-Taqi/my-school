@@ -83,14 +83,6 @@ export interface AlertItem {
   status: 'NEW' | 'REVIEWED';
 }
 
-export interface AcademicDepartment {
-  id?: number;
-  name: string;
-  headName: string;
-  teacherCount: number;
-  subjects: string;
-}
-
 export interface LessonPlan {
   id?: number;
   subject: string;

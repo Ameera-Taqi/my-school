@@ -99,12 +99,12 @@ export class DepartmentTeachersComponent implements OnInit, AfterViewInit {
   roleLabel(teacher: Teacher): string {
     if (teacher.roleName) return teacher.roleName;
     const labels: Record<string, string> = {
-      DEPARTMENT_HEAD: 'رئيس قسم', TEACHER: 'معلم', SCHOOL_MANAGER: 'مدير المدرسة',
+      DEPARTMENT_HEAD: 'رئيس شعبة', TEACHER: 'معلم', SCHOOL_MANAGER: 'مدير المدرسة',
       ASSISTANT_MANAGER: 'مدير مساعد', ADMIN: 'مدير النظام'
     };
-    if (teacher.roleKey?.startsWith('DEPARTMENT_HEAD')) return labels[teacher.roleKey] ?? 'رئيس قسم';
+    if (teacher.roleKey?.startsWith('DEPARTMENT_HEAD')) return labels[teacher.roleKey] ?? 'رئيس شعبة';
     if (teacher.roleKey && labels[teacher.roleKey]) return labels[teacher.roleKey];
-    return teacher.departmentHead ? 'رئيس قسم' : 'معلم';
+    return teacher.departmentHead ? 'رئيس شعبة' : 'معلم';
   }
 
   openTeacherDialog(teacher?: Teacher): void {

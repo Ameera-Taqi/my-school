@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ClassScheduleEntry, ScheduleDay } from '../../core/models';
 
-export interface Subject { id?: number; name: string; code?: string; color?: string; active?: boolean; }
+export interface Subject { id?: number; name: string; code?: string; color?: string; active?: boolean; departmentId?: number | null; departmentName?: string | null; }
 
 export interface SubjectAssignment {
   id?: number; classId: number; className?: string; subjectId: number; subjectName?: string; subjectColor?: string;

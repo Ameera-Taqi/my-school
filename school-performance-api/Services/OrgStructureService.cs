@@ -131,7 +131,7 @@ public class OrgStructureService
         FullName = teacher.FullName,
         Username = teacher.User?.Username,
         RoleKey = roleKey,
-        RoleName = teacher.User?.Roles.FirstOrDefault(r => r.RoleKey.StartsWith(roleKey))?.RoleName ?? (roleKey == "DEPARTMENT_HEAD" ? "رئيس قسم" : "معلم"),
+        RoleName = teacher.User?.Roles.FirstOrDefault(r => r.RoleKey.StartsWith(roleKey))?.RoleName ?? (roleKey == "DEPARTMENT_HEAD" ? "رئيس شعبة" : "معلم"),
         Email = teacher.Email,
         Phone = teacher.Phone,
         Specialization = teacher.Specialization,

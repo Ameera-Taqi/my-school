@@ -1,8 +1,8 @@
-<app-page-header title="المعلمون" subtitle="اختر القسم لعرض وإدارة المعلمين">
+<app-page-header title="المعلمون" subtitle="اختر الشعبة لعرض وإدارة المعلمين">
   @if ('departments.manage' | hasPermission) {
     <button mat-flat-button color="primary" (click)="openDepartmentDialog()">
       <mat-icon>add</mat-icon>
-      إضافة قسم
+      إضافة شعبة
     </button>
   }
 </app-page-header>
@@ -21,16 +21,16 @@
   </div>
 } @else if (departments.length === 0) {
   <div class="data-card">
-    <app-empty-state icon="domain" title="لا توجد أقسام بعد" description="أضف أول قسم ثم أضف المعلمين داخله.">
+    <app-empty-state icon="domain" title="لا توجد شعب بعد" description="أضف أول شعبة ثم أضف المعلمين داخلها.">
       @if ('departments.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDepartmentDialog()"><mat-icon>add</mat-icon> إضافة أول قسم</button>
+        <button mat-flat-button color="primary" (click)="openDepartmentDialog()"><mat-icon>add</mat-icon> إضافة أول شعبة</button>
       }
     </app-empty-state>
   </div>
 } @else {
   <div class="departments-grid">
     @for (dept of departments; track dept.id) {
-      <mat-card class="dept-card clickable" [routerLink]="['/teachers/departments', dept.id]" tabindex="0" role="link" [attr.aria-label]="'عرض القسم ' + dept.name">
+      <mat-card class="dept-card clickable" [routerLink]="['/teachers/departments', dept.id]" tabindex="0" role="link" [attr.aria-label]="'عرض الشعبة ' + dept.name">
         <div class="card-icon"><mat-icon>domain</mat-icon></div>
         <h3>{{ dept.name }}</h3>
         @if (dept.description) {
@@ -41,7 +41,7 @@
         </div>
         <div class="card-footer">
           <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/teachers/departments', dept.id]" (click)="$event.stopPropagation()">
-            عرض القسم
+            عرض الشعبة
             <mat-icon>arrow_back</mat-icon>
           </button>
           @if ('departments.manage' | hasPermission) {

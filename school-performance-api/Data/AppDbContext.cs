@@ -247,6 +247,7 @@ public class AppDbContext : DbContext
             e.HasIndex(x => x.Name).IsUnique();
             e.Property(x => x.Code).HasMaxLength(30);
             e.Property(x => x.Color).HasMaxLength(20);
+            e.HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<ClassSubjectAssignment>(e =>

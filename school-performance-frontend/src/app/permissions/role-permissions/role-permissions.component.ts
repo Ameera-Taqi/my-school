@@ -24,7 +24,7 @@ const MODULE_ICONS: Record<string, string> = {
   'الإدارة العليا': 'admin_panel_settings',
   'لوحة التحكم': 'dashboard',
   'إدارة المدرسة': 'school',
-  'رؤساء الأقسام': 'supervisor_account',
+  'رؤساء الشعب': 'supervisor_account',
   'المعلمين': 'person',
   'النظام والصلاحيات': 'security'
 };

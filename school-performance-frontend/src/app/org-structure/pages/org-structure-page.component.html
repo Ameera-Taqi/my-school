@@ -1,4 +1,4 @@
-<app-page-header title="الهيكل التنظيمي" subtitle="يتحدّث تلقائياً مع بيانات المستخدمين والأدوار والأقسام">
+<app-page-header title="الهيكل التنظيمي" subtitle="يتحدّث تلقائياً مع بيانات المستخدمين والأدوار والشعب">
   <mat-button-toggle-group class="view-toggle" [value]="view" (change)="view = $event.value" hideSingleSelectionIndicator>
     <mat-button-toggle value="chart" matTooltip="مخطط شجري"><mat-icon>account_tree</mat-icon></mat-button-toggle>
     <mat-button-toggle value="list" matTooltip="قائمة بالمستويات"><mat-icon>view_agenda</mat-icon></mat-button-toggle>
@@ -13,7 +13,7 @@
   }
   @if (data) {
     <span class="legend-spacer"></span>
-    <span class="legend-count"><mat-icon>groups</mat-icon> {{ data.totalPeople }} شخص · {{ data.departments.length }} قسم</span>
+    <span class="legend-count"><mat-icon>groups</mat-icon> {{ data.totalPeople }} شخص · {{ data.departments.length }} شعبة</span>
   }
 </div>
 
@@ -24,7 +24,7 @@
     <div class="row"><span class="skeleton dept"></span><span class="skeleton dept"></span><span class="skeleton dept"></span><span class="skeleton dept"></span></div>
   </div>
 } @else if (!data || isEmpty) {
-  <app-empty-state icon="account_tree" title="لا يوجد هيكل بعد" description="أضف مدير المدرسة والأقسام والمعلمين من صفحات المستخدمين والمعلمين ليظهر الهيكل هنا.">
+  <app-empty-state icon="account_tree" title="لا يوجد هيكل بعد" description="أضف مدير المدرسة والشعب والمعلمين من صفحات المستخدمين والمعلمين ليظهر الهيكل هنا.">
     @if ('users.manage' | hasPermission) { <a mat-flat-button color="primary" routerLink="/users"><mat-icon>manage_accounts</mat-icon> المستخدمون</a> }
   </app-empty-state>
 } @else {
@@ -58,56 +58,63 @@
     <!-- Level 3 + 4: departments (head + teachers) -->
     <div class="connector"></div>
     <section class="level level-departments">
-      <div class="level-label">رؤساء الأقسام والمعلمون</div>
-      <div class="departments">
-        @for (dept of data.departments; track dept.id) {
-          <article class="department" [class.inactive]="!dept.active" [class.collapsed]="isCollapsed(dept)">
-            <header class="dept-head" (click)="toggleDepartment(dept)">
-              <mat-icon class="dept-icon">domain</mat-icon>
-              <div class="dept-title">
-                <strong>{{ dept.name }}</strong>
-                <span>{{ dept.teachers.length }} معلم{{ dept.head ? ' · رئيس قسم' : ' · بدون رئيس' }}</span>
-              </div>
-              <a mat-icon-button [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة القسم" (click)="$event.stopPropagation()"><mat-icon>open_in_new</mat-icon></a>
-              <mat-icon class="chevron">expand_more</mat-icon>
-            </header>
-
-            <div class="dept-body">
-              @if (dept.head) {
-                <ng-container *ngTemplateOutlet="personCard; context: { $implicit: dept.head, level: 'head' }"></ng-container>
-              } @else {
-                <div class="node placeholder small"><mat-icon>person_add</mat-icon><span>لا يوجد رئيس قسم</span></div>
-              }
-              @if (dept.teachers.length) {
-                <div class="teachers">
-                  @for (t of dept.teachers; track t.id) {
-                    <ng-container *ngTemplateOutlet="personCard; context: { $implicit: t, level: 'teacher' }"></ng-container>
-                  }
-                </div>
-              } @else {
-                <p class="no-teachers">لا يوجد معلمون في هذا القسم</p>
-              }
-            </div>
-          </article>
-        }
-
-        @if (data.unassignedHeads.length || data.unassignedTeachers.length) {
-          <article class="department unassigned">
-            <header class="dept-head">
-              <mat-icon class="dept-icon">help_outline</mat-icon>
-              <div class="dept-title"><strong>بدون قسم</strong><span>{{ data.unassignedHeads.length + data.unassignedTeachers.length }} شخص</span></div>
-            </header>
-            <div class="dept-body">
-              @for (p of data.unassignedHeads; track p.id) {
-                <ng-container *ngTemplateOutlet="personCard; context: { $implicit: p, level: 'head' }"></ng-container>
-              }
-              <div class="teachers">
-                @for (t of data.unassignedTeachers; track t.id) {
-                  <ng-container *ngTemplateOutlet="personCard; context: { $implicit: t, level: 'teacher' }"></ng-container>
+      <div class="level-label">رؤساء الشعب والمعلمون</div>
+      <div class="departments-area" #deptArea>
+        @for (row of departmentRows; track $index; let i = $index) {
+          <div class="dept-row" [class.collapsed]="isRowCollapsed(i)">
+            <div class="departments" [style.grid-template-columns]="'repeat(' + columns + ', minmax(0, 1fr))'">
+              @for (dept of row; track dept?.id ?? 'unassigned') {
+                @if (dept) {
+                  <article class="department" [class.inactive]="!dept.active">
+                    <header class="dept-head">
+                      <mat-icon class="dept-icon">domain</mat-icon>
+                      <div class="dept-title">
+                        <strong>{{ dept.name }}</strong>
+                        <span>{{ dept.teachers.length }} معلم{{ dept.head ? ' · رئيس شعبة' : ' · بدون رئيس' }}</span>
+                      </div>
+                      <a mat-icon-button [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة الشعبة"><mat-icon>open_in_new</mat-icon></a>
+                    </header>
+                    <div class="dept-body">
+                      @if (dept.head) {
+                        <ng-container *ngTemplateOutlet="personCard; context: { $implicit: dept.head, level: 'head' }"></ng-container>
+                      } @else {
+                        <div class="node placeholder small"><mat-icon>person_add</mat-icon><span>لا يوجد رئيس شعبة</span></div>
+                      }
+                      @if (dept.teachers.length) {
+                        <div class="teachers">
+                          @for (t of dept.teachers; track t.id) {
+                            <ng-container *ngTemplateOutlet="personCard; context: { $implicit: t, level: 'teacher' }"></ng-container>
+                          }
+                        </div>
+                      } @else {
+                        <p class="no-teachers">لا يوجد معلمون في هذه الشعبة</p>
+                      }
+                    </div>
+                  </article>
+                } @else {
+                  <article class="department unassigned">
+                    <header class="dept-head">
+                      <mat-icon class="dept-icon">help_outline</mat-icon>
+                      <div class="dept-title"><strong>بدون شعبة</strong><span>{{ data.unassignedHeads.length + data.unassignedTeachers.length }} شخص</span></div>
+                    </header>
+                    <div class="dept-body">
+                      @for (p of data.unassignedHeads; track p.id) {
+                        <ng-container *ngTemplateOutlet="personCard; context: { $implicit: p, level: 'head' }"></ng-container>
+                      }
+                      <div class="teachers">
+                        @for (t of data.unassignedTeachers; track t.id) {
+                          <ng-container *ngTemplateOutlet="personCard; context: { $implicit: t, level: 'teacher' }"></ng-container>
+                        }
+                      </div>
+                    </div>
+                  </article>
                 }
-              </div>
+              }
             </div>
-          </article>
+            <button mat-icon-button type="button" class="row-toggle" (click)="toggleRow(i)" [attr.aria-expanded]="!isRowCollapsed(i)" [matTooltip]="isRowCollapsed(i) ? 'عرض معلمي هذا السطر' : 'إخفاء معلمي هذا السطر'">
+              <mat-icon class="level-chevron">expand_more</mat-icon>
+            </button>
+          </div>
         }
       </div>
     </section>

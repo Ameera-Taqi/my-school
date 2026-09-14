@@ -21,7 +21,7 @@ public class DepartmentService
         var result = new List<DepartmentDto>();
         foreach (var department in departments)
         {
-            result.Add(EntityMapper.ToDepartmentDto(department, await CountTeachersAsync(department.Id)));
+            result.Add(await ToDtoAsync(department));
         }
         return result;
     }
@@ -29,18 +29,36 @@ public class DepartmentService
     public async Task<DepartmentDto> FindByIdAsync(long id)
     {
         var department = await RequireAsync(id);
-        return EntityMapper.ToDepartmentDto(department, await CountTeachersAsync(id));
+        return await ToDtoAsync(department);
+    }
+
+    /// <summary>Same rules the org chart uses, so both pages always agree.</summary>
+    private async Task<DepartmentDto> ToDtoAsync(Department department)
+    {
+        var dto = EntityMapper.ToDepartmentDto(department, await CountTeachersAsync(department.Id));
+        dto.HeadName = await _db.Teachers
+            .Where(t => t.DepartmentId == department.Id && t.Active
+                        && t.User != null && t.User.Roles.Any(r => r.RoleKey.StartsWith("DEPARTMENT_HEAD")))
+            .OrderBy(t => t.Id)
+            .Select(t => t.FullName)
+            .FirstOrDefaultAsync();
+        dto.Subjects = await _db.Subjects
+            .Where(s => s.DepartmentId == department.Id && s.Active)
+            .OrderBy(s => s.Id)
+            .Select(s => s.Name)
+            .ToListAsync();
+        return dto;
     }
 
     public async Task<DepartmentDto> CreateAsync(DepartmentDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Code))
         {
-            throw new AppException("رمز القسم مطلوب");
+            throw new AppException("رمز الشعبة مطلوب");
         }
         if (await _db.Departments.AnyAsync(d => d.Code == dto.Code))
         {
-            throw new AppException("رمز القسم موجود مسبقاً");
+            throw new AppException("رمز الشعبة موجود مسبقاً");
         }
         var department = new Department
         {
@@ -64,7 +82,7 @@ public class DepartmentService
             department.Active = dto.Active.Value;
         }
         await _db.SaveChangesAsync();
-        return EntityMapper.ToDepartmentDto(department, await CountTeachersAsync(id));
+        return await ToDtoAsync(department);
     }
 
     public async Task DeleteAsync(long id)
@@ -72,7 +90,7 @@ public class DepartmentService
         var department = await RequireAsync(id);
         if (await CountTeachersAsync(id) > 0)
         {
-            throw new AppException("لا يمكن حذف قسم يحتوي على معلمين");
+            throw new AppException("لا يمكن حذف شعبة تحتوي على معلمين");
         }
         _db.Departments.Remove(department);
         await _db.SaveChangesAsync();
@@ -82,5 +100,5 @@ public class DepartmentService
         _db.Teachers.LongCountAsync(t => t.DepartmentId == departmentId);
 
     private async Task<Department> RequireAsync(long id) =>
-        await _db.Departments.FindAsync(id) ?? throw new NotFoundException("القسم غير موجود");
+        await _db.Departments.FindAsync(id) ?? throw new NotFoundException("الشعبة غير موجودة");
 }

@@ -81,12 +81,12 @@ export class ReportMockService {
           generatedAt: now,
           summary: [
             { label: 'عدد المعلمين', value: 32 },
-            { label: 'الأقسام', value: 4 },
+            { label: 'الشعب', value: 4 },
             { label: 'الفترة', value: period }
           ],
           columns: ['fullName', 'department', 'specialization', 'hireDate', 'status'],
           columnLabels: {
-            fullName: 'الاسم', department: 'القسم', specialization: 'التخصص',
+            fullName: 'الاسم', department: 'الشعبة', specialization: 'التخصص',
             hireDate: 'تاريخ التعيين', status: 'الحالة'
           },
           rows: [
