@@ -9,6 +9,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Teacher } from '../../core/models';
 
 export interface TeacherFormDialogData {
@@ -22,7 +23,7 @@ export interface TeacherFormDialogData {
   imports: [
     ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatDialogModule, MatDatepickerModule, MatIconModule, MatSlideToggleModule,
-    MatCheckboxModule
+    MatCheckboxModule, MatTooltipModule
   ],
   template: `
     <h2 mat-dialog-title>{{ data.teacher ? 'تعديل معلم' : 'إضافة معلم' }}</h2>
@@ -64,6 +65,7 @@ export interface TeacherFormDialogData {
           <div class="toggle-row">
             <mat-slide-toggle formControlName="active">نشط</mat-slide-toggle>
             <mat-checkbox class="department-head-check" formControlName="departmentHead">رئيس قسم</mat-checkbox>
+            <mat-checkbox class="department-head-check" formControlName="wingSupervisor" matTooltip="يمنحه قائمة «مشرف الجناح» وصلاحية تسجيل حضور الطلاب">مشرف جناح</mat-checkbox>
           </div>
         </div>
         @if (!data.teacher) {
@@ -105,7 +107,8 @@ export class TeacherFormDialogComponent {
     phone: [''],
     hireDate: [null as Date | null],
     active: [true],
-    departmentHead: [false]
+    departmentHead: [false],
+    wingSupervisor: [false]
   });
 
   constructor() {
@@ -114,7 +117,8 @@ export class TeacherFormDialogComponent {
       this.form.patchValue({
         ...rest,
         hireDate: this.parseDate(hireDate),
-        departmentHead: this.data.teacher.departmentHead ?? this.data.teacher.roleKey?.startsWith('DEPARTMENT_HEAD') === true
+        departmentHead: this.data.teacher.departmentHead ?? this.data.teacher.roleKey?.startsWith('DEPARTMENT_HEAD') === true,
+        wingSupervisor: this.data.teacher.wingSupervisor === true
       });
     }
   }
@@ -134,7 +138,8 @@ export class TeacherFormDialogComponent {
       phone: raw.phone?.trim() || undefined,
       hireDate: raw.hireDate ? this.formatDate(raw.hireDate) : undefined,
       active: raw.active ?? true,
-      departmentHead: raw.departmentHead === true
+      departmentHead: raw.departmentHead === true,
+      wingSupervisor: raw.wingSupervisor === true
     };
     this.dialogRef.close(payload);
   }

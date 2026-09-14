@@ -91,13 +91,18 @@ public static class EntityMapper
         string? roleKey = null;
         string? roleName = null;
         bool? departmentHead = null;
-        var role = user?.Roles.FirstOrDefault();
+        // Base role first (head/teacher); extra roles such as WING_SUPERVISOR are flags, not the main role.
+        var role = user?.Roles.FirstOrDefault(r => r.RoleKey.StartsWith("DEPARTMENT_HEAD"))
+                   ?? user?.Roles.FirstOrDefault(r => r.RoleKey == "TEACHER")
+                   ?? user?.Roles.FirstOrDefault(r => r.RoleKey != "WING_SUPERVISOR")
+                   ?? user?.Roles.FirstOrDefault();
         if (role != null)
         {
             roleKey = role.RoleKey;
             roleName = role.RoleName;
             departmentHead = roleKey.StartsWith("DEPARTMENT_HEAD");
         }
+        var wingSupervisor = user?.Roles.Any(r => r.RoleKey == "WING_SUPERVISOR");
         return new TeacherDto
         {
             Id = teacher.Id,
@@ -111,6 +116,7 @@ public static class EntityMapper
             DepartmentName = teacher.Department?.Name,
             Active = teacher.Active,
             DepartmentHead = departmentHead,
+            WingSupervisor = wingSupervisor,
             RoleKey = roleKey,
             RoleName = roleName,
             Username = user?.Username

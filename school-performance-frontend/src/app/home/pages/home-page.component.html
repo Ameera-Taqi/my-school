@@ -1,0 +1,27 @@
+<div class="home-head">
+  <div>
+    <h1>{{ greeting }}</h1>
+    <p class="home-date"><mat-icon>today</mat-icon> {{ today | appDate }} @if (roleLine) { <span class="sep">·</span> {{ roleLine }} }</p>
+  </div>
+</div>
+
+@if (showStats) {
+  <app-home-stats [stats]="stats" [loading]="loading"></app-home-stats>
+}
+
+@if (showMyDay) {
+  <section class="home-section"><app-home-my-day></app-home-my-day></section>
+}
+
+@if ('calendar.view' | hasPermission) {
+  <section class="home-section"><app-dashboard-calendar></app-dashboard-calendar></section>
+}
+
+@if (showLists) {
+  <section class="home-section"><app-home-lists [stats]="stats"></app-home-lists></section>
+}
+
+<section class="home-section">
+  <h2 class="section-title"><mat-icon>apps</mat-icon> الخدمات المتاحة لك</h2>
+  <app-home-quick-links></app-home-quick-links>
+</section>

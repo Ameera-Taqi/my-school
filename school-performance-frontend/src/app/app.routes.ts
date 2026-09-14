@@ -3,7 +3,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { permissionGuard } from './core/guards/permission.guard';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { LoginComponent } from './auth/login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { HomePageComponent } from './home/pages/home-page.component';
 import { RoleListComponent } from './roles/role-list/role-list.component';
 import { PermissionListComponent } from './permissions/permission-list/permission-list.component';
 import { RolePermissionsComponent } from './permissions/role-permissions/role-permissions.component';
@@ -36,9 +36,7 @@ import { SubjectResultsPageComponent } from './subject-results/pages/subject-res
 import { AcademicNotesPageComponent } from './academic-notes/pages/academic-notes-page.component';
 import { ClassSchedulePageComponent } from './class-schedule/pages/class-schedule-page.component';
 import { SettingsPageComponent } from './settings/pages/settings-page.component';
-import { SectionHomePageComponent } from './section-home/pages/section-home-page.component';
 import { OrgStructurePageComponent } from './org-structure/pages/org-structure-page.component';
-import { HEADS_PERMISSIONS, TEACHERS_PERMISSIONS, SYSTEM_PERMISSIONS } from './core/constants/sidebar.config';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -47,8 +45,13 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent, canActivate: [permissionGuard], data: { permission: 'dashboard.view' } },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      // One home for everyone: its widgets show or hide according to the user's permissions.
+      { path: 'home', component: HomePageComponent },
+      { path: 'dashboard', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'heads-home', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'teachers-home', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'system-home', redirectTo: 'home', pathMatch: 'full' },
 
       { path: 'kpi', component: KpiPageComponent, canActivate: [permissionGuard], data: { permission: 'kpi.view' } },
       { path: 'reports', component: ReportsPageComponent, canActivate: [permissionGuard], data: { permission: 'reports.view' } },
@@ -62,14 +65,13 @@ export const routes: Routes = [
       { path: 'teachers', component: DepartmentsListComponent, canActivate: [permissionGuard], data: { permission: 'teachers.view' } },
       { path: 'teachers/departments/:departmentId', component: DepartmentTeachersComponent, canActivate: [permissionGuard], data: { permission: 'teachers.view' } },
       { path: 'attendance', redirectTo: 'attendance/students', pathMatch: 'full' },
-      { path: 'attendance/students', component: StudentAttendancePageComponent, canActivate: [permissionGuard], data: { permission: 'attendance.view' } },
+      { path: 'attendance/students', component: StudentAttendancePageComponent, canActivate: [permissionGuard], data: { permission: ['attendance.view', 'wing_supervisor.view'] } },
       { path: 'attendance/teachers', component: TeacherAttendancePageComponent, canActivate: [permissionGuard], data: { permission: 'teacher_attendance.view' } },
       { path: 'behavior', component: BehaviorPageComponent, canActivate: [permissionGuard], data: { permission: 'behavior.view' } },
       { path: 'internal-requests', component: InternalRequestsPageComponent, canActivate: [permissionGuard], data: { permission: 'internal_requests.view' } },
       { path: 'alerts', component: AlertsPageComponent, canActivate: [permissionGuard], data: { permission: 'alerts.view' } },
 
       { path: 'teacher-monitoring', component: TeacherMonitoringPageComponent, canActivate: [permissionGuard], data: { permission: 'teacher_monitoring.view' } },
-      { path: 'heads-home', component: SectionHomePageComponent, canActivate: [permissionGuard], data: { permission: HEADS_PERMISSIONS, sectionTitleKey: 'section.heads' } },
       { path: 'lesson-plans', component: LessonPlansPageComponent, canActivate: [permissionGuard], data: { permission: 'lesson_plans.view' } },
       { path: 'class-schedule', component: ClassSchedulePageComponent, canActivate: [permissionGuard], data: { permission: 'class_schedule.view' } },
       { path: 'subject-results', component: SubjectResultsPageComponent, canActivate: [permissionGuard], data: { permission: 'subject_results.view' } },
@@ -77,7 +79,6 @@ export const routes: Routes = [
       { path: 'resource-bank', component: ResourceBankPageComponent, canActivate: [permissionGuard], data: { permission: 'resource_bank.view' } },
 
       { path: 'my-classes', component: MyClassesPageComponent, canActivate: [permissionGuard], data: { permission: 'my_classes.view' } },
-      { path: 'teachers-home', component: SectionHomePageComponent, canActivate: [permissionGuard], data: { permission: TEACHERS_PERMISSIONS, sectionTitleKey: 'section.teachers' } },
       { path: 'my-students', component: MyStudentsPageComponent, canActivate: [permissionGuard], data: { permission: 'my_students.view' } },
       { path: 'attendance-record', component: AttendanceRecordPageComponent, canActivate: [permissionGuard], data: { permission: 'attendance_record.view' } },
       { path: 'assignments', component: AssignmentsPageComponent, canActivate: [permissionGuard], data: { permission: 'assignments.view' } },
@@ -85,7 +86,6 @@ export const routes: Routes = [
       { path: 'notes', component: TeacherNotesPageComponent, canActivate: [permissionGuard], data: { permission: 'notes.view' } },
 
       { path: 'users', component: UsersPageComponent, canActivate: [permissionGuard], data: { permission: 'users.view' } },
-      { path: 'system-home', component: SectionHomePageComponent, canActivate: [permissionGuard], data: { permission: SYSTEM_PERMISSIONS, sectionTitleKey: 'section.system' } },
       { path: 'roles', component: RoleListComponent, canActivate: [permissionGuard], data: { permission: 'roles.view' } },
       { path: 'permissions', component: PermissionListComponent, canActivate: [permissionGuard], data: { permission: 'permissions.view' } },
       { path: 'role-permissions', component: RolePermissionsComponent, canActivate: [permissionGuard], data: { permission: 'role_permissions.manage' } },
@@ -93,5 +93,5 @@ export const routes: Routes = [
       { path: 'settings', component: SettingsPageComponent, canActivate: [permissionGuard], data: { permission: 'settings.view' } }
     ]
   },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: 'home' }
 ];

@@ -24,6 +24,8 @@ public class LoginResponse
     public string? DepartmentName { get; set; }
     public string? DepartmentCode { get; set; }
     public List<string>? DepartmentSubjects { get; set; }
+    /// <summary>Linked teacher profile id, when the account belongs to a teacher.</summary>
+    public long? TeacherId { get; set; }
 }
 
 public class DepartmentHeadScopeDto

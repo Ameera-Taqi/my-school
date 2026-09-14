@@ -19,9 +19,14 @@ export { HEADS_PERMISSIONS, TEACHERS_PERMISSIONS, SYSTEM_PERMISSIONS };
 
 export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
+    titleKey: 'section.home',
+    items: [
+      { labelKey: 'nav.home', icon: 'home', route: '/home', permission: '*' }
+    ]
+  },
+  {
     titleKey: 'section.executive',
     items: [
-      { labelKey: 'nav.dashboard', icon: 'dashboard', route: '/dashboard', permission: 'dashboard.view' },
       { labelKey: 'nav.kpi', icon: 'analytics', route: '/kpi', permission: 'kpi.view' },
       { labelKey: 'nav.reports', icon: 'assessment', route: '/reports', permission: 'reports.view' },
       { labelKey: 'nav.meetings', icon: 'groups', route: '/meetings', permission: 'meetings.view' },
@@ -43,9 +48,14 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     ]
   },
   {
+    titleKey: 'section.wing',
+    items: [
+      { labelKey: 'nav.attendanceStudents', icon: 'event_available', route: '/attendance/students', permission: 'wing_supervisor.view' }
+    ]
+  },
+  {
     titleKey: 'section.heads',
     items: [
-      { labelKey: 'nav.sectionHome', icon: 'home', route: '/heads-home', permission: HEADS_PERMISSIONS },
       { labelKey: 'nav.teacherMonitoring', icon: 'supervisor_account', route: '/teacher-monitoring', permission: 'teacher_monitoring.view' },
       { labelKey: 'nav.lessonPlans', icon: 'menu_book', route: '/lesson-plans', permission: 'lesson_plans.view' },
       { labelKey: 'nav.subjectResults', icon: 'bar_chart', route: '/subject-results', permission: 'subject_results.view' },
@@ -56,7 +66,6 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     titleKey: 'section.teachers',
     items: [
-      { labelKey: 'nav.sectionHome', icon: 'home', route: '/teachers-home', permission: TEACHERS_PERMISSIONS },
       { labelKey: 'nav.myClasses', icon: 'class', route: '/my-classes', permission: 'my_classes.view' },
       { labelKey: 'nav.myStudents', icon: 'people', route: '/my-students', permission: 'my_students.view' },
       { labelKey: 'nav.attendanceRecord', icon: 'how_to_reg', route: '/attendance-record', permission: 'attendance_record.view' },

@@ -28,7 +28,7 @@ export class TeacherApiService {
     return this.http.delete<void>(`${environment.apiUrl}/teachers/${teacherId}`);
   }
 
-  private sanitize(teacher: Teacher): Omit<Teacher, 'id' | 'departmentId' | 'departmentName' | 'roleKey' | 'username'> {
+  private sanitize(teacher: Teacher): Omit<Teacher, 'id' | 'departmentId' | 'departmentName' | 'roleKey' | 'roleName' | 'username'> {
     return {
       employeeNumber: teacher.employeeNumber,
       fullName: teacher.fullName,
@@ -37,7 +37,8 @@ export class TeacherApiService {
       specialization: teacher.specialization || undefined,
       hireDate: teacher.hireDate || undefined,
       active: teacher.active ?? true,
-      departmentHead: teacher.departmentHead === true
+      departmentHead: teacher.departmentHead === true,
+      wingSupervisor: teacher.wingSupervisor === true
     };
   }
 }

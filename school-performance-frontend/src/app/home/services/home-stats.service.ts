@@ -10,8 +10,9 @@ import { AttendanceApiService } from '../../attendance/services/attendance-api.s
 import { InternalRequestMockService } from '../../internal-requests/services/internal-request-mock.service';
 import { AlertMockService } from '../../alerts/services/alert-mock.service';
 import { AlertItem } from '../../core/models';
+import { AuthService } from '../../core/services/auth.service';
 
-export interface DashboardData extends Omit<DashboardStats, 'attendanceRate'> {
+export interface HomeStats extends Omit<DashboardStats, 'attendanceRate'> {
   /** null when no attendance has been recorded today */
   attendanceRate: number | null;
   attendanceRecorded: number;
@@ -26,7 +27,7 @@ export interface DashboardData extends Omit<DashboardStats, 'attendanceRate'> {
  * are read from the API. Internal requests and alerts still come from demo modules.
  */
 @Injectable({ providedIn: 'root' })
-export class DashboardService {
+export class HomeStatsService {
   private readonly stageApi = inject(AcademicStageApiService);
   private readonly departmentApi = inject(DepartmentApiService);
   private readonly meetings = inject(MeetingApiService);
@@ -34,16 +35,19 @@ export class DashboardService {
   private readonly attendance = inject(AttendanceApiService);
   private readonly requests = inject(InternalRequestMockService);
   private readonly alerts = inject(AlertMockService);
+  private readonly auth = inject(AuthService);
 
-  getStats(): Observable<DashboardData> {
+  getStats(): Observable<HomeStats> {
+    // Only call endpoints the user may access, so limited roles never trigger 403 toasts on the home page.
+    const can = (...keys: string[]) => keys.some(k => this.auth.hasPermission(k));
     return forkJoin({
-      stages: this.stageApi.getAll().pipe(catchError(() => of([]))),
-      departments: this.departmentApi.getAll().pipe(catchError(() => of([]))),
-      meetings: this.meetings.getAll().pipe(catchError(() => of([]))),
-      tasks: this.tasks.getAll().pipe(catchError(() => of([]))),
-      requests: this.requests.getAll().pipe(catchError(() => of([]))),
-      alerts: this.alerts.getAll().pipe(catchError(() => of([]))),
-      attendance: this.attendance.getSummary().pipe(catchError(() => of(null)))
+      stages: can('students.view', 'dashboard.view', 'kpi.view') ? this.stageApi.getAll().pipe(catchError(() => of([]))) : of([]),
+      departments: can('teachers.view', 'departments.view', 'dashboard.view') ? this.departmentApi.getAll().pipe(catchError(() => of([]))) : of([]),
+      meetings: can('meetings.view', 'meetings.create') ? this.meetings.getAll().pipe(catchError(() => of([]))) : of([]),
+      tasks: can('tasks.view', 'tasks.create') ? this.tasks.getAll().pipe(catchError(() => of([]))) : of([]),
+      requests: can('internal_requests.view') ? this.requests.getAll().pipe(catchError(() => of([]))) : of([]),
+      alerts: can('alerts.view') ? this.alerts.getAll().pipe(catchError(() => of([]))) : of([]),
+      attendance: can('dashboard.view', 'attendance.view', 'attendance.manage') ? this.attendance.getSummary().pipe(catchError(() => of(null))) : of(null)
     }).pipe(
       map(({ stages, departments, meetings, tasks, requests, alerts, attendance }) => {
         const studentsCount = stages.reduce((n, s) => n + (s.studentCount ?? 0), 0);

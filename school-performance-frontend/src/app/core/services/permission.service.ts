@@ -17,37 +17,14 @@ export class PermissionService {
     return this.buildVisibleSections();
   }
 
+  /** Every signed-in user lands on the unified home page; its widgets adapt to permissions. */
   getDefaultRoute(): string {
-    const perms = this.authService.permissions();
-    for (const section of SIDEBAR_SECTIONS) {
-      for (const item of section.items) {
-        if (this.hasAnyPermission(item.permission, perms)) {
-          return item.route;
-        }
-      }
-    }
-
-    if (!this.authService.isAuthenticated()) {
-      return '/login';
-    }
-
-    const roles = this.authService.user()?.roles ?? [];
-    if (roles.some(role => role.startsWith('DEPARTMENT_HEAD'))) {
-      return '/heads-home';
-    }
-    if (roles.includes('TEACHER')) {
-      return '/teachers-home';
-    }
-    if (roles.includes('ADMIN') || roles.includes('SCHOOL_MANAGER') || roles.includes('ASSISTANT_MANAGER')) {
-      return '/dashboard';
-    }
-
-    return '/heads-home';
+    return this.authService.isAuthenticated() ? '/home' : '/login';
   }
 
   private hasAnyPermission(permission: string | string[], perms: Set<string>): boolean {
     const required = Array.isArray(permission) ? permission : [permission];
-    return required.some(p => perms.has(p));
+    return required.some(p => p === '*' || perms.has(p));
   }
 
   private buildVisibleSections(): SidebarSection[] {

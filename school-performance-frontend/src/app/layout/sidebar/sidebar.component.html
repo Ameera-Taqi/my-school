@@ -1,5 +1,5 @@
 <nav class="sidebar" [class.mini]="mini" aria-label="القائمة الرئيسية">
-  <a class="sidebar-brand" routerLink="/dashboard" [matTooltip]="mini ? ('sidebar.brand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
+  <a class="sidebar-brand" routerLink="/home" [matTooltip]="mini ? ('sidebar.brand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
     <span class="brand-icon"><mat-icon>school</mat-icon></span>
     <span class="brand-text">{{ 'sidebar.brand' | translate }}</span>
   </a>
@@ -7,11 +7,13 @@
   <div class="sidebar-scroll">
     @for (section of sections; track section.titleKey) {
       <div class="sidebar-section" [class.open]="isOpen(section)" [class.has-active]="containsActive(section)">
+        @if (section.titleKey !== 'section.home') {
         <button type="button" class="section-title" (click)="toggle(section)" [attr.aria-expanded]="isOpen(section)" [disabled]="mini">
           <span class="section-label">{{ section.titleKey | translate }}</span>
           <span class="section-divider"></span>
           <mat-icon class="section-chevron">expand_more</mat-icon>
         </button>
+        }
         <ul [attr.aria-hidden]="!isOpen(section) && !mini">
           @for (item of section.items; track item.route) {
             <li>

@@ -23,6 +23,8 @@ public class TeacherDto
     public string? DepartmentName { get; set; }
     public bool? Active { get; set; }
     public bool? DepartmentHead { get; set; }
+    /// <summary>Extra role WING_SUPERVISOR on the linked account.</summary>
+    public bool? WingSupervisor { get; set; }
     public string? RoleKey { get; set; }
     public string? RoleName { get; set; }
     public string? Username { get; set; }

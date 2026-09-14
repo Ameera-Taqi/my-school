@@ -52,6 +52,7 @@ public class DataSeeder
         await SeedOrgStructurePermissionAsync(); // 14 org chart permission for the executive section
         await SeedSchedulingAsync();             // 15 subjects, class assignments, sample teacher constraints
         await SeedTeacherAttendancePermissionAsync(); // 16 scoped teacher-attendance page permission
+        await SeedWingSupervisorAsync();               // 17 wing supervisor role + permission
         _logger.LogInformation("Database seeding completed");
     }
 
@@ -627,6 +628,28 @@ public class DataSeeder
         {
             await GrantIfMissingAsync(role, permission);
         }
+    }
+
+    // ---- 17. Wing supervisor ---------------------------------------------------------------------------
+
+    private async Task SeedWingSupervisorAsync()
+    {
+        var permission = await EnsurePermissionAsync(new PermissionDef("wing_supervisor.view", "حضور الطلاب (مشرف الجناح)", "مشرف الجناح", "تسجيل ومتابعة حضور الطلاب بصفة مشرف جناح"));
+        var role = await FindRoleAsync("WING_SUPERVISOR");
+        if (role == null)
+        {
+            role = new Role { RoleKey = "WING_SUPERVISOR", RoleName = "مشرف جناح", Description = "معلم مكلّف بالإشراف على جناح وتسجيل حضور طلابه (يُضاف إلى دور المعلم)", Active = true };
+            _db.Roles.Add(role);
+            await _db.SaveChangesAsync();
+        }
+        await GrantIfMissingAsync(role, permission);
+        foreach (var key in new[] { "calendar.view", "calendar.personal.create", "calendar.personal.manage" })
+        {
+            var calendarPermission = await _db.Permissions.FirstOrDefaultAsync(x => x.PermissionKey == key);
+            if (calendarPermission != null) await GrantIfMissingAsync(role, calendarPermission);
+        }
+        var admin = await FindRoleAsync("ADMIN");
+        if (admin != null) await GrantIfMissingAsync(admin, permission);
     }
 
     // ---- helpers ------------------------------------------------------------------------------------

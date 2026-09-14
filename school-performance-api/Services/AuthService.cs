@@ -47,7 +47,8 @@ public class AuthService
             FullName = user.FullName,
             Roles = user.Roles.Select(r => r.RoleKey).ToHashSet(),
             RoleNames = user.Roles.Select(r => r.RoleName).ToList(),
-            Permissions = await _permissionService.GetPermissionsForUserAsync(user)
+            Permissions = await _permissionService.GetPermissionsForUserAsync(user),
+            TeacherId = await _db.Teachers.Where(t => t.UserId == user.Id).Select(t => (long?)t.Id).FirstOrDefaultAsync()
         };
         if (scope != null)
         {

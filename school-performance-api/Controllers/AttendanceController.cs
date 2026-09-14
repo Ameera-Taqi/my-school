@@ -20,7 +20,7 @@ public class AttendanceController : ControllerBase
     }
 
     [HttpGet("students")]
-    [RequirePermission(Perms.AttendanceView, Perms.AttendanceManage, Perms.AttendanceRecordView, Perms.MyClassesView)]
+    [RequirePermission(Perms.AttendanceView, Perms.AttendanceManage, Perms.AttendanceRecordView, Perms.MyClassesView, Perms.WingSupervisorView)]
     public async Task<ActionResult<List<AttendanceRecordDto>>> Students([FromQuery] long classId, [FromQuery] string date)
     {
         if (classId <= 0 || string.IsNullOrWhiteSpace(date)) throw new AppException("الفصل والتاريخ مطلوبان");
@@ -28,7 +28,7 @@ public class AttendanceController : ControllerBase
     }
 
     [HttpPut("students")]
-    [RequirePermission(Perms.AttendanceManage, Perms.AttendanceRecordView)]
+    [RequirePermission(Perms.AttendanceManage, Perms.AttendanceRecordView, Perms.WingSupervisorView)]
     public async Task<IActionResult> SaveStudents([FromBody] List<AttendanceRecordDto> records)
     {
         var user = await _currentUser.RequireUserAsync();

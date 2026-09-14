@@ -62,6 +62,7 @@
               @if (isHead(row)) { <mat-icon class="chip-icon">star</mat-icon> }
               {{ roleLabel(row) }}
             </span>
+            @if (row.wingSupervisor) { <span class="chip warning" matTooltip="مشرف جناح: يسجّل حضور الطلاب"><mat-icon class="chip-icon">meeting_room</mat-icon> مشرف جناح</span> }
           </td>
         </ng-container>
         <ng-container matColumnDef="contact">

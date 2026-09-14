@@ -32,6 +32,8 @@ public static class Perms
     public const string AttendanceManage = "attendance.manage";
     /// <summary>Scoped view of teacher attendance: management sees all, heads their department, teachers themselves.</summary>
     public const string TeacherAttendanceView = "teacher_attendance.view";
+    /// <summary>Wing supervisor: record student attendance for the classes in their wing.</summary>
+    public const string WingSupervisorView = "wing_supervisor.view";
     public const string BehaviorView = "behavior.view";
     public const string BehaviorCreate = "behavior.create";
     public const string InternalRequestsView = "internal_requests.view";
@@ -68,7 +70,7 @@ public static class Perms
 
     /// <summary>Anyone whose screens need stages, classes or students as lookups.</summary>
     public const string AcademicRead = StudentsView + "," + StudentsCreate + "," + StudentsUpdate + "," + StudentsDelete + "," + AcademicStagesView + "," + ClassesView + "," + ClassesCreate + "," + ClassesUpdate + "," + ClassesDelete + ","
-        + AttendanceView + "," + AttendanceManage + "," + AttendanceRecordView + "," + MyClassesView + "," + MyStudentsView + "," + GradesView + "," + AssignmentsView + "," + NotesView + ","
+        + AttendanceView + "," + AttendanceManage + "," + AttendanceRecordView + "," + WingSupervisorView + "," + MyClassesView + "," + MyStudentsView + "," + GradesView + "," + AssignmentsView + "," + NotesView + ","
         + BehaviorView + "," + BehaviorCreate + "," + ClassScheduleView + "," + ClassScheduleManage + "," + SubjectResultsView + "," + AcademicNotesView + "," + KpiView + "," + ReportsView + "," + DashboardView;
 
     /// <summary>Anyone whose screens need departments or teachers as lookups.</summary>

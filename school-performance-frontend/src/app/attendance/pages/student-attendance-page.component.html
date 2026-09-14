@@ -91,7 +91,7 @@
           <ng-container><mat-icon>picture_as_pdf</mat-icon> تصدير PDF</ng-container>
         }
       </button>
-      @if ('attendance.manage' | hasPermission) {
+      @if (('attendance.manage' | hasPermission) || ('wing_supervisor.view' | hasPermission)) {
         <button mat-flat-button color="primary" (click)="saveStudents()">
           <mat-icon>save</mat-icon>
           حفظ الحضور

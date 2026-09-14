@@ -23,6 +23,7 @@ export class SidebarComponent {
   private readonly router = inject(Router);
 
   isOpen(section: SidebarSection): boolean {
+    if (section.titleKey === 'section.home') return true;
     // Never hide the section that contains the current page.
     if (this.containsActive(section)) return true;
     return this.layout.isSectionOpen(section.titleKey);

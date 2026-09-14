@@ -58,6 +58,8 @@ export interface LoginResponse {
   departmentName?: string;
   departmentCode?: string;
   departmentSubjects?: string[];
+  /** linked teacher profile id, when the account belongs to a teacher */
+  teacherId?: number | null;
 }
 
 export interface Student {
@@ -106,6 +108,8 @@ export interface Teacher {
   departmentName?: string;
   active?: boolean;
   departmentHead?: boolean;
+  /** teacher also holds the WING_SUPERVISOR role */
+  wingSupervisor?: boolean;
   roleKey?: string;
   roleName?: string;
   username?: string;

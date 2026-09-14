@@ -50,7 +50,7 @@ public class TeacherService
         Apply(teacher, dto);
         _db.Teachers.Add(teacher);
         await _db.SaveChangesAsync();
-        await SyncUserAccountAsync(teacher, dto.DepartmentHead == true);
+        await SyncUserAccountAsync(teacher, dto.DepartmentHead == true, dto.WingSupervisor);
         await _db.SaveChangesAsync();
         await transaction.CommitAsync();
 
@@ -68,7 +68,7 @@ public class TeacherService
 
         await using var transaction = await _db.Database.BeginTransactionAsync();
         Apply(teacher, dto);
-        await SyncUserAccountAsync(teacher, dto.DepartmentHead == true);
+        await SyncUserAccountAsync(teacher, dto.DepartmentHead == true, dto.WingSupervisor);
         await _db.SaveChangesAsync();
         await transaction.CommitAsync();
 
@@ -96,11 +96,16 @@ public class TeacherService
         }
     }
 
-    private async Task SyncUserAccountAsync(Teacher teacher, bool isHead)
+    /// <summary>
+    /// Keeps the login account in step with the teacher: base role (teacher or department head) is replaced,
+    /// extra roles are preserved, and the wing-supervisor role is added/removed when the flag is provided.
+    /// </summary>
+    private async Task SyncUserAccountAsync(Teacher teacher, bool isHead, bool? wingSupervisor)
     {
         var roleKey = isHead ? "DEPARTMENT_HEAD" : "TEACHER";
         var role = await _db.Roles.FirstOrDefaultAsync(r => r.RoleKey == roleKey)
             ?? throw new NotFoundException("الدور غير موجود");
+        var wingRole = await _db.Roles.FirstOrDefaultAsync(r => r.RoleKey == "WING_SUPERVISOR");
 
         var user = teacher.User;
         if (user == null)
@@ -108,15 +113,26 @@ public class TeacherService
             user = await CreateUserForTeacherAsync(teacher, role);
             teacher.User = user;
             teacher.UserId = user.Id;
-            return;
+        }
+        else
+        {
+            user.FullName = teacher.FullName;
+            user.Email = teacher.Email;
+            user.Phone = teacher.Phone;
+            user.Active = teacher.Active;
+            foreach (var baseRole in user.Roles.Where(r => r.RoleKey == "TEACHER" || r.RoleKey.StartsWith("DEPARTMENT_HEAD")).ToList())
+            {
+                user.Roles.Remove(baseRole);
+            }
+            user.Roles.Add(role);
         }
 
-        user.FullName = teacher.FullName;
-        user.Email = teacher.Email;
-        user.Phone = teacher.Phone;
-        user.Active = teacher.Active;
-        user.Roles.Clear();
-        user.Roles.Add(role);
+        if (wingSupervisor != null && wingRole != null)
+        {
+            var has = user.Roles.Any(r => r.Id == wingRole.Id);
+            if (wingSupervisor == true && !has) user.Roles.Add(wingRole);
+            if (wingSupervisor == false && has) user.Roles.Remove(user.Roles.First(r => r.Id == wingRole.Id));
+        }
     }
 
     private async Task<User> CreateUserForTeacherAsync(Teacher teacher, Role role)

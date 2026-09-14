@@ -71,7 +71,7 @@ export class HeaderComponent {
   }
 
   goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/home']);
   }
 
   logout(): void {
