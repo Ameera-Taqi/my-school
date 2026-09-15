@@ -54,6 +54,7 @@ public class DataSeeder
         await SeedTeacherAttendancePermissionAsync(); // 16 scoped teacher-attendance page permission
         await SeedWingSupervisorAsync();               // 17 wing supervisor role + permission
         await SeedDepartmentSubjectsAsync();          // 18 each department's subjects (created if missing, linked by name)
+        await LocalizeRoleNamesAsync();               // 19 keep role display names Arabic (API RoleName)
         _logger.LogInformation("Database seeding completed");
     }
 
@@ -136,7 +137,7 @@ public class DataSeeder
         }).ToList();
         _db.Permissions.AddRange(permissions);
 
-        var admin = new Role { RoleKey = "ADMIN", RoleName = "Admin", Description = "مدير النظام", Active = true };
+        var admin = new Role { RoleKey = "ADMIN", RoleName = "مدير النظام", Description = "مدير النظام", Active = true };
         _db.Roles.AddRange(
             admin,
             new Role { RoleKey = "SCHOOL_MANAGER", RoleName = "مدير المدرسة", Description = "مدير المدرسة", Active = true },
@@ -755,5 +756,30 @@ public class DataSeeder
                 await _db.SaveChangesAsync();
             }
         }
+    }
+
+    /// <summary>Keep RoleName in Arabic for UI consistency (API previously seeded ADMIN as "Admin").</summary>
+    private async Task LocalizeRoleNamesAsync()
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["ADMIN"] = "مدير النظام",
+            ["SCHOOL_MANAGER"] = "مدير المدرسة",
+            ["ASSISTANT_MANAGER"] = "مدير مساعد",
+            ["DEPARTMENT_HEAD"] = "رئيس شعبة",
+            ["TEACHER"] = "معلم",
+            ["WING_SUPERVISOR"] = "مشرف جناح"
+        };
+
+        var roles = await _db.Roles.ToListAsync();
+        var changed = false;
+        foreach (var role in roles)
+        {
+            if (!map.TryGetValue(role.RoleKey, out var localized)) continue;
+            if (string.Equals(role.RoleName, localized, StringComparison.Ordinal)) continue;
+            role.RoleName = localized;
+            changed = true;
+        }
+        if (changed) await _db.SaveChangesAsync();
     }
 }

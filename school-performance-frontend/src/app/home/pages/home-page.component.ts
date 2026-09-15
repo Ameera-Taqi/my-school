@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageService } from '../../core/services/language.service';
 import { DashboardCalendarComponent } from '../../calendar/dashboard-calendar/dashboard-calendar.component';
 import { HomeStats, HomeStatsService } from '../services/home-stats.service';
 import { HomeStatsComponent } from '../widgets/home-stats.component';
@@ -23,25 +24,34 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 export class HomePageComponent implements OnInit {
   private readonly statsService = inject(HomeStatsService);
   private readonly auth = inject(AuthService);
+  private readonly lang = inject(LanguageService);
 
   readonly today = new Date();
   loading = true;
   stats: HomeStats | null = null;
 
-  get greeting(): string {
-    const h = this.today.getHours();
-    const name = (this.auth.fullName() || '').replace(/^أ\.\s*/, '').split(' ')[0];
-    const salute = h < 12 ? 'صباح الخير' : 'مساء الخير';
-    return name ? `${salute}، ${name}` : salute;
-  }
+  readonly greeting = computed(() => {
+    const h = new Date().getHours();
+    const salute = this.lang.translate(h < 12 ? 'menu.greeting.morning' : 'menu.greeting.evening');
+    const role = this.roleLabel();
+    const raw = (this.auth.fullName() || '').replace(/^أ\.\s*/, '').trim();
+    const first = raw.split(/\s+/).filter(Boolean)[0];
+    const name = first && first !== role ? first : role;
+    const sep = this.lang.isEnglish() ? ', ' : '، ';
+    return name ? `${salute}${sep}${name}` : salute;
+  });
 
-  get roleLine(): string {
+  readonly roleLine = computed(() => {
+    const dept = this.auth.user()?.departmentName ?? '';
+    const role = this.roleLabel();
+    return dept ? `${role} · ${dept}` : role;
+  });
+
+  private roleLabel(): string {
     const u = this.auth.user();
-    const role = u?.roleNames?.[0] ?? '';
-    return u?.departmentName ? `${role} · ${u.departmentName}` : role;
+    return this.lang.roleLabel(u?.roles?.[0], u?.roleNames?.[0]);
   }
 
-  /** Stats widget is worth loading only when at least one card is permitted. */
   get showStats(): boolean {
     return ['students.view', 'teachers.view', 'attendance.view', 'internal_requests.view', 'alerts.view', 'dashboard.view'].some(p => this.auth.hasPermission(p));
   }

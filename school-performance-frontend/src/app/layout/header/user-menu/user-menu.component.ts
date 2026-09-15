@@ -41,16 +41,11 @@ export class UserMenuComponent {
   });
 
   readonly primaryRoleLabel = computed(() => {
-    const roleNames = this.user()?.roleNames ?? [];
-    if (roleNames.length) return roleNames[0];
     const roles = this.user()?.roles ?? [];
-    if (!roles.length) return this.lang.translate('role.default');
-    const roleKey = roles[0];
-    if (roleKey.startsWith('DEPARTMENT_HEAD')) {
-      const label = this.lang.translate(`role.${roleKey}`);
-      return label === `role.${roleKey}` ? this.lang.translate('role.DEPARTMENT_HEAD') : label;
-    }
-    return this.lang.translate(`role.${roleKey}`);
+    const names = this.user()?.roleNames ?? [];
+    if (roles.length) return this.lang.roleLabel(roles[0], names[0]);
+    if (names.length) return this.lang.roleLabel(names[0], names[0]);
+    return this.lang.translate('role.default');
   });
 
   readonly roleLine = computed(() => {
@@ -60,12 +55,14 @@ export class UserMenuComponent {
 
   readonly greetingLine = computed(() => {
     const h = new Date().getHours();
-    const salute = this.lang.isEnglish()
-      ? (h < 12 ? 'Good morning' : 'Good evening')
-      : (h < 12 ? 'صباح الخير' : 'مساء الخير');
-    const name = this.fullName().trim().replace(/^أ\.\s*/, '').split(/\s+/)[0]
-      || this.primaryRoleLabel();
-    return `${salute}، ${name}`;
+    const saluteKey = h < 12 ? 'menu.greeting.morning' : 'menu.greeting.evening';
+    const salute = this.lang.translate(saluteKey);
+    const raw = this.fullName().trim().replace(/^أ\.\s*/, '');
+    const first = raw.split(/\s+/).filter(Boolean)[0];
+    // Prefer a real person name; avoid repeating the role title in the greeting.
+    const name = first && first !== this.primaryRoleLabel() ? first : this.primaryRoleLabel();
+    const sep = this.lang.isEnglish() ? ', ' : '، ';
+    return `${salute}${sep}${name}`;
   });
 
   goToDashboard(): void {

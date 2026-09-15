@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { filter } from 'rxjs';
@@ -12,8 +12,13 @@ import { LayoutService } from '../../shared/services/layout.service';
   selector: 'app-main-layout',
   standalone: true,
   imports: [RouterOutlet, MatSidenavModule, SidebarComponent, HeaderComponent],
+  encapsulation: ViewEncapsulation.None,
   template: `
-    <mat-sidenav-container class="layout" [class.collapsed]="layout.collapsed() && !layout.isMobile()" [hasBackdrop]="layout.isMobile()">
+    <mat-sidenav-container
+      class="layout"
+      [class.collapsed]="layout.collapsed() && !layout.isMobile()"
+      [class.mobile]="layout.isMobile()"
+      [hasBackdrop]="layout.isMobile()">
       <mat-sidenav
         class="layout-sidenav"
         [mode]="layout.sidebarMode()"
@@ -38,18 +43,46 @@ import { LayoutService } from '../../shared/services/layout.service';
       height: 100vh;
       background: var(--sp-bg);
     }
-    .layout-sidenav {
-      width: var(--sp-sidebar-width);
-      border: none;
+
+    .layout-sidenav.mat-drawer,
+    .layout-sidenav.mat-sidenav {
+      width: var(--sp-sidebar-width) !important;
+      border: none !important;
       border-radius: 0 !important;
+      background: transparent !important;
       transition: width 0.2s ease;
-      background: transparent;
     }
+
     .layout-sidenav .mat-drawer-inner-container {
       border-radius: 0 !important;
       overflow: hidden;
+      width: 100%;
     }
-    .layout.collapsed .layout-sidenav { width: var(--sp-sidebar-mini); }
+
+    .layout.collapsed .layout-sidenav.mat-drawer,
+    .layout.collapsed .layout-sidenav.mat-sidenav {
+      width: var(--sp-sidebar-mini) !important;
+    }
+
+    /* Material keeps the open-width margin; force it to follow collapse */
+    .layout:not(.mobile) .main-area.mat-sidenav-content {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-inline-start: var(--sp-sidebar-width) !important;
+      margin-inline-end: 0 !important;
+      transition: margin-inline-start 0.2s ease;
+    }
+
+    .layout.collapsed:not(.mobile) .main-area.mat-sidenav-content {
+      margin-inline-start: var(--sp-sidebar-mini) !important;
+    }
+
+    .layout.mobile .main-area.mat-sidenav-content {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-inline-start: 0 !important;
+    }
+
     .main-area {
       display: flex;
       flex-direction: column;
@@ -57,6 +90,7 @@ import { LayoutService } from '../../shared/services/layout.service';
       overflow: hidden;
       background: var(--sp-bg);
     }
+
     .content {
       flex: 1;
       min-height: 0;
@@ -66,6 +100,7 @@ import { LayoutService } from '../../shared/services/layout.service';
       width: 100%;
       margin: 0 auto;
     }
+
     @media (max-width: 959px) {
       .content { padding: 1rem; }
     }
@@ -80,7 +115,6 @@ export class MainLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.refreshCurrentUser().subscribe();
-    // Close the mobile drawer after navigating.
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.layout.closeDrawer());
   }
 }

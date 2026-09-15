@@ -20,6 +20,16 @@ export class LanguageService {
     return TRANSLATIONS[lang][key] ?? TRANSLATIONS.ar[key] ?? key;
   }
 
+  /** Localized role label from RoleKey; falls back to API name then key. */
+  roleLabel(roleKey: string | null | undefined, fallbackName?: string | null): string {
+    const key = (roleKey ?? '').trim();
+    if (!key) return (fallbackName ?? '').trim();
+    const base = key.startsWith('DEPARTMENT_HEAD') ? 'DEPARTMENT_HEAD' : key;
+    const translated = this.translate(`role.${base}`);
+    if (translated !== `role.${base}`) return translated;
+    return (fallbackName ?? key).trim();
+  }
+
   setLanguage(lang: AppLanguage): void {
     if (this._lang() === lang) return;
     this._lang.set(lang);

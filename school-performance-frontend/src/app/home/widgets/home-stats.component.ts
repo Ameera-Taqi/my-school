@@ -2,16 +2,27 @@ import { Component, Input, OnChanges, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { HomeStats } from '../services/home-stats.service';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
-interface StatCard { icon: string; label: string; value: string; suffix?: string; color: string; bg: string; route: string; permission: string; live: boolean; }
+interface StatCard {
+  icon: string;
+  labelKey: string;
+  value: string;
+  suffix?: string;
+  color: string;
+  bg: string;
+  route: string;
+  permission: string;
+  live: boolean;
+}
 
 /** Key figures. Each card needs its own permission; the widget disappears when none apply. */
 @Component({
   selector: 'app-home-stats',
   standalone: true,
-  imports: [UiIconComponent, RouterLink, MatTooltipModule],
+  imports: [UiIconComponent, RouterLink, MatTooltipModule, TranslatePipe],
   template: `
     @if (loading) {
       <div class="stats-grid">
@@ -21,10 +32,15 @@ interface StatCard { icon: string; label: string; value: string; suffix?: string
       </div>
     } @else if (cards.length) {
       <div class="stats-grid">
-        @for (stat of cards; track stat.label) {
-          <a class="stat-card link" [routerLink]="stat.route" [matTooltip]="'فتح ' + stat.label">
+        @for (stat of cards; track stat.labelKey) {
+          <a class="stat-card link" [routerLink]="stat.route" [matTooltip]="('common.open' | translate) + ' ' + (stat.labelKey | translate)">
             <div class="stat-top">
-              <span class="stat-label">{{ stat.label }} @if (!stat.live) { <span class="demo-tag" matTooltip="بيانات تجريبية حتى ربط هذه الوحدة بقاعدة البيانات">تجريبي</span> }</span>
+              <span class="stat-label">
+                {{ stat.labelKey | translate }}
+                @if (!stat.live) {
+                  <span class="demo-tag" [matTooltip]="'common.demoHint' | translate">{{ 'common.demo' | translate }}</span>
+                }
+              </span>
               <span class="stat-icon" [style.background]="stat.bg" [style.color]="stat.color"><app-ui-icon [name]="stat.icon"></app-ui-icon></span>
             </div>
             <div class="stat-info">
@@ -72,12 +88,18 @@ export class HomeStatsComponent implements OnChanges {
     const d = this.stats;
     if (!d) { this.cards = []; return; }
     const all: StatCard[] = [
-      { icon: 'school', label: 'الطلاب', value: String(d.studentsCount), color: '#4f46e5', bg: '#eef2ff', route: '/students', permission: 'students.view', live: d.live.students },
-      { icon: 'how_to_reg', label: 'المعلمون', value: String(d.teachersCount), color: '#059669', bg: '#ecfdf5', route: '/teachers', permission: 'teachers.view', live: d.live.teachers },
-      { icon: 'menu_book', label: 'الفصول', value: String(d.classesCount), color: '#2563eb', bg: '#eff6ff', route: '/students', permission: 'students.view', live: d.live.classes },
-      { icon: 'event_available', label: d.attendanceRate == null ? 'لم يُسجَّل حضور اليوم' : 'نسبة الحضور اليوم', value: d.attendanceRate == null ? '—' : String(d.attendanceRate), suffix: d.attendanceRate == null ? '' : '%', color: '#d97706', bg: '#fffbeb', route: '/attendance/students', permission: 'attendance.view', live: d.live.attendance },
-      { icon: 'view_kanban', label: 'طلبات مفتوحة', value: String(d.openRequestsCount), color: '#7c3aed', bg: '#f5f3ff', route: '/internal-requests', permission: 'internal_requests.view', live: d.live.requests },
-      { icon: 'notifications', label: 'تنبيهات جديدة', value: String(d.alertsCount), color: '#e11d48', bg: '#fff1f2', route: '/alerts', permission: 'alerts.view', live: d.live.alerts }
+      { icon: 'school', labelKey: 'stats.students', value: String(d.studentsCount), color: '#4f46e5', bg: '#eef2ff', route: '/students', permission: 'students.view', live: d.live.students },
+      { icon: 'how_to_reg', labelKey: 'stats.teachers', value: String(d.teachersCount), color: '#059669', bg: '#ecfdf5', route: '/teachers', permission: 'teachers.view', live: d.live.teachers },
+      { icon: 'menu_book', labelKey: 'stats.classes', value: String(d.classesCount), color: '#2563eb', bg: '#eff6ff', route: '/students', permission: 'students.view', live: d.live.classes },
+      {
+        icon: 'event_available',
+        labelKey: d.attendanceRate == null ? 'stats.attendanceMissing' : 'stats.attendanceRate',
+        value: d.attendanceRate == null ? '—' : String(d.attendanceRate),
+        suffix: d.attendanceRate == null ? '' : '%',
+        color: '#d97706', bg: '#fffbeb', route: '/attendance/students', permission: 'attendance.view', live: d.live.attendance
+      },
+      { icon: 'view_kanban', labelKey: 'stats.openRequests', value: String(d.openRequestsCount), color: '#7c3aed', bg: '#f5f3ff', route: '/internal-requests', permission: 'internal_requests.view', live: d.live.requests },
+      { icon: 'notifications', labelKey: 'stats.newAlerts', value: String(d.alertsCount), color: '#e11d48', bg: '#fff1f2', route: '/alerts', permission: 'alerts.view', live: d.live.alerts }
     ];
     this.cards = all.filter(c => this.auth.hasPermission(c.permission));
   }

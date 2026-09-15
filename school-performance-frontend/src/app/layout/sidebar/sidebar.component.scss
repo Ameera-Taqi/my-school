@@ -26,16 +26,13 @@
   border-radius: 0;
   flex-shrink: 0;
 
-  .brand-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 0;
+  .brand-logo {
+    width: 48px;
+    height: 48px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #6366f1, #a78bfa);
-    .app-ui-icon { font-size: 1.2rem; color: #fff; }
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fff;
   }
 
   .brand-text {
@@ -188,7 +185,7 @@ a {
   .item-label,
   .section-label,
   .section-divider,
-  .section-chevron { display: none; }
+  .section-chevron { display: none !important; }
 
   .sidebar-brand {
     justify-content: center;

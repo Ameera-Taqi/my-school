@@ -21,7 +21,16 @@
 .orb-2 { width: 260px; height: 260px; background: #a78bfa; bottom: -100px; inset-inline-start: -60px; }
 
 .art-content { position: relative; max-width: 460px; }
-.art-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.95; color: #fff; }
+.art-logo {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 1.25rem;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
 .art-content h2 { margin: 0 0 0.75rem; font-size: 1.7rem; line-height: 1.4; font-weight: 800; }
 .art-content p { margin: 0 0 1.5rem; opacity: 0.85; line-height: 1.8; font-size: 1rem; }
 .art-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
@@ -48,11 +57,14 @@
 
 .login-header { text-align: center; margin-bottom: 1.5rem; }
 .logo-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 60px; height: 60px; border-radius: 16px; margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #6366f1, #a78bfa); color: #fff;
-  box-shadow: 0 12px 28px rgba(79, 70, 229, 0.3);
-  .app-ui-icon { font-size: 1.6rem; color: #fff; }
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 16px;
+  margin: 0 auto 0.75rem;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
 }
 h1 { font-size: 1.4rem; margin: 0 0 0.25rem; color: var(--sp-primary); font-weight: 800; }
 .login-header p { color: var(--sp-text-muted); margin: 0; }

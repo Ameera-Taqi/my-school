@@ -5,7 +5,7 @@ import { AppUser } from '../../core/models';
 
 let nextId = 10;
 let MOCK: AppUser[] = [
-  { id: 1, fullName: 'مدير النظام', email: 'admin@school.om', username: 'admin', roleName: 'Admin', active: true },
+  { id: 1, fullName: 'مدير النظام', email: 'admin@school.om', username: 'admin', roleName: 'مدير النظام', active: true },
   { id: 2, fullName: 'محمد السعيدي', email: 'manager@school.om', username: 'manager', roleName: 'مدير المدرسة', active: true },
   { id: 3, fullName: 'سالم الحارثي', email: 'salem@school.om', username: 'salem', roleName: 'رئيس شعبة', active: true },
   { id: 4, fullName: 'مريم الزهراني', email: 'mariam@school.om', username: 'mariam', roleName: 'معلم', active: true }

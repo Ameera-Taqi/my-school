@@ -5,8 +5,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmService } from '../../shared/services/confirm.service';
+import { LanguageService } from '../../core/services/language.service';
 import { CalendarApiService } from '../services/calendar-api.service';
 import { CalendarEventFormDialogComponent } from '../calendar-event-form-dialog/calendar-event-form-dialog.component';
 import { CalendarEventDetailDialogComponent } from '../calendar-event-detail-dialog/calendar-event-detail-dialog.component';
@@ -25,7 +27,7 @@ interface CalendarDay {
 @Component({
   selector: 'app-dashboard-calendar',
   standalone: true,
-  imports: [UiIconComponent, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, HasPermissionPipe, AppDatePipe],
+  imports: [UiIconComponent, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, HasPermissionPipe, AppDatePipe, TranslatePipe],
   templateUrl: './dashboard-calendar.component.html',
   styleUrl: './dashboard-calendar.component.scss'
 })
@@ -34,14 +36,9 @@ export class DashboardCalendarComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly lang = inject(LanguageService);
 
   readonly typeLabels = CALENDAR_EVENT_TYPE_LABELS;
-  readonly weekDays = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
-  readonly monthNames = [
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-  ];
-  readonly weekDaysShort = ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'];
   readonly skeletonCells = Array.from({ length: 35 }, (_, i) => i);
   /** How many event pills a cell shows before collapsing into "+N". */
   readonly maxPills = 2;
@@ -59,15 +56,50 @@ export class DashboardCalendarComponent implements OnInit {
     this.loadEvents();
   }
 
-  get monthLabel(): string {
-    return `${this.monthNames[this.currentMonth]} ${this.currentYear}`;
+  private get locale(): string {
+    return this.lang.current() === 'en' ? 'en-GB' : 'ar-u-nu-latn';
   }
 
-  /** Long label for the selected day: "الثلاثاء 9 سبتمبر 2026". */
+  /** Saturday → Friday (grid uses Sat-first). */
+  get weekDays(): string[] {
+    const base = new Date(2024, 0, 6);
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      return new Intl.DateTimeFormat(this.locale, { weekday: 'long' }).format(d);
+    });
+  }
+
+  get weekDaysShort(): string[] {
+    const base = new Date(2024, 0, 6);
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      return new Intl.DateTimeFormat(this.locale, { weekday: 'narrow' }).format(d);
+    });
+  }
+
+  get monthLabel(): string {
+    return new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric' })
+      .format(new Date(this.currentYear, this.currentMonth, 1));
+  }
+
+  get eventsInMonthLabel(): string {
+    return this.lang.translate('calendar.eventsInMonth')
+      .replace('{count}', String(this.monthEventCount))
+      .replace('{month}', this.monthLabel);
+  }
+
+  /** Long label for the selected day. */
   get selectedDayLabel(): string {
     if (!this.selectedDate) return '';
-    const d = this.parseDate(this.selectedDate);
-    return new Intl.DateTimeFormat('ar-u-nu-latn', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+    return new Intl.DateTimeFormat(this.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+      .format(this.parseDate(this.selectedDate));
+  }
+
+  get selectedWeekday(): string {
+    if (!this.selectedDate) return '';
+    return new Intl.DateTimeFormat(this.locale, { weekday: 'long' }).format(this.parseDate(this.selectedDate));
   }
 
   get isSelectedToday(): boolean {
@@ -116,11 +148,12 @@ export class DashboardCalendarComponent implements OnInit {
   }
 
   dayEventsTitle(date: string): string {
-    return this.eventsForDay(date).map(e => e.title).join('، ');
+    const sep = this.lang.isEnglish() ? ', ' : '، ';
+    return this.eventsForDay(date).map(e => e.title).join(sep);
   }
 
   eventDateRange(ev: CalendarEvent): string {
-    const fmt = (v: string) => new Intl.DateTimeFormat('ar-u-nu-latn', { day: 'numeric', month: 'short' }).format(this.parseDate(v));
+    const fmt = (v: string) => new Intl.DateTimeFormat(this.locale, { day: 'numeric', month: 'short' }).format(this.parseDate(v));
     if (ev.endDate && ev.endDate !== ev.startDate) return `${fmt(ev.startDate)} – ${fmt(ev.endDate)}`;
     return fmt(ev.startDate);
   }
@@ -205,7 +238,7 @@ export class DashboardCalendarComponent implements OnInit {
       if (!result) return;
       this.calendarService.create(result).subscribe({
         next: () => {
-          this.toast.success('تمت إضافة الحدث');
+          this.toast.success(this.lang.translate('calendar.eventAdded'));
           this.loadEvents();
         },
         error: (e) => this.toast.fromError(e)
@@ -241,7 +274,7 @@ export class DashboardCalendarComponent implements OnInit {
       if (!result?.id) return;
       this.calendarService.update(result.id, result).subscribe({
         next: () => {
-          this.toast.success('تم تحديث الحدث');
+          this.toast.success(this.lang.translate('calendar.eventUpdated'));
           this.loadEvents();
         },
         error: (e) => this.toast.fromError(e)
@@ -251,10 +284,10 @@ export class DashboardCalendarComponent implements OnInit {
 
   private deleteEvent(event: CalendarEvent): void {
     if (!event.id) return;
-    this.confirm.deleteConfirmed(event.title, 'الحدث').subscribe(() => {
+    this.confirm.deleteConfirmed(event.title, this.lang.translate('calendar.eventNoun')).subscribe(() => {
       this.calendarService.delete(event.id!).subscribe({
         next: () => {
-          this.toast.success('تم حذف الحدث');
+          this.toast.success(this.lang.translate('calendar.eventDeleted'));
           this.loadEvents();
         },
         error: (e) => this.toast.fromError(e)

@@ -4,32 +4,32 @@
     <div class="cal-title">
       <span class="cal-title-icon"><app-ui-icon name="calendar_month"></app-ui-icon></span>
       <div>
-        <h3>التقويم المدرسي</h3>
-        <span class="cal-subtitle">{{ monthEventCount }} حدث في {{ monthLabel }}</span>
+        <h3>{{ 'calendar.title' | translate }}</h3>
+        <span class="cal-subtitle">{{ eventsInMonthLabel }}</span>
       </div>
     </div>
 
     <div class="cal-nav">
-      <button mat-icon-button type="button" (click)="nextMonth()" matTooltip="الشهر التالي" aria-label="الشهر التالي"><app-ui-icon name="chevron_right"></app-ui-icon></button>
+      <button mat-icon-button type="button" (click)="nextMonth()" [matTooltip]="'calendar.nextMonth' | translate" [attr.aria-label]="'calendar.nextMonth' | translate"><app-ui-icon name="chevron_right"></app-ui-icon></button>
       <span class="month-label">{{ monthLabel }}</span>
-      <button mat-icon-button type="button" (click)="prevMonth()" matTooltip="الشهر السابق" aria-label="الشهر السابق"><app-ui-icon name="chevron_left"></app-ui-icon></button>
-      <button mat-stroked-button type="button" class="today-btn" (click)="goToToday()" [disabled]="isCurrentMonthShown && isSelectedToday">اليوم</button>
+      <button mat-icon-button type="button" (click)="prevMonth()" [matTooltip]="'calendar.prevMonth' | translate" [attr.aria-label]="'calendar.prevMonth' | translate"><app-ui-icon name="chevron_left"></app-ui-icon></button>
+      <button mat-stroked-button type="button" class="today-btn" (click)="goToToday()" [disabled]="isCurrentMonthShown && isSelectedToday">{{ 'calendar.today' | translate }}</button>
     </div>
 
     <div class="cal-actions">
       @if ('calendar.personal.create' | hasPermission) {
         <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">
           <app-ui-icon name="add"></app-ui-icon>
-          إضافة حدث
+          {{ 'calendar.addEvent' | translate }}
         </button>
       }
     </div>
   </div>
 
   <div class="legend">
-    <span class="legend-item"><span class="dot public"></span> مدرسي</span>
-    <span class="legend-item"><span class="dot role"></span> اجتماع</span>
-    <span class="legend-item"><span class="dot personal"></span> شخصي</span>
+    <span class="legend-item"><span class="dot public"></span> {{ 'calendar.legend.school' | translate }}</span>
+    <span class="legend-item"><span class="dot role"></span> {{ 'calendar.legend.meeting' | translate }}</span>
+    <span class="legend-item"><span class="dot personal"></span> {{ 'calendar.legend.personal' | translate }}</span>
   </div>
 
   @if (loading) {
@@ -98,19 +98,19 @@
           <div class="agenda-date">
             <span class="agenda-day">{{ selectedDate ? selectedDate.slice(8) : '' }}</span>
             <div class="agenda-text">
-              <strong>{{ isSelectedToday ? 'اليوم' : selectedDayLabel.split(' ')[0] }}</strong>
+              <strong>{{ isSelectedToday ? ('calendar.today' | translate) : selectedWeekday }}</strong>
               <span>{{ selectedDate | appDate }}</span>
             </div>
           </div>
           @if ('calendar.personal.create' | hasPermission) {
-            <button mat-icon-button type="button" matTooltip="إضافة حدث في هذا اليوم" (click)="openAddDialog()"><app-ui-icon name="add_circle"></app-ui-icon></button>
+            <button mat-icon-button type="button" [matTooltip]="'calendar.addEventToday' | translate" (click)="openAddDialog()"><app-ui-icon name="add_circle"></app-ui-icon></button>
           }
         </div>
 
         @if (selectedDayEvents.length === 0) {
           <div class="agenda-empty">
             <app-ui-icon name="event_available"></app-ui-icon>
-            <p>لا توجد أحداث في هذا اليوم</p>
+            <p>{{ 'calendar.emptyDay' | translate }}</p>
           </div>
         } @else {
           <ul class="agenda-list">
@@ -134,7 +134,7 @@
         }
 
         @if (upcomingEvents.length) {
-          <div class="agenda-sub">القادم هذا الشهر</div>
+          <div class="agenda-sub">{{ 'calendar.upcoming' | translate }}</div>
           <ul class="agenda-list compact">
             @for (ev of upcomingEvents; track ev.id) {
               <li>

@@ -1,6 +1,6 @@
-<nav class="sidebar" [class.mini]="mini" aria-label="القائمة الرئيسية">
+<nav class="sidebar" [class.mini]="mini" [attr.aria-label]="'sidebar.mainNav' | translate">
   <a class="sidebar-brand" routerLink="/home" [matTooltip]="mini ? ('sidebar.brand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
-    <span class="brand-icon"><app-ui-icon name="school"></app-ui-icon></span>
+    <img class="brand-logo" src="assets/images/logo.png" width="48" height="48" alt="" />
     <span class="brand-text">
       <span class="brand-title">{{ 'sidebar.brand' | translate }}</span>
       <span class="brand-sub">{{ 'sidebar.brandSub' | translate }}</span>
