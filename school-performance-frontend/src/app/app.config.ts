@@ -9,6 +9,7 @@ import { MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
 import { provideToastr } from 'ngx-toastr';
 import { AppPaginatorIntl } from './shared/services/paginator-intl.service';
 import { AppDirectionality } from './core/services/app-directionality';
+import { SpToastComponent } from './shared/components/sp-toast/sp-toast.component';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -22,14 +23,16 @@ export const appConfig: ApplicationConfig = {
     provideNativeDateAdapter(),
     provideToastr({
       timeOut: 3200,
-      positionClass: 'toast-top-center',
+      positionClass: 'toast-top-right',
       preventDuplicates: true,
       progressBar: true,
       closeButton: true,
       newestOnTop: true,
       maxOpened: 4,
       autoDismiss: true,
-      easeTime: 280
+      easeTime: 280,
+      toastComponent: SpToastComponent,
+      toastClass: 'sp-toast ngx-toastr'
     }),
     AppDirectionality,
     { provide: Directionality, useExisting: AppDirectionality },

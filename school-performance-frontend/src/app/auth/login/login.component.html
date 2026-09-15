@@ -31,11 +31,11 @@
         <p class="m-0 text-[0.92rem] text-muted">أدخل بيانات حسابك للمتابعة</p>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form space-y-5" [class.login-form--shake]="submitted && form.invalid" novalidate>
-        <div class="login-field group/input">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form" [class.login-form--shake]="submitted && form.invalid" novalidate>
+        <div class="login-field" [class.is-invalid]="showError('username')" [class.is-valid]="showValid('username')" [class.is-focused]="focused === 'username'">
           <label class="login-label" for="login-username">اسم المستخدم</label>
           <div class="login-control">
-            <span class="login-control__icon login-control__icon--lead" aria-hidden="true">
+            <span class="login-icon" aria-hidden="true">
               <app-ui-icon name="person"></app-ui-icon>
             </span>
             <input
@@ -46,19 +46,19 @@
               dir="ltr"
               cdkFocusInitial
               class="login-input"
-              placeholder="مثال: a.manager"
-              [class.login-input--invalid]="showError('username')"
-              [class.login-input--valid]="showValid('username')">
+              placeholder="e.g. a.manager"
+              (focus)="focused = 'username'"
+              (blur)="focused = null">
           </div>
           @if (showError('username')) {
             <p class="login-error" role="alert">اسم المستخدم مطلوب</p>
           }
         </div>
 
-        <div class="login-field group/input">
+        <div class="login-field" [class.is-invalid]="showError('password')" [class.is-valid]="showValid('password')" [class.is-focused]="focused === 'password'">
           <label class="login-label" for="login-password">كلمة المرور</label>
           <div class="login-control">
-            <span class="login-control__icon login-control__icon--lead" aria-hidden="true">
+            <span class="login-icon" aria-hidden="true">
               <app-ui-icon name="lock"></app-ui-icon>
             </span>
             <input
@@ -67,13 +67,13 @@
               formControlName="password"
               autocomplete="current-password"
               dir="ltr"
-              class="login-input login-input--with-trail"
-              placeholder="أدخل كلمة المرور"
-              [class.login-input--invalid]="showError('password')"
-              [class.login-input--valid]="showValid('password')">
+              class="login-input"
+              placeholder="Enter your password"
+              (focus)="focused = 'password'"
+              (blur)="focused = null">
             <button
               type="button"
-              class="login-control__icon login-control__icon--trail"
+              class="login-icon login-icon--btn"
               (click)="hidePassword = !hidePassword"
               [attr.aria-label]="hidePassword ? 'إظهار كلمة المرور' : 'إخفاء كلمة المرور'">
               <app-ui-icon [name]="hidePassword ? 'visibility_off' : 'visibility'"></app-ui-icon>
@@ -84,26 +84,27 @@
           }
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-0.5">
-          <label class="login-remember group/check">
+        <div class="login-options">
+          <label class="login-remember">
             <span class="login-remember__box">
-              <input type="checkbox" formControlName="remember" class="peer sr-only" />
+              <input type="checkbox" formControlName="remember" class="sr-only" />
               <span class="login-remember__face" aria-hidden="true"></span>
               <app-ui-icon name="check" class="login-remember__check"></app-ui-icon>
             </span>
             <span class="login-remember__text">تذكر اسم المستخدم</span>
           </label>
-          <span class="login-forgot">نسيت كلمة المرور؟ تواصل مع المدير</span>
         </div>
 
-        <button type="submit" class="login-submit group/btn" [disabled]="loading">
+        <button type="submit" class="login-submit" [disabled]="loading">
           @if (loading) {
             <mat-spinner diameter="22"></mat-spinner>
           } @else {
+            <app-ui-icon name="login"></app-ui-icon>
             <span>تسجيل الدخول</span>
-            <app-ui-icon name="arrow_forward" class="login-submit__arrow"></app-ui-icon>
           }
         </button>
+
+        <p class="login-hint">نسيت كلمة المرور؟ تواصل مع مدير النظام لإعادة تعيينها.</p>
       </form>
     </div>
     <p class="m-0 text-[0.78rem] text-faint max-[899px]:text-white/80">© {{ year }} نظام مؤشر الأداء المدرسي الذكي</p>

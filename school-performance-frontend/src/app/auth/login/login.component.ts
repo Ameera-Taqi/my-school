@@ -27,6 +27,7 @@ export class LoginComponent {
   loading = false;
   hidePassword = true;
   submitted = false;
+  focused: 'username' | 'password' | null = null;
   readonly year = new Date().getFullYear();
 
   form = this.fb.nonNullable.group({

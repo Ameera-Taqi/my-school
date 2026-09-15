@@ -9,19 +9,23 @@ export class ToastService {
   private readonly lang = inject(LanguageService);
 
   success(message: string, title?: string): void {
-    this.toastr.success(message, title ?? '', this.opts(2800));
+    this.toastr.success(message, title ?? this.lang.translate('toast.success'), this.opts(2800));
   }
 
   error(message?: string, title?: string): void {
-    this.toastr.error(message || this.lang.translate('toast.genericError'), title ?? '', this.opts(4500));
+    this.toastr.error(
+      message || this.lang.translate('toast.genericError'),
+      title ?? this.lang.translate('toast.error'),
+      this.opts(4500)
+    );
   }
 
   info(message: string, title?: string): void {
-    this.toastr.info(message, title ?? '', this.opts(3200));
+    this.toastr.info(message, title ?? this.lang.translate('toast.info'), this.opts(3200));
   }
 
   warning(message: string, title?: string): void {
-    this.toastr.warning(message, title ?? '', this.opts(3800));
+    this.toastr.warning(message, title ?? this.lang.translate('toast.warning'), this.opts(3800));
   }
 
   /** Extracts the API error message when present, otherwise a generic one. */
