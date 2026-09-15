@@ -19,16 +19,18 @@ export class AppPaginatorIntl extends MatPaginatorIntl {
   override getRangeLabel = (page: number, pageSize: number, length: number): string => {
     const en = this.lang.current() === 'en';
     if (length === 0 || pageSize === 0) {
-      return en ? `0 of ${length}` : `0 من ${length}`;
+      return en ? `Showing 0 of ${length} entries` : `عرض 0 من ${length} سجل`;
     }
     const start = page * pageSize + 1;
     const end = Math.min((page + 1) * pageSize, length);
-    return en ? `${start} – ${end} of ${length}` : `${start} – ${end} من ${length}`;
+    return en
+      ? `Showing ${start} to ${end} of ${length} entries`
+      : `عرض ${start} إلى ${end} من ${length} سجل`;
   };
 
   private apply(): void {
     const en = this.lang.current() === 'en';
-    this.itemsPerPageLabel = en ? 'Rows per page' : 'عدد الصفوف';
+    this.itemsPerPageLabel = en ? 'Items per page' : 'عدد الصفوف';
     this.nextPageLabel = en ? 'Next page' : 'الصفحة التالية';
     this.previousPageLabel = en ? 'Previous page' : 'الصفحة السابقة';
     this.firstPageLabel = en ? 'First page' : 'الصفحة الأولى';

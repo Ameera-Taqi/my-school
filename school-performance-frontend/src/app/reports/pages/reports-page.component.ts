@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,9 +23,8 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatDatepickerModule, MatTableModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './reports-page.component.html',
-  styleUrl: './reports-page.component.scss'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatDatepickerModule, MatTableModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
+  templateUrl: './reports-page.component.html'
 })
 export class ReportsPageComponent {
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;

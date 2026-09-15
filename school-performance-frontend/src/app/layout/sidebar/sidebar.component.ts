@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, Input, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -10,9 +11,9 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [UiIconComponent, RouterModule, MatTooltipModule, TranslatePipe],
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  imports: [NgClass, UiIconComponent, RouterModule, MatTooltipModule, TranslatePipe],
+  host: { class: 'block h-full' },
+  templateUrl: './sidebar.component.html'
 })
 export class SidebarComponent {
   @Input() sections: SidebarSection[] = [];

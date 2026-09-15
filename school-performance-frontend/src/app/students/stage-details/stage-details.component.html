@@ -20,14 +20,14 @@
 }
 
 @if (loading) {
-  <div class="classes-grid" aria-busy="true">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4" aria-busy="true">
     @for (i of skeletonCards; track i) {
-      <mat-card class="class-card skeleton-card">
-        <span class="skeleton sk-title"></span>
-        <span class="skeleton sk-line"></span>
-        <span class="skeleton sk-line short"></span>
-        <span class="skeleton sk-bar"></span>
-        <div class="sk-footer"><span class="skeleton sk-btn"></span><span class="skeleton sk-icon"></span><span class="skeleton sk-icon"></span></div>
+      <mat-card class="flex flex-col px-5 pt-[1.1rem] pb-[0.85rem] pointer-events-none">
+        <span class="skeleton mb-[0.9rem] h-[18px] w-[45%]"></span>
+        <span class="skeleton mb-2 h-3 w-[70%]"></span>
+        <span class="skeleton mb-2 h-3 w-1/2"></span>
+        <span class="skeleton my-[0.4rem] mb-4 h-1.5 w-full rounded-full"></span>
+        <div class="flex items-center gap-2 border-t border-border pt-[0.6rem]"><span class="skeleton me-auto h-9 w-[120px] rounded-lg"></span><span class="skeleton size-8 rounded-full"></span><span class="skeleton size-8 rounded-full"></span></div>
       </mat-card>
     }
   </div>
@@ -40,40 +40,41 @@
     </app-empty-state>
   </div>
 } @else {
-  <div class="classes-grid">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
     @for (cls of classes; track cls.id) {
-      <mat-card class="class-card" [class.clickable]="'students.view' | hasPermission"
+      <mat-card
+        [class]="'flex flex-col px-5 pt-[1.1rem] pb-[0.85rem] transition-[transform,box-shadow,border-color] duration-150' + (('students.view' | hasPermission) ? ' cursor-pointer hover:-translate-y-0.5 hover:border-[#c5cae9] hover:shadow-sp-md focus-visible:-translate-y-0.5 focus-visible:border-[#c5cae9] focus-visible:shadow-sp-md focus-visible:outline-none' : '')"
         [routerLink]="('students.view' | hasPermission) ? ['/students/classes', cls.id] : null"
         [attr.tabindex]="('students.view' | hasPermission) ? 0 : null"
         [attr.role]="('students.view' | hasPermission) ? 'link' : null">
-        <div class="card-head">
-          <span class="class-icon"><app-ui-icon name="class"></app-ui-icon></span>
-          <h3>{{ cls.name }}</h3>
+        <div class="mb-3 flex items-center gap-[0.6rem]">
+          <span class="flex size-[38px] shrink-0 items-center justify-center rounded-[10px] bg-primary-bg text-primary-mid"><app-ui-icon name="class" class="size-[22px] text-[22px]"></app-ui-icon></span>
+          <h3 class="m-0 text-[1.1rem] font-bold text-primary">{{ cls.name }}</h3>
         </div>
-        <div class="class-meta">
-          <span class="chip info"><app-ui-icon name="people" class="chip-icon"></app-ui-icon> {{ cls.studentCount ?? 0 }} طالب</span>
-          <span class="chip neutral"><app-ui-icon name="event_seat" class="chip-icon"></app-ui-icon> الطاقة {{ cls.capacity }}</span>
+        <div class="mb-[0.6rem] flex flex-wrap gap-[0.4rem]">
+          <span class="chip info"><app-ui-icon name="people" class="size-3.5 text-sm"></app-ui-icon> {{ cls.studentCount ?? 0 }} طالب</span>
+          <span class="chip neutral"><app-ui-icon name="event_seat" class="size-3.5 text-sm"></app-ui-icon> الطاقة {{ cls.capacity }}</span>
         </div>
-        <div class="capacity-bar" [matTooltip]="fillPercent(cls) + '% من الطاقة الاستيعابية'">
-          <span [style.width.%]="fillPercent(cls)" [class.full]="fillPercent(cls) >= 100"></span>
+        <div class="h-1.5 overflow-hidden rounded-full bg-[#e9ebf3]" [matTooltip]="fillPercent(cls) + '% من الطاقة الاستيعابية'">
+          <span class="block h-full rounded-full transition-[width] duration-400" [class.bg-primary-mid]="fillPercent(cls) < 100" [class.bg-danger]="fillPercent(cls) >= 100" [style.width.%]="fillPercent(cls)"></span>
         </div>
         @if (cls.notes) {
-          <p class="notes">{{ cls.notes }}</p>
+          <p class="mt-[0.65rem] mb-0 text-[0.85rem] leading-relaxed text-muted">{{ cls.notes }}</p>
         }
-        <div class="card-footer">
+        <div class="mt-4 flex items-center gap-2 border-t border-border pt-[0.6rem]">
           @if ('students.view' | hasPermission) {
             <button mat-flat-button color="primary" [routerLink]="['/students/classes', cls.id]" (click)="$event.stopPropagation()">
               <app-ui-icon name="people"></app-ui-icon>
               عرض الطلاب
             </button>
           }
-          <span class="spacer"></span>
+          <span class="flex-1"></span>
           <div class="row-actions">
             @if ('classes.update' | hasPermission) {
-              <button mat-icon-button matTooltip="تعديل" (click)="openClassDialog(cls); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
+              <button type="button" class="btn-action btn-action--edit" (click)="openClassDialog(cls); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon> تعديل</button>
             }
             @if ('classes.delete' | hasPermission) {
-              <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteClass(cls); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon></button>
+              <button type="button" class="btn-action btn-action--delete" (click)="deleteClass(cls); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
             }
           </div>
         </div>

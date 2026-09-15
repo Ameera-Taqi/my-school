@@ -14,15 +14,15 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل صلاحية' : 'إضافة صلاحية' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>مفتاح الصلاحية (permissionKey)</mat-label>
           <input matInput formControlName="permissionKey" placeholder="students.view" [readonly]="!!data" cdkFocusInitial autocomplete="off" dir="ltr">
           <app-ui-icon name="key" matSuffix></app-ui-icon>
           <mat-error>مفتاح الصلاحية مطلوب</mat-error>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>اسم الصلاحية</mat-label>
             <input matInput formControlName="permissionName" placeholder="عرض الطلاب" autocomplete="off">
@@ -34,11 +34,11 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>اسم الوحدة مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الوصف</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
         </mat-form-field>
-        <mat-slide-toggle formControlName="active" class="active-toggle">نشط</mat-slide-toggle>
+        <mat-slide-toggle formControlName="active" class="mt-2 mb-1">نشط</mat-slide-toggle>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -47,15 +47,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الصلاحية' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    .active-toggle { margin: 0.5rem 0 0.25rem; }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class PermissionFormDialogComponent {
   readonly data: Permission | null = inject(MAT_DIALOG_DATA);

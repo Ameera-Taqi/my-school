@@ -1,13 +1,13 @@
 <app-page-header title="الطلاب" subtitle="اختر المرحلة الدراسية لعرض الفصول والطلاب"></app-page-header>
 
 @if (loading) {
-  <div class="stages-grid" aria-busy="true">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5" aria-busy="true">
     @for (i of skeletonCards; track i) {
-      <mat-card class="stage-card skeleton-card">
-        <span class="skeleton sk-icon"></span>
-        <span class="skeleton sk-title"></span>
-        <div class="sk-stats"><span class="skeleton sk-chip"></span><span class="skeleton sk-chip"></span></div>
-        <span class="skeleton sk-btn"></span>
+      <mat-card class="flex flex-col items-center px-5 pt-6 pb-5 text-center pointer-events-none">
+        <span class="skeleton size-16 rounded-[18px]"></span>
+        <span class="skeleton mt-4 mb-3 h-[18px] w-[55%]"></span>
+        <div class="mb-[1.1rem] flex gap-[0.4rem]"><span class="skeleton h-5 w-16 rounded-full"></span><span class="skeleton h-5 w-16 rounded-full"></span></div>
+        <span class="skeleton mt-auto h-10 w-full rounded-lg"></span>
       </mat-card>
     }
   </div>
@@ -16,16 +16,16 @@
     <app-empty-state icon="school" title="لا توجد مراحل دراسية" description="لم تُضف أي مرحلة دراسية بعد. أضف المراحل من قاعدة البيانات لتظهر هنا."></app-empty-state>
   </div>
 } @else {
-  <div class="stages-grid">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5">
     @for (stage of stages; track stage.id) {
-      <mat-card class="stage-card clickable" [routerLink]="['/students/stages', stage.id]" tabindex="0" role="link" [attr.aria-label]="'عرض المرحلة ' + stage.name">
-        <div class="card-icon"><app-ui-icon name="school"></app-ui-icon></div>
-        <h3>{{ stage.name }}</h3>
-        <div class="stats">
-          <span class="chip neutral"><app-ui-icon name="class" class="chip-icon"></app-ui-icon> {{ stage.classCount ?? 0 }} فصل</span>
-          <span class="chip info"><app-ui-icon name="people" class="chip-icon"></app-ui-icon> {{ stage.studentCount ?? 0 }} طالب</span>
+      <mat-card class="flex cursor-pointer flex-col items-center px-5 pt-6 pb-5 text-center transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-0.5 hover:border-[#c5cae9] hover:shadow-sp-md focus-visible:-translate-y-0.5 focus-visible:border-[#c5cae9] focus-visible:shadow-sp-md focus-visible:outline-none" [routerLink]="['/students/stages', stage.id]" tabindex="0" role="link" [attr.aria-label]="'عرض المرحلة ' + stage.name">
+        <div class="flex size-16 items-center justify-center rounded-[18px] bg-primary-bg text-primary-mid"><app-ui-icon name="school" class="size-[34px] text-[34px]"></app-ui-icon></div>
+        <h3 class="mt-[0.85rem] mb-1 text-[1.15rem] font-bold text-primary">{{ stage.name }}</h3>
+        <div class="my-2 mb-[1.1rem] flex flex-wrap justify-center gap-[0.4rem]">
+          <span class="chip neutral"><app-ui-icon name="class" class="size-3.5 text-sm"></app-ui-icon> {{ stage.classCount ?? 0 }} فصل</span>
+          <span class="chip info"><app-ui-icon name="people" class="size-3.5 text-sm"></app-ui-icon> {{ stage.studentCount ?? 0 }} طالب</span>
         </div>
-        <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/students/stages', stage.id]" (click)="$event.stopPropagation()">
+        <button mat-flat-button color="primary" class="mt-auto w-full" [routerLink]="['/students/stages', stage.id]" (click)="$event.stopPropagation()">
           <app-ui-icon name="chevron_left"></app-ui-icon>
           عرض المرحلة
         </button>

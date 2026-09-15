@@ -24,8 +24,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-tasks-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
-  templateUrl: './tasks-page.component.html',
-  styleUrl: './tasks-page.component.scss'
+  templateUrl: './tasks-page.component.html'
 })
 export class TasksPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(TaskApiService);

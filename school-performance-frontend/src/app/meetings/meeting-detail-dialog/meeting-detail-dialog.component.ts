@@ -18,61 +18,63 @@ export interface MeetingDetailDialogData {
   standalone: true,
   imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatDividerModule, AppDatePipe],
   template: `
-    <div class="dialog-header">
-      <div class="header-icon"><app-ui-icon name="groups"></app-ui-icon></div>
-      <div class="header-text">
-        <h2 mat-dialog-title>{{ data.meeting.title }}</h2>
-        <p class="subtitle">
+    <div class="flex items-center gap-[0.9rem] px-6 pt-5">
+      <div class="flex size-12 shrink-0 items-center justify-center rounded-sp-sm bg-primary-light text-primary">
+        <app-ui-icon name="groups" class="size-7 text-[28px]"></app-ui-icon>
+      </div>
+      <div class="min-w-0">
+        <h2 mat-dialog-title class="!m-0 !p-0 text-[1.2rem] font-bold text-primary">{{ data.meeting.title }}</h2>
+        <p class="mt-1 mb-0 flex flex-wrap items-center gap-2 text-[0.85rem] text-muted">
           {{ data.meeting.meetingDate | appDate:'withTime' }}
           @if (isUpcoming) { <span class="chip info">قادم</span> } @else { <span class="chip neutral">منتهٍ</span> }
         </p>
       </div>
     </div>
 
-    <mat-dialog-content class="detail-content">
-      <div class="info-grid">
-        <div class="info-item">
-          <app-ui-icon name="event"></app-ui-icon>
+    <mat-dialog-content class="max-w-[560px] min-w-0 pt-2">
+      <div class="mb-4 grid gap-[0.6rem]">
+        <div class="flex items-start gap-3 rounded-sp-sm border border-border bg-primary-bg px-4 py-[0.7rem]">
+          <app-ui-icon name="event" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">التاريخ والوقت</span>
-            <span class="value">{{ data.meeting.meetingDate | appDate:'withTime' }}</span>
+            <span class="mb-[0.15rem] block text-[0.75rem] text-muted">التاريخ والوقت</span>
+            <span class="block leading-normal text-text">{{ data.meeting.meetingDate | appDate:'withTime' }}</span>
           </div>
         </div>
-        <div class="info-item">
-          <app-ui-icon name="badge"></app-ui-icon>
+        <div class="flex items-start gap-3 rounded-sp-sm border border-border bg-primary-bg px-4 py-[0.7rem]">
+          <app-ui-icon name="badge" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">الأدوار المستهدفة</span>
-            <span class="value">{{ formatRoleLabels(data.meeting.targetRoleKeys) }}</span>
+            <span class="mb-[0.15rem] block text-[0.75rem] text-muted">الأدوار المستهدفة</span>
+            <span class="block leading-normal text-text">{{ formatRoleLabels(data.meeting.targetRoleKeys) }}</span>
           </div>
         </div>
-        <div class="info-item">
-          <app-ui-icon name="people"></app-ui-icon>
+        <div class="flex items-start gap-3 rounded-sp-sm border border-border bg-primary-bg px-4 py-[0.7rem]">
+          <app-ui-icon name="people" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">الحضور</span>
-            <span class="value">{{ data.meeting.attendees || '—' }}</span>
+            <span class="mb-[0.15rem] block text-[0.75rem] text-muted">الحضور</span>
+            <span class="block leading-normal text-text">{{ data.meeting.attendees || '—' }}</span>
           </div>
         </div>
       </div>
 
       <mat-divider></mat-divider>
 
-      <section class="detail-section">
-        <h3><app-ui-icon name="list_alt"></app-ui-icon> جدول الأعمال</h3>
-        <p class="section-body">{{ data.meeting.agenda || '—' }}</p>
+      <section class="my-4">
+        <h3 class="mb-2 flex items-center gap-2 text-[0.95rem] text-primary"><app-ui-icon name="list_alt" class="size-5 text-xl"></app-ui-icon> جدول الأعمال</h3>
+        <p class="m-0 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-3 leading-7 whitespace-pre-wrap text-text">{{ data.meeting.agenda || '—' }}</p>
       </section>
 
-      <section class="detail-section highlight">
-        <h3><app-ui-icon name="description"></app-ui-icon> محضر الاجتماع</h3>
-        <p class="section-body">{{ data.meeting.minutes || 'لم يُسجَّل محضر بعد.' }}</p>
+      <section class="my-4">
+        <h3 class="mb-2 flex items-center gap-2 text-[0.95rem] text-primary"><app-ui-icon name="description" class="size-5 text-xl"></app-ui-icon> محضر الاجتماع</h3>
+        <p class="m-0 rounded-sp-sm border border-[#ffe082] bg-[#fff8e1] px-4 py-3 leading-7 whitespace-pre-wrap text-text">{{ data.meeting.minutes || 'لم يُسجَّل محضر بعد.' }}</p>
       </section>
 
-      <section class="detail-section">
-        <h3><app-ui-icon name="task_alt"></app-ui-icon> المهام الناتجة</h3>
-        <p class="section-body">{{ data.meeting.followUpTasks || 'لا توجد مهام ناتجة.' }}</p>
+      <section class="my-4">
+        <h3 class="mb-2 flex items-center gap-2 text-[0.95rem] text-primary"><app-ui-icon name="task_alt" class="size-5 text-xl"></app-ui-icon> المهام الناتجة</h3>
+        <p class="m-0 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-3 leading-7 whitespace-pre-wrap text-text">{{ data.meeting.followUpTasks || 'لا توجد مهام ناتجة.' }}</p>
       </section>
     </mat-dialog-content>
 
-    <mat-dialog-actions align="end">
+    <mat-dialog-actions align="end" class="gap-2 px-6 pt-3 pb-5">
       @if (data.canEdit) {
         <button mat-stroked-button color="primary" type="button" (click)="edit()">
           <app-ui-icon name="edit"></app-ui-icon>
@@ -81,75 +83,7 @@ export interface MeetingDetailDialogData {
       }
       <button mat-flat-button color="primary" type="button" mat-dialog-close>إغلاق</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-header {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-      padding: 1.25rem 1.5rem 0;
-          }
-    .header-icon {
-      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--sp-primary-light); color: var(--sp-primary);
-      app-ui-icon { font-size: 28px; width: 28px; height: 28px; }
-    }
-    .header-text { min-width: 0; }
-    h2[mat-dialog-title] {
-      margin: 0;
-      padding: 0;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--sp-primary);
-    }
-    .subtitle {
-      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
-      margin: 0.25rem 0 0;
-      color: var(--sp-text-muted);
-      font-size: 0.85rem;
-    }
-    .detail-content {
-            min-width: 0;
-      max-width: 560px;
-      padding-top: 0.5rem;
-    }
-    .info-grid { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
-    .info-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.7rem 1rem;
-      background: var(--sp-primary-bg);
-      border: 1px solid var(--sp-border);
-      border-radius: var(--sp-radius-sm);
-    }
-    .info-item app-ui-icon { color: var(--sp-primary-mid); margin-top: 2px; }
-    .label { display: block; font-size: 0.75rem; color: var(--sp-text-muted); margin-bottom: 0.15rem; }
-    .value { display: block; color: var(--sp-text); line-height: 1.5; }
-    .detail-section { margin: 1rem 0; }
-    .detail-section h3 {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0 0 0.5rem;
-      font-size: 0.95rem;
-      color: var(--sp-primary);
-    }
-    .detail-section h3 app-ui-icon { font-size: 20px; width: 20px; height: 20px; }
-    .section-body {
-      margin: 0;
-      padding: 0.75rem 1rem;
-      background: #fafbfe;
-      border-radius: var(--sp-radius-sm);
-      border: 1px solid var(--sp-border);
-      line-height: 1.7;
-      color: var(--sp-text);
-      white-space: pre-wrap;
-    }
-    .detail-section.highlight .section-body { background: #fff8e1; border-color: #ffe082; }
-    mat-dialog-actions { padding: 0.75rem 1.5rem 1.25rem; gap: 0.5rem; }
-  `]
+  `
 })
 export class MeetingDetailDialogComponent implements OnInit {
   readonly data: MeetingDetailDialogData = inject(MAT_DIALOG_DATA);

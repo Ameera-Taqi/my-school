@@ -27,8 +27,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-student-attendance-page',
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
-  templateUrl: './student-attendance-page.component.html',
-  styleUrl: './student-attendance-page.component.scss'
+  templateUrl: './student-attendance-page.component.html'
 })
 export class StudentAttendancePageComponent implements OnInit {
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;

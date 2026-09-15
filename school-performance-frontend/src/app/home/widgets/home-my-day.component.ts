@@ -22,59 +22,65 @@ const DAY_KEYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDA
   selector: 'app-home-my-day',
   standalone: true,
   imports: [UiIconComponent, RouterLink, MatCardModule, MatButtonModule, MatTooltipModule],
+  host: { class: 'block' },
   template: `
-    <div class="my-day">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
       @if (canSchedule) {
-        <mat-card class="day-card">
-          <div class="card-head"><h3><app-ui-icon name="calendar_view_day"></app-ui-icon> حصصي اليوم</h3><a mat-button routerLink="/class-schedule">الجدول</a></div>
-          @if (loading) { <div class="sk"><span class="skeleton line"></span><span class="skeleton line"></span></div> }
-          @else if (isWeekend) { <p class="muted"><app-ui-icon name="weekend"></app-ui-icon> اليوم عطلة نهاية الأسبوع</p> }
-          @else if (!lessons.length) { <p class="muted">لا توجد حصص لك اليوم</p> }
-          @else {
-            <ul class="lessons">
+        <mat-card class="px-5 py-4">
+          <div class="mb-2 flex items-center justify-between">
+            <h3 class="m-0 flex items-center gap-1.5 text-base text-primary"><app-ui-icon name="calendar_view_day" class="size-5 text-[20px]"></app-ui-icon> حصصي اليوم</h3>
+            <a mat-button routerLink="/class-schedule">الجدول</a>
+          </div>
+          @if (loading) {
+            <div class="flex flex-col gap-2"><span class="skeleton block h-3.5 w-[70%]"></span><span class="skeleton block h-3.5 w-[70%]"></span></div>
+          } @else if (isWeekend) {
+            <p class="my-2 flex items-center gap-[0.35rem] text-[0.9rem] text-muted"><app-ui-icon name="weekend" class="size-[18px] text-[18px]"></app-ui-icon> اليوم عطلة نهاية الأسبوع</p>
+          } @else if (!lessons.length) {
+            <p class="my-2 text-[0.9rem] text-muted">لا توجد حصص لك اليوم</p>
+          } @else {
+            <ul class="m-0 flex list-none flex-col gap-[0.35rem] p-0">
               @for (l of lessons; track l.id) {
-                <li [style.--subj]="l.subjectColor || '#5c6bc0'"><span class="period">{{ l.period }}</span><span class="lesson-text"><strong>{{ l.subject }}</strong><small>فصل {{ l.className }}@if (l.room) { · {{ l.room }} }</small></span></li>
+                <li class="flex items-center gap-[0.6rem] rounded-lg bg-[color-mix(in_srgb,var(--subj)_10%,white)] py-[0.4rem] ps-[0.6rem] pe-[0.6rem] border-s-4" [style.--subj]="l.subjectColor || '#5c6bc0'" [style.border-inline-start-color]="l.subjectColor || '#5c6bc0'">
+                  <span class="inline-flex size-[26px] shrink-0 items-center justify-center rounded-full text-[0.8rem] font-bold text-white" [style.background]="l.subjectColor || '#5c6bc0'">{{ l.period }}</span>
+                  <span class="flex flex-col leading-tight">
+                    <strong class="text-[0.9rem]">{{ l.subject }}</strong>
+                    <small class="text-xs text-muted">فصل {{ l.className }}@if (l.room) { · {{ l.room }} }</small>
+                  </span>
+                </li>
               }
             </ul>
           }
         </mat-card>
       }
       @if (canAttendance) {
-        <mat-card class="day-card">
-          <div class="card-head"><h3><app-ui-icon name="fingerprint"></app-ui-icon> {{ scope?.scope === 'DEPARTMENT' ? 'حضور معلمي الشعبة اليوم' : 'حضوري اليوم' }}</h3><a mat-button routerLink="/attendance/teachers">التفاصيل</a></div>
-          @if (loading) { <div class="sk"><span class="skeleton line"></span><span class="skeleton line"></span></div> }
-          @else if (scope?.scope === 'SELF' && mine) {
-            <div class="self-row">
+        <mat-card class="px-5 py-4">
+          <div class="mb-2 flex items-center justify-between">
+            <h3 class="m-0 flex items-center gap-1.5 text-base text-primary"><app-ui-icon name="fingerprint" class="size-5 text-[20px]"></app-ui-icon> {{ scope?.scope === 'DEPARTMENT' ? 'حضور معلمي الشعبة اليوم' : 'حضوري اليوم' }}</h3>
+            <a mat-button routerLink="/attendance/teachers">التفاصيل</a>
+          </div>
+          @if (loading) {
+            <div class="flex flex-col gap-2"><span class="skeleton block h-3.5 w-[70%]"></span><span class="skeleton block h-3.5 w-[70%]"></span></div>
+          } @else if (scope?.scope === 'SELF' && mine) {
+            <div class="flex flex-wrap items-center gap-3 py-[0.35rem]">
               <span class="chip" [class]="'chip ' + chip(mine.status)">{{ labels[mine.status] || mine.status }}</span>
-              <span class="times"><span matTooltip="وقت الحضور"><app-ui-icon name="login"></app-ui-icon> {{ mine.checkInTime || '—' }}</span><span matTooltip="وقت التواجد"><app-ui-icon name="schedule"></app-ui-icon> {{ mine.presenceTime || '—' }}</span><span matTooltip="وقت الانصراف"><app-ui-icon name="logout"></app-ui-icon> {{ mine.checkOutTime || '—' }}</span></span>
+              <span class="inline-flex gap-[0.9rem] font-variant-numeric:tabular-nums" dir="ltr">
+                <span class="inline-flex items-center gap-1 text-[0.88rem]" matTooltip="وقت الحضور"><app-ui-icon name="login" class="size-4 text-[16px] text-faint"></app-ui-icon> {{ mine.checkInTime || '—' }}</span>
+                <span class="inline-flex items-center gap-1 text-[0.88rem]" matTooltip="وقت التواجد"><app-ui-icon name="schedule" class="size-4 text-[16px] text-faint"></app-ui-icon> {{ mine.presenceTime || '—' }}</span>
+                <span class="inline-flex items-center gap-1 text-[0.88rem]" matTooltip="وقت الانصراف"><app-ui-icon name="logout" class="size-4 text-[16px] text-faint"></app-ui-icon> {{ mine.checkOutTime || '—' }}</span>
+              </span>
             </div>
-          }
-          @else if (scope?.scope === 'DEPARTMENT') {
-            <div class="dept-counts">
+          } @else if (scope?.scope === 'DEPARTMENT') {
+            <div class="flex flex-wrap gap-1.5 py-[0.35rem]">
               <span class="chip success">حاضر {{ count('PRESENT') }}</span><span class="chip warning">متأخر {{ count('LATE') }}</span>
               <span class="chip danger">غائب {{ count('ABSENT') }}</span><span class="chip info">مستأذن {{ count('EXCUSED') }}</span><span class="chip neutral">غير مسجّل {{ count('NOT_RECORDED') }}</span>
             </div>
+          } @else {
+            <p class="my-2 text-[0.9rem] text-muted">لا توجد بيانات</p>
           }
-          @else { <p class="muted">لا توجد بيانات</p> }
         </mat-card>
       }
     </div>
-  `,
-  styles: [`
-    :host { display: block; }
-    .my-day { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
-    .day-card { padding: 1rem 1.25rem; }
-    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; h3 { margin: 0; font-size: 1rem; color: var(--sp-primary); display: flex; align-items: center; gap: 0.4rem; app-ui-icon { font-size: 20px; width: 20px; height: 20px; } } }
-    .muted { color: var(--sp-text-muted); margin: 0.5rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.35rem; app-ui-icon { font-size: 18px; width: 18px; height: 18px; } }
-    .sk { display: flex; flex-direction: column; gap: 0.5rem; .line { height: 14px; width: 70%; display: block; } }
-    .lessons { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
-    .lessons li { --subj: #5c6bc0; display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.6rem; border-radius: 8px; background: color-mix(in srgb, var(--subj) 10%, #fff); border-inline-start: 4px solid var(--subj); }
-    .period { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--subj); color: #fff; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
-    .lesson-text { display: flex; flex-direction: column; line-height: 1.25; strong { font-size: 0.9rem; } small { font-size: 0.75rem; color: var(--sp-text-muted); } }
-    .self-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.35rem 0; }
-    .times { display: inline-flex; gap: 0.9rem; font-variant-numeric: tabular-nums; direction: ltr; span { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.88rem; } app-ui-icon { font-size: 16px; width: 16px; height: 16px; color: var(--sp-text-faint); } }
-    .dept-counts { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.35rem 0; }
-  `]
+  `
 })
 export class HomeMyDayComponent implements OnInit {
   private readonly auth = inject(AuthService);

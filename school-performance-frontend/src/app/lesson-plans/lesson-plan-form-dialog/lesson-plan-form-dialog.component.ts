@@ -14,9 +14,9 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل خطة' : 'خطة درس جديدة' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <div class="two-col">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>المادة</mat-label>
             <input matInput formControlName="subject" cdkFocusInitial autocomplete="off">
@@ -28,7 +28,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>اسم المعلم مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>المرحلة</mat-label>
             <input matInput formControlName="stageName" autocomplete="off">
@@ -40,12 +40,12 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>الفصل مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>عنوان الخطة</mat-label>
           <input matInput formControlName="title" autocomplete="off">
           <mat-error>عنوان الخطة مطلوب</mat-error>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الأسبوع الدراسي</mat-label>
             <input matInput type="number" formControlName="weekNumber">
@@ -61,7 +61,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>الحالة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>ملف مرفق (اختياري)</mat-label>
           <input matInput formControlName="attachmentName" placeholder="اسم الملف" autocomplete="off">
           <app-ui-icon name="attach_file" matSuffix></app-ui-icon>
@@ -72,14 +72,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class LessonPlanFormDialogComponent {
   readonly data: LessonPlan | null = inject(MAT_DIALOG_DATA);

@@ -21,8 +21,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-settings-page',
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTooltipModule, MatSlideToggleModule, MatProgressSpinnerModule, MatDividerModule, PageHeaderComponent],
-  templateUrl: './settings-page.component.html',
-  styleUrl: './settings-page.component.scss'
+  templateUrl: './settings-page.component.html'
 })
 export class SettingsPageComponent implements OnInit {
   private readonly service = inject(SettingsMockService);

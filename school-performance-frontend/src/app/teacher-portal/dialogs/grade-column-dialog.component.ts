@@ -18,13 +18,13 @@ export interface GradeColumnDialogData {
   template: `
     <h2 mat-dialog-title>{{ data.column ? 'تعديل العمود' : 'إضافة عمود درجات' }}</h2>
     <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>عنوان العمود</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off" placeholder="مثال: اختبار قصير، واجب، مشروع">
           <mat-error>عنوان العمود مطلوب</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الدرجة الكاملة</mat-label>
           <input matInput type="number" formControlName="maxScore" min="1">
           <mat-hint>الدرجة out of كم؟</mat-hint>
@@ -37,11 +37,7 @@ export interface GradeColumnDialogData {
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .full-width { width: 100%; }
-  `]
+  `
 })
 export class GradeColumnDialogComponent {
   readonly data: GradeColumnDialogData = inject(MAT_DIALOG_DATA);

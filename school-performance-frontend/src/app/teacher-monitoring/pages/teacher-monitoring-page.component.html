@@ -3,9 +3,9 @@
   [subtitle]="departmentScope.isScoped() ? 'متابعة معلمي ' + departmentScope.departmentName() : 'متابعة أداء المعلمين وتقييم الزيارات الصفية'">
 </app-page-header>
 
-<mat-card class="filters-card">
-  <form [formGroup]="filters" class="filters-form">
-    <mat-form-field appearance="outline" class="filter-field">
+<mat-card class="mb-5 px-5 py-4">
+  <form [formGroup]="filters" class="flex flex-wrap items-end gap-4">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>حالة المتابعة</mat-label>
       <mat-select formControlName="status">
         <mat-option value="">الكل</mat-option>
@@ -14,11 +14,11 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>بحث</mat-label>
       <input matInput formControlName="search" placeholder="اسم المعلم أو المادة">
     </mat-form-field>
-    <div class="filter-actions">
+    <div class="flex flex-wrap items-center gap-2">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
         <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
@@ -35,33 +35,33 @@
 </mat-card>
 
 @if (!loading) {
-  <div class="stats-grid">
-    <mat-card class="stat-card">
-      <app-ui-icon name="groups"></app-ui-icon>
+  <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="groups" class="size-9 text-[36px] text-primary"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.total }}</span>
-        <span class="stat-label">معلمين</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.total }}</span>
+        <span class="text-[0.85rem] text-muted">معلمين</span>
       </div>
     </mat-card>
-    <mat-card class="stat-card">
-      <app-ui-icon name="verified" class="success"></app-ui-icon>
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="verified" class="size-9 text-[36px] text-success"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.excellent }}</span>
-        <span class="stat-label">أداء جيد / ممتاز</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.excellent }}</span>
+        <span class="text-[0.85rem] text-muted">أداء جيد / ممتاز</span>
       </div>
     </mat-card>
-    <mat-card class="stat-card">
-      <app-ui-icon name="warning" class="warning"></app-ui-icon>
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="warning" class="size-9 text-[36px] text-warning"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.needsFollowUp }}</span>
-        <span class="stat-label">يحتاج متابعة</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.needsFollowUp }}</span>
+        <span class="text-[0.85rem] text-muted">يحتاج متابعة</span>
       </div>
     </mat-card>
-    <mat-card class="stat-card">
-      <app-ui-icon name="star"></app-ui-icon>
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="star" class="size-9 text-[36px] text-primary"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.avgScore }}</span>
-        <span class="stat-label">متوسط التقييم / 5</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.avgScore }}</span>
+        <span class="text-[0.85rem] text-muted">متوسط التقييم / 5</span>
       </div>
     </mat-card>
   </div>
@@ -69,7 +69,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <span class="toolbar-title"><app-ui-icon name="fact_check"></app-ui-icon> سجل المتابعة</span>
+    <span class="inline-flex items-center gap-[0.4rem] font-bold text-primary"><app-ui-icon name="fact_check" class="size-5 text-xl"></app-ui-icon> سجل المتابعة</span>
     @if (!loading) {
       <span class="toolbar-count">{{ total }} معلم</span>
     }
@@ -89,9 +89,9 @@
         <ng-container matColumnDef="teacherName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
           <td mat-cell *matCellDef="let r">
-            <div class="name-cell">
-              <span class="avatar">{{ r.teacherName?.replace('أ. ', '')?.charAt(0) }}</span>
-              <span class="name">{{ r.teacherName }}</span>
+            <div class="flex items-center gap-[0.7rem]">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-light font-bold text-primary">{{ r.teacherName?.replace('أ. ', '')?.charAt(0) }}</span>
+              <span class="font-semibold">{{ r.teacherName }}</span>
             </div>
           </td>
         </ng-container>
@@ -106,24 +106,40 @@
         <ng-container matColumnDef="attendanceRate">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>الحضور</th>
           <td mat-cell *matCellDef="let r">
-            <div class="rate-cell">
-              <span class="rate-bar"><span class="rate-fill" [class]="'rate-fill ' + rateClass(r.attendanceRate)" [style.width.%]="r.attendanceRate"></span></span>
-              <span class="rate-value">{{ r.attendanceRate }}%</span>
+            <div class="inline-flex min-w-[120px] items-center gap-2">
+              <span class="h-1.5 min-w-[60px] flex-1 overflow-hidden rounded-full bg-[#e9ebf3]">
+                <span
+                  class="block h-full rounded-[inherit] transition-[width] duration-300"
+                  [class.bg-success]="rateClass(r.attendanceRate) === 'success'"
+                  [class.bg-warning]="rateClass(r.attendanceRate) === 'warning'"
+                  [class.bg-danger]="rateClass(r.attendanceRate) === 'danger'"
+                  [class.bg-primary-mid]="rateClass(r.attendanceRate) !== 'success' && rateClass(r.attendanceRate) !== 'warning' && rateClass(r.attendanceRate) !== 'danger'"
+                  [style.width.%]="r.attendanceRate"></span>
+              </span>
+              <span class="min-w-[38px] text-[0.85rem] tabular-nums">{{ r.attendanceRate }}%</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="lessonPlanRate">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>خطط الدروس</th>
           <td mat-cell *matCellDef="let r">
-            <div class="rate-cell">
-              <span class="rate-bar"><span class="rate-fill" [class]="'rate-fill ' + rateClass(r.lessonPlanRate)" [style.width.%]="r.lessonPlanRate"></span></span>
-              <span class="rate-value">{{ r.lessonPlanRate }}%</span>
+            <div class="inline-flex min-w-[120px] items-center gap-2">
+              <span class="h-1.5 min-w-[60px] flex-1 overflow-hidden rounded-full bg-[#e9ebf3]">
+                <span
+                  class="block h-full rounded-[inherit] transition-[width] duration-300"
+                  [class.bg-success]="rateClass(r.lessonPlanRate) === 'success'"
+                  [class.bg-warning]="rateClass(r.lessonPlanRate) === 'warning'"
+                  [class.bg-danger]="rateClass(r.lessonPlanRate) === 'danger'"
+                  [class.bg-primary-mid]="rateClass(r.lessonPlanRate) !== 'success' && rateClass(r.lessonPlanRate) !== 'warning' && rateClass(r.lessonPlanRate) !== 'danger'"
+                  [style.width.%]="r.lessonPlanRate"></span>
+              </span>
+              <span class="min-w-[38px] text-[0.85rem] tabular-nums">{{ r.lessonPlanRate }}%</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="evaluationScore">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>التقييم</th>
-          <td mat-cell *matCellDef="let r"><strong>{{ r.evaluationScore }}</strong> <span class="muted">/ 5</span></td>
+          <td mat-cell *matCellDef="let r"><strong>{{ r.evaluationScore }}</strong> <span class="text-[0.8rem] text-muted">/ 5</span></td>
         </ng-container>
         <ng-container matColumnDef="lastVisitDate">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>آخر زيارة</th>
@@ -136,8 +152,8 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-          <td mat-cell *matCellDef="let r" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap">
             <div class="row-actions">
               <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
             </div>
@@ -147,6 +163,6 @@
         <tr mat-row *matRowDef="let row; columns: tableCols;" class="clickable" (click)="view(row)"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

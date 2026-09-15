@@ -11,7 +11,7 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "none"
         }
       },
       "root": "",
@@ -41,7 +41,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/material-theme.scss",
+              "src/styles.css",
+              "src/feature-pages.css"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
@@ -117,7 +119,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/material-theme.scss",
+              "src/styles.css",
+              "src/feature-pages.css"
             ],
             "scripts": []
           }

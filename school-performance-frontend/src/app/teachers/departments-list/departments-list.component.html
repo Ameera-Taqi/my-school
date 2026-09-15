@@ -1,56 +1,182 @@
-<app-page-header title="المعلمون" subtitle="اختر الشعبة لعرض وإدارة المعلمين">
-  @if ('departments.manage' | hasPermission) {
-    <button mat-flat-button color="primary" (click)="openDepartmentDialog()">
-      <app-ui-icon name="add"></app-ui-icon>
-      إضافة شعبة
+<app-page-header title="المعلمون" subtitle="عرض جميع المعلمين مع التصفية حسب الشعبة">
+  @if ('teachers.manage' | hasPermission) {
+    <button mat-flat-button color="primary" type="button" (click)="openTeacherDialog()" [disabled]="!departments.length">
+      <app-ui-icon name="person_add"></app-ui-icon>
+      إضافة معلم
     </button>
   }
 </app-page-header>
 
-@if (loading) {
-  <div class="departments-grid" aria-busy="true">
-    @for (i of skeletonCards; track i) {
-      <mat-card class="dept-card skeleton-card">
-        <span class="skeleton sk-icon"></span>
-        <span class="skeleton sk-title"></span>
-        <span class="skeleton sk-line"></span>
-        <span class="skeleton sk-chip"></span>
-        <span class="skeleton sk-btn"></span>
-      </mat-card>
-    }
+<section class="filters-panel" [attr.aria-expanded]="filtersOpen">
+  <div class="filters-panel__head">
+    <div class="filters-panel__title">
+      <span class="filters-panel__icon" aria-hidden="true"><app-ui-icon name="filter_alt"></app-ui-icon></span>
+      الفلاتر
+    </div>
+    <div class="filters-panel__meta">
+      <span class="filters-panel__badge">{{ activeFilterCount }} نشط</span>
+      <button type="button" class="filters-panel__icon-btn" matTooltip="إعادة تعيين" (click)="resetFilters()" [disabled]="!activeFilterCount && !draftQuery && draftDepartment === 'all'">
+        <app-ui-icon name="refresh"></app-ui-icon>
+      </button>
+      <button type="button" class="filters-panel__icon-btn" [attr.aria-label]="filtersOpen ? 'طي الفلاتر' : 'توسيع الفلاتر'" (click)="filtersOpen = !filtersOpen">
+        <app-ui-icon [name]="filtersOpen ? 'expand_less' : 'expand_more'"></app-ui-icon>
+      </button>
+    </div>
   </div>
-} @else if (departments.length === 0) {
-  <div class="data-card">
-    <app-empty-state icon="domain" title="لا توجد شعب بعد" description="أضف أول شعبة ثم أضف المعلمين داخلها.">
-      @if ('departments.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDepartmentDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة أول شعبة</button>
+
+  @if (filtersOpen) {
+    <div class="filters-panel__body">
+      <div class="filters-panel__grid">
+        <label class="filters-panel__field">
+          <span class="filters-panel__label">بحث</span>
+          <input
+            class="filters-panel__control"
+            type="search"
+            [(ngModel)]="draftQuery"
+            placeholder="الاسم، رقم الموظف، التخصص..."
+            autocomplete="off"
+            (keydown.enter)="applyFilters()">
+        </label>
+
+        <label class="filters-panel__field">
+          <span class="filters-panel__label">الشعبة</span>
+          <select class="filters-panel__control" [(ngModel)]="draftDepartment">
+            <option value="all">الكل</option>
+            @for (dept of departments; track dept.id) {
+              <option [ngValue]="dept.id">{{ dept.name }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="filters-panel__actions">
+        <button type="button" class="filters-panel__apply" (click)="applyFilters()">
+          <app-ui-icon name="search"></app-ui-icon>
+          تطبيق
+        </button>
+      </div>
+    </div>
+  }
+</section>
+
+<div class="data-card">
+  <h2 class="data-card__title">المعلمون</h2>
+
+  @if (!loading) {
+    <div class="list-toolbar" style="border-bottom: 0">
+      <span class="toolbar-count">
+        @if (activeFilterCount) {
+          عرض {{ filteredCount }} من {{ total }} معلم
+        } @else {
+          {{ total }} معلم
+        }
+      </span>
+    </div>
+  }
+
+  @if (loading) {
+    <app-table-skeleton [rows]="6" [columns]="7"></app-table-skeleton>
+  } @else if (total === 0) {
+    <app-empty-state icon="person_off" title="لا يوجد معلمون بعد" description="أضف معلماً واربطه بشعبته لبدء إدارة الهيئة التدريسية.">
+      @if ('teachers.manage' | hasPermission) {
+        <button mat-flat-button color="primary" type="button" (click)="openTeacherDialog()" [disabled]="!departments.length">
+          <app-ui-icon name="person_add"></app-ui-icon> إضافة أول معلم
+        </button>
       }
     </app-empty-state>
-  </div>
-} @else {
-  <div class="departments-grid">
-    @for (dept of departments; track dept.id) {
-      <mat-card class="dept-card clickable" [routerLink]="['/teachers/departments', dept.id]" tabindex="0" role="link" [attr.aria-label]="'عرض الشعبة ' + dept.name">
-        <div class="card-icon"><app-ui-icon name="domain"></app-ui-icon></div>
-        <h3>{{ dept.name }}</h3>
-        @if (dept.description) {
-          <p class="description">{{ dept.description }}</p>
-        }
-        <div class="stats">
-          <span class="chip info"><app-ui-icon name="person" class="chip-icon"></app-ui-icon> {{ dept.teacherCount ?? 0 }} معلم</span>
-        </div>
-        <div class="card-footer">
-          <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/teachers/departments', dept.id]" (click)="$event.stopPropagation()">
-            <app-ui-icon name="chevron_left"></app-ui-icon>
-            عرض الشعبة
-          </button>
-          @if ('departments.manage' | hasPermission) {
-            <div class="row-actions">
-              <button mat-icon-button matTooltip="تعديل" (click)="openDepartmentDialog(dept); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
+  } @else if (filteredCount === 0) {
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" description="عدّل الفلاتر ثم اضغط تطبيق." [compact]="true"></app-empty-state>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="fullName" matSortDirection="asc">
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex items-center gap-[0.7rem]">
+              <span [class]="'flex size-9 shrink-0 items-center justify-center rounded-full font-bold ' + (isHead(row) ? 'bg-primary text-white' : 'bg-primary-light text-primary')">
+                {{ row.fullName?.replace('أ. ', '')?.charAt(0) }}
+              </span>
+              <div class="flex min-w-0 flex-col leading-snug">
+                <span class="font-semibold text-text">{{ row.fullName }}</span>
+                <span class="text-[0.78rem] text-muted">
+                  @if (row.username) { <code class="px-1.5 py-px text-[0.72rem]">{{ row.username }}</code> }
+                  @else { بدون حساب دخول }
+                </span>
+              </div>
             </div>
-          }
-        </div>
-      </mat-card>
-    }
-  </div>
-}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="departmentName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الشعبة</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.departmentId) {
+              <a class="font-semibold text-primary-mid no-underline hover:underline" [routerLink]="['/teachers/departments', row.departmentId]" (click)="$event.stopPropagation()">
+                {{ row.departmentName || '—' }}
+              </a>
+            } @else {
+              <span class="text-muted">—</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="employeeNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>رقم الموظف</th>
+          <td mat-cell *matCellDef="let row"><code>{{ row.employeeNumber }}</code></td>
+        </ng-container>
+
+        <ng-container matColumnDef="specialization">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>التخصص</th>
+          <td mat-cell *matCellDef="let row">{{ row.specialization || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>الدور</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class.info]="isHead(row)" [class.neutral]="!isHead(row)">
+              @if (isHead(row)) { <app-ui-icon name="star" class="size-3.5 text-sm"></app-ui-icon> }
+              {{ roleLabel(row) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [class.success]="row.active !== false" [class.danger]="row.active === false">
+              <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
+              {{ row.active === false ? 'غير نشط' : 'نشط' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let row" class="w-px whitespace-nowrap">
+            <div class="row-actions">
+              @if ('teachers.manage' | hasPermission) {
+                <button type="button" class="btn-action btn-action--edit" (click)="openTeacherDialog(row); $event.stopPropagation()">
+                  <app-ui-icon name="edit"></app-ui-icon>
+                  تعديل
+                </button>
+                <button type="button" class="btn-action btn-action--delete" (click)="deleteTeacher(row); $event.stopPropagation()">
+                  <app-ui-icon name="delete"></app-ui-icon>
+                  حذف
+                </button>
+              } @else {
+                <button type="button" class="btn-action btn-action--view" (click)="viewTeacher(row); $event.stopPropagation()">
+                  <app-ui-icon name="visibility"></app-ui-icon>
+                  عرض
+                </button>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable" (click)="viewTeacher(row)"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
+  }
+</div>

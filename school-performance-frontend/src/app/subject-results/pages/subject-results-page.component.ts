@@ -28,8 +28,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-subject-results-page',
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './subject-results-page.component.html',
-  styleUrl: './subject-results-page.component.scss'
+  templateUrl: './subject-results-page.component.html'
 })
 export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(SubjectResultsMockService);

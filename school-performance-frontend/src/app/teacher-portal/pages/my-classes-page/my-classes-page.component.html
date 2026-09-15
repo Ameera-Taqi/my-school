@@ -6,13 +6,13 @@
 </app-page-header>
 
 @if (loading) {
-  <div class="cards-grid">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
     @for (i of skeletonCards; track i) {
-      <div class="class-card skeleton-card">
-        <span class="skeleton s-icon"></span>
-        <div class="s-lines">
-          <span class="skeleton s-line"></span>
-          <span class="skeleton s-line short"></span>
+      <div class="flex min-h-[92px] cursor-default items-center gap-[0.65rem] rounded-sp border border-border bg-surface px-[0.9rem] pt-[0.85rem] pb-2 shadow-sp">
+        <span class="skeleton size-10 shrink-0 rounded-[10px]"></span>
+        <div class="flex flex-1 flex-col gap-2">
+          <span class="skeleton h-3 w-[70%]"></span>
+          <span class="skeleton h-3 w-[45%]"></span>
         </div>
       </div>
     }
@@ -24,34 +24,38 @@
     </app-empty-state>
   </div>
 } @else {
-  <div class="cards-grid">
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
     @for (c of classes; track c.id) {
       <div
-        class="class-card"
+        class="cursor-pointer rounded-sp border border-border bg-surface px-[0.9rem] pt-[0.85rem] pb-2 shadow-sp outline-none transition-[border-color,box-shadow,transform] duration-150 hover:-translate-y-px hover:border-primary-mid hover:shadow-[0_4px_14px_rgba(26,35,126,0.12)] focus-visible:-translate-y-px focus-visible:border-primary-mid focus-visible:shadow-[0_4px_14px_rgba(26,35,126,0.12)]"
         role="button"
         tabindex="0"
-        [class.selected]="selectedClass?.id === c.id"
+        [class.border-primary-mid]="selectedClass?.id === c.id"
+        [class.bg-primary-bg]="selectedClass?.id === c.id"
+        [ngClass]="selectedClass?.id === c.id ? 'shadow-[0_2px_8px_rgba(57,73,171,0.15)]' : ''"
         (click)="selectClass(c)"
         (keydown.enter)="selectClass(c)">
-        <div class="card-body">
-          <span class="card-icon"><app-ui-icon name="class"></app-ui-icon></span>
-          <div class="card-info">
-            <h3>{{ c.name }}</h3>
-            <p class="meta">{{ c.stageName }} · {{ c.studentCount }} طالب</p>
+        <div class="flex items-center gap-[0.65rem]">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary-light text-primary [&_app-ui-icon]:size-6 [&_app-ui-icon]:text-2xl">
+            <app-ui-icon name="class"></app-ui-icon>
+          </span>
+          <div class="min-w-0 flex-1">
+            <h3 class="m-0 text-base font-bold leading-snug text-primary">{{ c.name }}</h3>
+            <p class="mt-[0.15rem] mb-0 text-[0.8rem] leading-snug text-muted">{{ c.stageName }} · {{ c.studentCount }} طالب</p>
           </div>
         </div>
-        <div class="card-footer row-actions">
+        <div class="row-actions mt-2 flex justify-end border-t border-border pt-[0.35rem]">
           <button mat-icon-button matTooltip="كشف الطلاب" (click)="selectClass(c); $event.stopPropagation()"><app-ui-icon name="groups"></app-ui-icon></button>
-          <button mat-icon-button matTooltip="تعديل" (click)="openDialog(c); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
+          <button type="button" class="btn-action btn-action--edit" (click)="openDialog(c); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon> تعديل</button>
         </div>
       </div>
     }
   </div>
 
   @if (selectedClass) {
-    <div class="data-card roster-card">
+    <div class="data-card mt-5">
       <div class="list-toolbar">
-        <span class="toolbar-title"><app-ui-icon name="groups"></app-ui-icon> كشف طلاب فصل {{ selectedClass.name }}</span>
+        <span class="inline-flex items-center gap-[0.4rem] font-bold text-primary [&_app-ui-icon]:size-5 [&_app-ui-icon]:text-[20px]"><app-ui-icon name="groups"></app-ui-icon> كشف طلاب فصل {{ selectedClass.name }}</span>
         @if (!studentsLoading) {
           <span class="toolbar-count">{{ rosterTotal }} طالب</span>
         }
@@ -67,16 +71,16 @@
             <ng-container matColumnDef="fullName">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
               <td mat-cell *matCellDef="let row">
-                <div class="name-cell">
-                  <span class="avatar">{{ row.fullName?.charAt(0) }}</span>
-                  <span class="name">{{ row.fullName }}</span>
+                <div class="flex items-center gap-[0.7rem]">
+                  <span class="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ row.fullName?.charAt(0) }}</span>
+                  <span class="font-semibold">{{ row.fullName }}</span>
                 </div>
               </td>
             </ng-container>
             <ng-container matColumnDef="guardianPhone">
               <th mat-header-cell *matHeaderCellDef>ولي الأمر</th>
               <td mat-cell *matCellDef="let row">
-                @if (row.guardianPhone) { <a class="phone" [href]="'tel:' + row.guardianPhone" dir="ltr">{{ row.guardianPhone }}</a> } @else { — }
+                @if (row.guardianPhone) { <a class="text-text no-underline [font-variant-numeric:tabular-nums] hover:text-primary-mid" [href]="'tel:' + row.guardianPhone" dir="ltr">{{ row.guardianPhone }}</a> } @else { — }
               </td>
             </ng-container>
             <ng-container matColumnDef="status">
@@ -89,7 +93,7 @@
             <tr mat-row *matRowDef="let row; columns: studentCols;"></tr>
           </table>
         </div>
-        <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
       }
     </div>
   }

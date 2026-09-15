@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -22,9 +23,8 @@ import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-grades-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatProgressSpinnerModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
-  templateUrl: './grades-page.component.html',
-  styleUrl: './grades-page.component.scss'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatTableModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatProgressSpinnerModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
+  templateUrl: './grades-page.component.html'
 })
 export class GradesPageComponent implements OnInit {
   private readonly service = inject(TeacherPortalMockService);

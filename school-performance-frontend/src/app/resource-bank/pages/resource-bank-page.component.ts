@@ -24,8 +24,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-resource-bank-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
-  templateUrl: './resource-bank-page.component.html',
-  styleUrl: './resource-bank-page.component.scss'
+  templateUrl: './resource-bank-page.component.html'
 })
 export class ResourceBankPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(ResourceBankMockService);

@@ -16,17 +16,32 @@ export interface OrgPerson {
   active: boolean;
 }
 
+export interface OrgSubject {
+  id: number;
+  name: string;
+  code?: string;
+  color?: string;
+  teachers: OrgPerson[];
+}
+
 export interface OrgDepartment {
   id: number;
   code: string;
   name: string;
   active: boolean;
   head?: OrgPerson | null;
+  subjects: OrgSubject[];
   teachers: OrgPerson[];
+}
+
+export interface OrgAssistantBranch {
+  person: OrgPerson;
+  departments: OrgDepartment[];
 }
 
 export interface OrgStructure {
   managers: OrgPerson[];
+  assistantBranches: OrgAssistantBranch[];
   assistantManagers: OrgPerson[];
   departments: OrgDepartment[];
   unassignedHeads: OrgPerson[];
@@ -35,7 +50,7 @@ export interface OrgStructure {
   generatedAt: string;
 }
 
-/** Live school hierarchy built by the server from users, roles, departments and teachers. */
+/** Live school hierarchy: principal → VPs → departments → subjects → teachers. */
 @Injectable({ providedIn: 'root' })
 export class OrgStructureApiService {
   private readonly http = inject(HttpClient);

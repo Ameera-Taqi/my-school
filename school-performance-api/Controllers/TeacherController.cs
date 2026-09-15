@@ -15,6 +15,11 @@ public class TeacherController : ControllerBase
         _service = service;
     }
 
+    [HttpGet("api/teachers")]
+    [RequirePermission(Perms.StaffRead)]
+    public async Task<ActionResult<List<TeacherDto>>> FindAll() =>
+        Ok(await _service.FindAllAsync());
+
     [HttpGet("api/departments/{departmentId:long}/teachers")]
     [RequirePermission(Perms.StaffRead)]
     public async Task<ActionResult<List<TeacherDto>>> FindByDepartment(long departmentId) =>

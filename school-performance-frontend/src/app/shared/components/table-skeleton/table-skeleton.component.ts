@@ -5,27 +5,23 @@ import { Component, Input } from '@angular/core';
   selector: 'app-table-skeleton',
   standalone: true,
   template: `
-    <div class="skeleton-table" aria-busy="true" aria-live="polite">
+    <div class="py-1" aria-busy="true" aria-live="polite">
       @if (header) {
-        <div class="row header">
-          @for (c of columnsArray; track $index) { <span class="skeleton cell" [style.width.%]="widths[$index % widths.length]"></span> }
+        <div class="flex items-center gap-5 border-b border-border bg-[#f8f9fc] px-5 py-3">
+          @for (c of columnsArray; track $index) {
+            <span class="skeleton h-3 max-w-[220px] flex-1" [style.width.%]="widths[$index % widths.length]"></span>
+          }
         </div>
       }
       @for (r of rowsArray; track $index) {
-        <div class="row">
-          @for (c of columnsArray; track $index) { <span class="skeleton cell" [style.width.%]="widths[($index + r) % widths.length]"></span> }
+        <div class="flex items-center gap-5 border-b border-border px-5 py-[0.9rem] last:border-b-0">
+          @for (c of columnsArray; track $index) {
+            <span class="skeleton h-3.5 max-w-[220px] flex-1" [style.width.%]="widths[($index + r) % widths.length]"></span>
+          }
         </div>
       }
     </div>
-  `,
-  styles: [`
-    .skeleton-table { padding: 0.25rem 0; }
-    .row { display: flex; gap: 1.25rem; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--sp-border); align-items: center; }
-    .row:last-child { border-bottom: none; }
-    .row.header { background: #f8f9fc; padding: 0.75rem 1.25rem; }
-    .cell { height: 14px; flex: 1; max-width: 220px; }
-    .header .cell { height: 12px; }
-  `]
+  `
 })
 export class TableSkeletonComponent {
   @Input() rows = 5;

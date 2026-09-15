@@ -14,24 +14,24 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل دور' : 'إضافة دور' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>مفتاح الدور (Role Key)</mat-label>
           <input matInput formControlName="roleKey" [readonly]="!!data" cdkFocusInitial autocomplete="off" dir="ltr">
           <app-ui-icon name="key" matSuffix></app-ui-icon>
           <mat-error>مفتاح الدور مطلوب</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>اسم الدور</mat-label>
           <input matInput formControlName="roleName" autocomplete="off">
           <mat-error>اسم الدور مطلوب</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الوصف</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
         </mat-form-field>
-        <mat-slide-toggle formControlName="active" class="active-toggle">نشط</mat-slide-toggle>
+        <mat-slide-toggle formControlName="active" class="mt-2 mb-1">نشط</mat-slide-toggle>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -40,13 +40,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الدور' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .full-width { width: 100%; }
-    .active-toggle { margin: 0.5rem 0 0.25rem; }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class RoleFormDialogComponent {
   readonly data: Role | null = inject(MAT_DIALOG_DATA);

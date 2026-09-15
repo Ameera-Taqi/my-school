@@ -1,31 +1,61 @@
-<nav class="sidebar" [class.mini]="mini" [attr.aria-label]="'sidebar.mainNav' | translate">
-  <a class="sidebar-brand" routerLink="/home" [matTooltip]="mini ? ('sidebar.brand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
-    <img class="brand-logo" src="assets/images/logo.png" width="48" height="48" alt="" />
-    <span class="brand-text">
-      <span class="brand-title">{{ 'sidebar.brand' | translate }}</span>
-      <span class="brand-sub">{{ 'sidebar.brandSub' | translate }}</span>
-    </span>
+<nav
+  class="flex h-screen w-full flex-col overflow-hidden rounded-none bg-linear-to-b from-primary via-slate-900 to-slate-950 text-white shadow-[-12px_0_40px_rgba(15,23,42,0.25)]"
+  [class.sidebar-mini]="mini"
+  [attr.aria-label]="'sidebar.mainNav' | translate">
+  <a
+    class="flex min-h-[72px] shrink-0 items-center gap-3 border-b border-white/10 px-[1.1rem] py-[1.15rem] text-[0.95rem] font-extrabold text-white no-underline"
+    [class.justify-center]="mini"
+    [class.px-2]="mini"
+    routerLink="/home"
+    [matTooltip]="mini ? ('sidebar.brand' | translate) : ''"
+    [matTooltipPosition]="tooltipPosition()">
+    <img class="size-12 shrink-0 rounded-[10px] bg-white object-contain" src="assets/images/logo.png" width="48" height="48" alt="" />
+    @if (!mini) {
+      <span class="flex min-w-0 flex-col gap-0.5 leading-tight">
+        <span class="truncate whitespace-nowrap">{{ 'sidebar.brand' | translate }}</span>
+        <span class="text-[0.7rem] font-semibold text-indigo-300">{{ 'sidebar.brandSub' | translate }}</span>
+      </span>
+    }
   </a>
 
-  <div class="sidebar-scroll">
+  <div class="flex-1 overflow-x-hidden overflow-y-auto py-3 [scrollbar-color:rgba(255,255,255,0.2)_transparent] [scrollbar-width:thin]" [class.py-2]="mini">
     @for (section of sections; track section.titleKey) {
-      <div class="sidebar-section" [class.open]="isOpen(section)" [class.has-active]="containsActive(section)">
-        @if (section.titleKey !== 'section.home') {
-        <button type="button" class="section-title" (click)="toggle(section)" [attr.aria-expanded]="isOpen(section)" [disabled]="mini">
-          <span class="section-label">{{ section.titleKey | translate }}</span>
-          <span class="section-divider"></span>
-          <app-ui-icon name="expand_more" class="section-chevron"></app-ui-icon>
-        </button>
+      <div class="py-0.5 pb-1.5">
+        @if (section.titleKey !== 'section.home' && !mini) {
+          <button
+            type="button"
+            class="flex w-full cursor-pointer items-center gap-2 px-[1.1rem] py-[0.4rem] text-[0.68rem] font-bold tracking-widest text-indigo-300/70 uppercase transition-colors hover:text-white/90"
+            [class.text-indigo-200]="containsActive(section)"
+            (click)="toggle(section)"
+            [attr.aria-expanded]="isOpen(section)">
+            <span class="whitespace-nowrap">{{ section.titleKey | translate }}</span>
+            <span class="h-px flex-1 bg-white/10"></span>
+            <app-ui-icon
+              name="expand_more"
+              class="text-[0.85rem] opacity-70 transition-transform duration-200"
+              [class.rotate-180]="isOpen(section)"></app-ui-icon>
+          </button>
         }
-        <ul [attr.aria-hidden]="!isOpen(section) && !mini">
+        <ul
+          class="m-0 flex list-none flex-col p-0"
+          [class.hidden]="!mini && !isOpen(section)"
+          [attr.aria-hidden]="!isOpen(section) && !mini">
           @for (item of section.items; track item.route) {
             <li>
-              <a [routerLink]="item.route" routerLinkActive="active"
-                 [matTooltip]="mini ? (item.labelKey | translate) : ''"
-                 [matTooltipPosition]="tooltipPosition()"
-                 matTooltipShowDelay="200">
-                <app-ui-icon [name]="item.icon"></app-ui-icon>
-                <span class="item-label">{{ item.labelKey | translate }}</span>
+              <a
+                class="sidebar-link relative m-0 flex items-center gap-3 px-[1.1rem] py-[0.7rem] text-[0.875rem] font-semibold no-underline transition-colors"
+                [class.justify-center]="mini"
+                [class.py-3]="mini"
+                [class.px-0]="mini"
+                [routerLink]="item.route"
+                routerLinkActive="active"
+                [matTooltip]="mini ? (item.labelKey | translate) : ''"
+                [matTooltipPosition]="tooltipPosition()"
+                matTooltipShowDelay="200">
+                <app-ui-icon [name]="item.icon" class="shrink-0 text-[1.05rem] opacity-95"></app-ui-icon>
+                @if (!mini) {
+                  <span class="truncate whitespace-nowrap">{{ item.labelKey | translate }}</span>
+                }
               </a>
             </li>
           }
@@ -34,11 +64,21 @@
     }
   </div>
 
-  <button type="button" class="collapse-btn hide-mobile" (click)="layout.toggleCollapsed()"
-          [attr.aria-expanded]="!mini"
-          [matTooltip]="mini ? ('sidebar.expand' | translate) : ('sidebar.collapse' | translate)"
-          [matTooltipPosition]="tooltipPosition()">
-    <app-ui-icon name="angle-double-left"></app-ui-icon>
-    <span class="item-label">{{ mini ? ('sidebar.expand' | translate) : ('sidebar.collapse' | translate) }}</span>
+  <button
+    type="button"
+    class="hide-mobile flex w-full shrink-0 cursor-pointer items-center gap-[0.65rem] border-t border-white/10 px-[1.1rem] py-[0.85rem] text-[0.8rem] font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+    [class.justify-center]="mini"
+    [class.px-0]="mini"
+    (click)="layout.toggleCollapsed()"
+    [attr.aria-expanded]="!mini"
+    [matTooltip]="mini ? ('sidebar.expand' | translate) : ('sidebar.collapse' | translate)"
+    [matTooltipPosition]="tooltipPosition()">
+    <app-ui-icon
+      name="angle-double-left"
+      class="text-[0.95rem]"
+      [ngClass]="mini ? 'rtl:-scale-x-100 ltr:scale-x-100' : 'rtl:scale-x-100 ltr:-scale-x-100'"></app-ui-icon>
+    @if (!mini) {
+      <span>{{ mini ? ('sidebar.expand' | translate) : ('sidebar.collapse' | translate) }}</span>
+    }
   </button>
 </nav>

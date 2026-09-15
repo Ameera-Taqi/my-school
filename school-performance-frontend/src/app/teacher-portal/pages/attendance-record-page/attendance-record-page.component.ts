@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,9 +26,8 @@ type AttendanceRecordStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 @Component({
   selector: 'app-attendance-record-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatButtonToggleModule, MatTableModule, MatDatepickerModule, MatInputModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
-  templateUrl: './attendance-record-page.component.html',
-  styleUrl: './attendance-record-page.component.scss'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatButtonToggleModule, MatTableModule, MatDatepickerModule, MatInputModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
+  templateUrl: './attendance-record-page.component.html'
 })
 export class AttendanceRecordPageComponent implements OnInit {
   private readonly service = inject(TeacherPortalMockService);
@@ -96,15 +96,6 @@ export class AttendanceRecordPageComponent implements OnInit {
   setStatus(row: ClassAttendanceRow, status: AttendanceRecordStatus): void {
     row.status = status;
     this.rows = [...this.rows];
-  }
-
-  statusClass(status: string): string {
-    switch (status) {
-      case 'PRESENT': return 'status-present';
-      case 'ABSENT': return 'status-absent';
-      case 'LATE': return 'status-late';
-      default: return '';
-    }
   }
 
   countOf(status: AttendanceRecordStatus): number {

@@ -18,8 +18,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-home-page',
   standalone: true,
   imports: [UiIconComponent, AppDatePipe, HasPermissionPipe, DashboardCalendarComponent, HomeStatsComponent, HomeListsComponent, HomeMyDayComponent],
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss'
+  templateUrl: './home-page.component.html'
 })
 export class HomePageComponent implements OnInit {
   private readonly statsService = inject(HomeStatsService);

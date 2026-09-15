@@ -24,8 +24,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-meetings-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './meetings-page.component.html',
-  styleUrl: './meetings-page.component.scss'
+  templateUrl: './meetings-page.component.html'
 })
 export class MeetingsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(MeetingApiService);

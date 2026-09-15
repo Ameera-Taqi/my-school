@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,9 +33,8 @@ import {
 @Component({
   selector: 'app-class-schedule-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatCardModule, MatTabsModule, MatMenuModule, MatButtonToggleModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, EmptyStateComponent],
-  templateUrl: './class-schedule-page.component.html',
-  styleUrl: './class-schedule-page.component.scss'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatCardModule, MatTabsModule, MatMenuModule, MatButtonToggleModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, EmptyStateComponent],
+  templateUrl: './class-schedule-page.component.html'
 })
 export class ClassSchedulePageComponent implements OnInit {
   private readonly api = inject(ScheduleApiService);

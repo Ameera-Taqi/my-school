@@ -20,8 +20,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-role-list',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent],
-  templateUrl: './role-list.component.html',
-  styleUrl: './role-list.component.scss'
+  templateUrl: './role-list.component.html'
 })
 export class RoleListComponent implements OnInit, AfterViewInit {
   private readonly roleService = inject(RoleApiService);

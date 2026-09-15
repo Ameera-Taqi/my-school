@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -27,9 +28,9 @@ interface CalendarDay {
 @Component({
   selector: 'app-dashboard-calendar',
   standalone: true,
-  imports: [UiIconComponent, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, HasPermissionPipe, AppDatePipe, TranslatePipe],
-  templateUrl: './dashboard-calendar.component.html',
-  styleUrl: './dashboard-calendar.component.scss'
+  imports: [NgClass, UiIconComponent, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, HasPermissionPipe, AppDatePipe, TranslatePipe],
+  host: { class: 'block @container' },
+  templateUrl: './dashboard-calendar.component.html'
 })
 export class DashboardCalendarComponent implements OnInit {
   private readonly calendarService = inject(CalendarApiService);

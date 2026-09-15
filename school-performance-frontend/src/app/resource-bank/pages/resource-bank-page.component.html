@@ -8,7 +8,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالعنوان أو المادة أو المعلم أو نوع الملف" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    <app-search-field placeholder="ابحث بالعنوان أو المادة أو المعلم أو نوع الملف" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
         @if (query) { {{ filteredCount }} من {{ total }} ملف } @else { {{ total }} ملف }
@@ -32,10 +32,10 @@
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>العنوان</th>
           <td mat-cell *matCellDef="let r">
-            <div class="title-cell">
-              <span class="title">{{ r.title }}</span>
+            <div class="flex min-w-0 flex-col leading-snug">
+              <span class="font-semibold">{{ r.title }}</span>
               @if (r.fileName) {
-                <span class="sub" dir="ltr">{{ r.fileName }}</span>
+                <span class="break-all text-[0.78rem] text-muted" dir="ltr">{{ r.fileName }}</span>
               }
             </div>
           </td>
@@ -43,7 +43,7 @@
         <ng-container matColumnDef="fileType">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>النوع</th>
           <td mat-cell *matCellDef="let r">
-            <span class="chip neutral"><app-ui-icon [name]="fileIcon(r.fileType)" class="chip-icon"></app-ui-icon>{{ r.fileType }}</span>
+            <span class="chip neutral"><app-ui-icon [name]="fileIcon(r.fileType)" class="text-sm"></app-ui-icon>{{ r.fileType }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="subject">
@@ -60,18 +60,18 @@
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef>الوصف</th>
-          <td mat-cell *matCellDef="let r" class="desc-cell" [matTooltip]="r.description">{{ r.description || '—' }}</td>
+          <td mat-cell *matCellDef="let r" class="max-w-[260px] truncate" [matTooltip]="r.description">{{ r.description || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="uploadedAt">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>تاريخ الرفع</th>
           <td mat-cell *matCellDef="let r">{{ r.uploadedAt | appDate }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-          <td mat-cell *matCellDef="let r" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap">
             @if ('resource_bank.manage' | hasPermission) {
               <div class="row-actions">
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon></button>
+                <button type="button" class="btn-action btn-action--delete" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
               </div>
             }
           </td>
@@ -80,6 +80,6 @@
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

@@ -1,7 +1,15 @@
-<div class="home-head">
-  <div>
-    <h1>{{ greeting() }}</h1>
-    <p class="home-date"><app-ui-icon name="today"></app-ui-icon> {{ today | appDate }} @if (roleLine()) { <span class="sep">·</span> {{ roleLine() }} }</p>
+<div
+  class="relative mb-6 flex items-start justify-between gap-4 overflow-hidden rounded-sp-lg bg-linear-[105deg] from-[#312e81] via-[#3730a3] to-[#5b21b6] px-7 py-6 text-white shadow-sp-md after:pointer-events-none after:absolute after:start-[-2rem] after:bottom-[-3rem] after:size-56 after:rounded-full after:bg-indigo-500/25 after:blur-[18px] after:content-['']"
+>
+  <div class="relative z-[1]">
+    <h1 class="m-0 text-[clamp(1.35rem,2vw,1.85rem)] font-extrabold text-white">{{ greeting() }}</h1>
+    <p class="mt-[0.45rem] mb-0 flex flex-wrap items-center gap-[0.35rem] text-[0.88rem] text-indigo-200">
+      <app-ui-icon name="today" class="text-base"></app-ui-icon>
+      {{ today | appDate }}
+      @if (roleLine()) {
+        <span class="text-indigo-200/55">·</span> {{ roleLine() }}
+      }
+    </p>
   </div>
 </div>
 
@@ -10,13 +18,13 @@
 }
 
 @if (showMyDay) {
-  <section class="home-section"><app-home-my-day></app-home-my-day></section>
+  <section class="mb-[1.35rem]"><app-home-my-day></app-home-my-day></section>
 }
 
 @if ('calendar.view' | hasPermission) {
-  <section class="home-section"><app-dashboard-calendar></app-dashboard-calendar></section>
+  <section class="mb-[1.35rem]"><app-dashboard-calendar></app-dashboard-calendar></section>
 }
 
 @if (showLists) {
-  <section class="home-section"><app-home-lists [stats]="stats"></app-home-lists></section>
+  <section class="mb-[1.35rem]"><app-home-lists [stats]="stats"></app-home-lists></section>
 }

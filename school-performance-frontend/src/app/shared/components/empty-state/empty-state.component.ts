@@ -1,36 +1,35 @@
 import { Component, Input } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { UiIconComponent } from '../../icons/ui-icon.component';
 
 /** Friendly empty state with optional action slot: <app-empty-state icon="..." title="..."><button>…</button></app-empty-state> */
 @Component({
   selector: 'app-empty-state',
   standalone: true,
-  imports: [UiIconComponent],
+  imports: [UiIconComponent, NgClass],
   template: `
-    <div class="empty-state" [class.compact]="compact">
-      <div class="icon-wrap"><app-ui-icon [name]="icon"></app-ui-icon></div>
-      <h3>{{ title }}</h3>
+    <div
+      class="empty-state flex flex-col items-center justify-center gap-3 px-4 text-center text-muted"
+      [ngClass]="compact ? 'py-7' : 'py-12'"
+    >
+      <div
+        class="flex items-center justify-center rounded-full bg-primary-bg text-primary-mid"
+        [ngClass]="compact ? 'size-14' : 'size-[72px]'"
+      >
+        <app-ui-icon
+          [name]="icon"
+          [ngClass]="compact ? '!size-7 !text-[28px]' : '!size-9 !text-[36px]'"
+        ></app-ui-icon>
+      </div>
+      <h3 class="mt-1 mb-0 text-[1.05rem] font-bold text-text">{{ title }}</h3>
       @if (description) {
-        <p>{{ description }}</p>
+        <p class="m-0 max-w-[420px] leading-relaxed">{{ description }}</p>
       }
-      <div class="actions"><ng-content></ng-content></div>
+      <div class="mt-2 flex flex-wrap justify-center gap-2 empty:hidden">
+        <ng-content></ng-content>
+      </div>
     </div>
-  `,
-  styles: [`
-    .empty-state { padding: 3rem 1rem; }
-    .empty-state.compact { padding: 1.75rem 1rem; }
-    .icon-wrap {
-      width: 72px; height: 72px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--sp-primary-bg); color: var(--sp-primary-mid);
-      app-ui-icon { font-size: 36px; width: 36px; height: 36px; }
-    }
-    .compact .icon-wrap { width: 56px; height: 56px; app-ui-icon { font-size: 28px; width: 28px; height: 28px; } }
-    h3 { margin: 0.25rem 0 0; font-size: 1.05rem; color: var(--sp-text); font-weight: 700; }
-    p { margin: 0; max-width: 420px; line-height: 1.7; }
-    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-top: 0.5rem; }
-    .actions:empty { display: none; }
-  `]
+  `
 })
 export class EmptyStateComponent {
   @Input() icon = 'inbox';

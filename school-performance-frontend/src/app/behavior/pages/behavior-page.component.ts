@@ -24,8 +24,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-behavior-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
-  templateUrl: './behavior-page.component.html',
-  styleUrl: './behavior-page.component.scss'
+  templateUrl: './behavior-page.component.html'
 })
 export class BehaviorPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(BehaviorMockService);

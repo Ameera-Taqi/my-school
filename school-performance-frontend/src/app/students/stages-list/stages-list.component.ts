@@ -13,8 +13,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-stages-list',
   standalone: true,
   imports: [UiIconComponent, RouterModule, MatCardModule, MatButtonModule, PageHeaderComponent, EmptyStateComponent],
-  templateUrl: './stages-list.component.html',
-  styleUrl: './stages-list.component.scss'
+  templateUrl: './stages-list.component.html'
 })
 export class StagesListComponent implements OnInit {
   private readonly stageService = inject(AcademicStageApiService);

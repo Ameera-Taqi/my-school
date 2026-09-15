@@ -16,9 +16,9 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل طلب' : 'طلب داخلي جديد' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>نوع الطلب</mat-label>
           <mat-select formControlName="requestType" cdkFocusInitial>
             <mat-option value="MAINTENANCE">طلب صيانة</mat-option>
@@ -32,7 +32,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         </mat-form-field>
 
         @if (isOtherType) {
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="w-full">
             <mat-label>حدد نوع الطلب</mat-label>
             <input matInput formControlName="customRequestType" placeholder="مثال: طلب زيارة ميدانية" autocomplete="off">
             @if (form.controls.customRequestType.hasError('required')) { <mat-error>يرجى إدخال نوع الطلب</mat-error> }
@@ -40,19 +40,19 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
           </mat-form-field>
         }
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>مقدم الطلب</mat-label>
           <input matInput formControlName="requesterName" readonly>
           <app-ui-icon name="person" matSuffix></app-ui-icon>
           <mat-hint>يُسجَّل تلقائياً باسم المستخدم الحالي</mat-hint>
           <mat-error>مقدم الطلب مطلوب</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الوصف</mat-label>
           <textarea matInput formControlName="description" rows="3"></textarea>
           <mat-error>الوصف مطلوب</mat-error>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الأولوية</mat-label>
             <mat-select formControlName="priority">
@@ -74,7 +74,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>الحالة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>التاريخ</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="requestDate">
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -89,14 +89,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إرسال الطلب' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .full-width { width: 100%; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class InternalRequestFormDialogComponent {
   readonly data: InternalRequest | null = inject(MAT_DIALOG_DATA);

@@ -2,7 +2,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالعنوان أو النوع أو الخطورة أو الحالة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    <app-search-field placeholder="ابحث بالعنوان أو النوع أو الخطورة أو الحالة" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
         @if (query) { {{ filteredCount }} من {{ total }} تنبيه } @else { {{ total }} تنبيه @if (newCount) { · {{ newCount }} جديد } }
@@ -22,36 +22,44 @@
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>العنوان</th>
           <td mat-cell *matCellDef="let r">
-            <div class="title-cell">
-              <span class="type-icon" [class]="'type-icon ' + severityChip(r.severity)"><app-ui-icon [name]="typeIcon(r.alertType)"></app-ui-icon></span>
-              <span class="name">{{ r.title }}</span>
+            <div class="flex items-center gap-[0.6rem]" [class.opacity-60]="r.status === 'REVIEWED'">
+              <span
+                class="flex size-8 shrink-0 items-center justify-center rounded-lg text-lg"
+                [ngClass]="r.status === 'REVIEWED'
+                  ? 'bg-slate-100 text-faint'
+                  : severityChip(r.severity) === 'danger' ? 'bg-danger-bg text-danger'
+                  : severityChip(r.severity) === 'warning' ? 'bg-warning-bg text-warning'
+                  : 'bg-success-bg text-success'">
+                <app-ui-icon [name]="typeIcon(r.alertType)"></app-ui-icon>
+              </span>
+              <span [class]="r.status === 'REVIEWED' ? 'font-medium' : 'font-semibold'">{{ r.title }}</span>
             </div>
           </td>
         </ng-container>
         <ng-container matColumnDef="alertType">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>النوع</th>
-          <td mat-cell *matCellDef="let r">{{ typeLabels[r.alertType] }}</td>
+          <td mat-cell *matCellDef="let r" [class.opacity-60]="r.status === 'REVIEWED'">{{ typeLabels[r.alertType] }}</td>
         </ng-container>
         <ng-container matColumnDef="alertDate">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>التاريخ</th>
-          <td mat-cell *matCellDef="let r" class="nowrap">{{ r.alertDate | appDate }}</td>
+          <td mat-cell *matCellDef="let r" class="whitespace-nowrap" [class.opacity-60]="r.status === 'REVIEWED'">{{ r.alertDate | appDate }}</td>
         </ng-container>
         <ng-container matColumnDef="severity">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>الخطورة</th>
-          <td mat-cell *matCellDef="let r"><span class="chip" [class]="'chip ' + severityChip(r.severity)">{{ severityLabels[r.severity] }}</span></td>
+          <td mat-cell *matCellDef="let r" [class.opacity-60]="r.status === 'REVIEWED'"><span class="chip" [class]="'chip ' + severityChip(r.severity)">{{ severityLabels[r.severity] }}</span></td>
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
-          <td mat-cell *matCellDef="let r">
+          <td mat-cell *matCellDef="let r" [class.opacity-60]="r.status === 'REVIEWED'">
             <span class="chip" [class]="'chip ' + statusChip(r.status)">
-              @if (r.status === 'REVIEWED') { <app-ui-icon name="check" class="chip-icon"></app-ui-icon> }
+              @if (r.status === 'REVIEWED') { <app-ui-icon name="check" class="text-sm"></app-ui-icon> }
               {{ statusLabels[r.status] }}
             </span>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-          <td mat-cell *matCellDef="let r" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap" [class.opacity-60]="r.status === 'REVIEWED'">
             <div class="row-actions">
               @if (r.status === 'NEW') {
                 <button mat-icon-button class="success" matTooltip="تحديد كتمت المراجعة" (click)="markReviewed(r)"><app-ui-icon name="task_alt"></app-ui-icon></button>
@@ -60,9 +68,9 @@
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="cols"></tr>
-        <tr mat-row *matRowDef="let row; columns: cols;" [class.reviewed]="row.status === 'REVIEWED'"></tr>
+        <tr mat-row *matRowDef="let row; columns: cols;"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

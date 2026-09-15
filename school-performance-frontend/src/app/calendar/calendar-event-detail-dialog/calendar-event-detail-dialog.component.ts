@@ -17,77 +17,59 @@ export interface CalendarEventDetailDialogData {
   standalone: true,
   imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatTooltipModule, AppDatePipe],
   template: `
-    <div class="detail-head">
-      <span class="head-icon" [style.background]="chipColor"><app-ui-icon name="event"></app-ui-icon></span>
-      <div class="head-text">
-        <h2 mat-dialog-title>{{ data.event.title }}</h2>
-        <span class="chip type-chip" [style.background]="chipColor">{{ typeLabel }}</span>
+    <div class="flex items-center gap-[0.85rem] px-6 pt-5">
+      <span class="flex size-[46px] shrink-0 items-center justify-center rounded-sp text-white" [style.background]="chipColor">
+        <app-ui-icon name="event" class="size-[26px] text-[26px]"></app-ui-icon>
+      </span>
+      <div class="flex min-w-0 flex-col items-start gap-[0.35rem]">
+        <h2 mat-dialog-title class="!m-0 !p-0 text-[1.15rem] leading-snug before:hidden">{{ data.event.title }}</h2>
+        <span class="chip text-white" [style.background]="chipColor">{{ typeLabel }}</span>
       </div>
     </div>
-    <mat-dialog-content class="detail-content">
-      <dl class="fields">
-        <div class="field">
-          <dt>التاريخ</dt>
-          <dd>{{ data.event.startDate | appDate }}@if (data.event.endDate && data.event.endDate !== data.event.startDate) { — {{ data.event.endDate | appDate }} }</dd>
+    <mat-dialog-content class="pt-3 leading-7">
+      <dl class="m-0 flex flex-col gap-[0.6rem]">
+        <div class="flex flex-col gap-[0.1rem] border-b border-border pb-[0.6rem] last:border-b-0 last:pb-0">
+          <dt class="text-[0.78rem] font-bold text-muted">التاريخ</dt>
+          <dd class="m-0 text-text">{{ data.event.startDate | appDate }}@if (data.event.endDate && data.event.endDate !== data.event.startDate) { — {{ data.event.endDate | appDate }} }</dd>
         </div>
         @if (data.event.targetRoleKeys?.length) {
-          <div class="field">
-            <dt>الأدوار المستهدفة</dt>
-            <dd class="chips">
+          <div class="flex flex-col gap-[0.1rem] border-b border-border pb-[0.6rem] last:border-b-0 last:pb-0">
+            <dt class="text-[0.78rem] font-bold text-muted">الأدوار المستهدفة</dt>
+            <dd class="m-0 flex flex-wrap gap-[0.3rem] pt-[0.2rem]">
               @for (key of data.event.targetRoleKeys; track key) { <span class="chip neutral">{{ key }}</span> }
             </dd>
           </div>
         }
         @if (data.event.description) {
-          <div class="field">
-            <dt>الوصف</dt>
-            <dd>{{ data.event.description }}</dd>
+          <div class="flex flex-col gap-[0.1rem] border-b border-border pb-[0.6rem] last:border-b-0 last:pb-0">
+            <dt class="text-[0.78rem] font-bold text-muted">الوصف</dt>
+            <dd class="m-0 text-text">{{ data.event.description }}</dd>
           </div>
         }
         @if (data.event.notes) {
-          <div class="field">
-            <dt>ملاحظات</dt>
-            <dd>{{ data.event.notes }}</dd>
+          <div class="flex flex-col gap-[0.1rem] border-b border-border pb-[0.6rem] last:border-b-0 last:pb-0">
+            <dt class="text-[0.78rem] font-bold text-muted">ملاحظات</dt>
+            <dd class="m-0 text-text">{{ data.event.notes }}</dd>
           </div>
         }
         @if (data.event.createdByName) {
-          <div class="field">
-            <dt>أنشأه</dt>
-            <dd>{{ data.event.createdByName }}</dd>
+          <div class="flex flex-col gap-[0.1rem] border-b border-border pb-[0.6rem] last:border-b-0 last:pb-0">
+            <dt class="text-[0.78rem] font-bold text-muted">أنشأه</dt>
+            <dd class="m-0 text-text">{{ data.event.createdByName }}</dd>
           </div>
         }
       </dl>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       @if (canManage) {
-        <div class="row-actions manage-actions">
+        <div class="row-actions me-auto">
           <button mat-icon-button matTooltip="تعديل" type="button" (click)="edit()"><app-ui-icon name="edit"></app-ui-icon></button>
           <button mat-icon-button class="danger" matTooltip="حذف" type="button" (click)="remove()"><app-ui-icon name="delete"></app-ui-icon></button>
         </div>
       }
       <button mat-flat-button color="primary" mat-dialog-close type="button">إغلاق</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .detail-head { display: flex; align-items: center; gap: 0.85rem; padding: 1.25rem 1.5rem 0; }
-    .head-icon {
-      width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
-    }
-    .head-text { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; min-width: 0; }
-    .head-text h2 { margin: 0; padding: 0; font-size: 1.15rem; line-height: 1.4; }
-    .head-text h2::before { display: none; }
-    .type-chip { color: #fff; }
-    .detail-content { line-height: 1.7; padding-top: 0.75rem; }
-    .fields { margin: 0; display: flex; flex-direction: column; gap: 0.6rem; }
-    .field { display: flex; flex-direction: column; gap: 0.1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--sp-border); }
-    .field:last-child { border-bottom: none; padding-bottom: 0; }
-    dt { font-size: 0.78rem; font-weight: 700; color: var(--sp-text-muted); }
-    dd { margin: 0; color: var(--sp-text); }
-    dd.chips { display: flex; flex-wrap: wrap; gap: 0.3rem; padding-top: 0.2rem; }
-    .manage-actions { margin-inline-end: auto; }
-  `]
+  `
 })
 export class CalendarEventDetailDialogComponent {
   readonly data: CalendarEventDetailDialogData = inject(MAT_DIALOG_DATA);

@@ -12,43 +12,54 @@
   }
 </app-page-header>
 
-@if (generating) { <mat-progress-bar mode="indeterminate" class="gen-bar"></mat-progress-bar> }
+@if (generating) { <mat-progress-bar mode="indeterminate" class="mb-3 rounded-full"></mat-progress-bar> }
 
 <!-- Overview strip -->
 @if (overview) {
-  <div class="overview">
+  <div class="mb-4 flex flex-wrap items-center gap-2">
     @for (c of overview.classes; track c.classId) {
-      <button type="button" class="ov-chip" [class.active]="c.classId === filter.controls.classId.value" [class.done]="c.required > 0 && c.scheduled >= c.required" [class.empty]="c.required === 0" (click)="mode = 'class'; filter.controls.classId.setValue(c.classId)">
-        <span class="ov-name">{{ c.className }}</span>
-        <span class="ov-count">{{ c.scheduled }}/{{ c.required }}</span>
-        <span class="ov-bar"><span [style.width.%]="c.required ? (100 * c.scheduled / c.required) : 0"></span></span>
+      <button
+        type="button"
+        class="box-border flex min-w-[110px] cursor-pointer flex-col gap-[3px] rounded-[10px] border border-solid border-border bg-surface px-[0.7rem] py-[0.45rem] transition-[border-color,box-shadow] duration-150 hover:border-[#c5cae9] hover:shadow-sp"
+        [ngClass]="c.classId === filter.controls.classId.value ? 'border-primary-mid shadow-[inset_0_0_0_1px_var(--color-primary-mid)]' : ''"
+        (click)="mode = 'class'; filter.controls.classId.setValue(c.classId)">
+        <span class="text-[0.85rem] font-bold">{{ c.className }}</span>
+        <span class="text-[0.72rem] text-muted">{{ c.scheduled }}/{{ c.required }}</span>
+        <span class="h-1 overflow-hidden rounded-full bg-[#e9ebf3]">
+          <span
+            class="block h-full"
+            [class.bg-warning]="!(c.required > 0 && c.scheduled >= c.required) && c.required !== 0"
+            [class.bg-success]="c.required > 0 && c.scheduled >= c.required"
+            [class.bg-transparent]="c.required === 0"
+            [style.width.%]="c.required ? (100 * c.scheduled / c.required) : 0"></span>
+        </span>
       </button>
     }
     @if (overview.conflicts.length) {
-      <span class="chip danger conflicts" [matTooltip]="overview.conflicts[0].message"><app-ui-icon name="error"></app-ui-icon> {{ overview.conflicts.length }} تعارض</span>
+      <span class="chip danger ms-auto" [matTooltip]="overview.conflicts[0].message"><app-ui-icon name="error" class="size-4 text-base"></app-ui-icon> {{ overview.conflicts.length }} تعارض</span>
     }
   </div>
 }
 
-<mat-tab-group class="sched-tabs" animationDuration="150ms">
+<mat-tab-group class="sched-tabs [&_.mat-mdc-tab-body-content]:overflow-visible [&_.mat-mdc-tab-body-content]:pt-4 [&_.mdc-tab__text-label]:inline-flex [&_.mdc-tab__text-label]:items-center [&_.mdc-tab__text-label]:gap-[0.35rem]" animationDuration="150ms">
   <!-- ───────── Tab 1: timetable ───────── -->
   <mat-tab>
-    <ng-template mat-tab-label><app-ui-icon name="calendar_view_week"></app-ui-icon> الجدول</ng-template>
-    <mat-card class="filters-card">
-      <form [formGroup]="filter" class="filters-form">
-        <mat-button-toggle-group [value]="mode" (change)="setMode($event.value)" hideSingleSelectionIndicator class="mode-toggle">
-          <mat-button-toggle value="class"><app-ui-icon name="class"></app-ui-icon> حسب الفصل</mat-button-toggle>
-          <mat-button-toggle value="teacher"><app-ui-icon name="person"></app-ui-icon> حسب المعلم</mat-button-toggle>
+    <ng-template mat-tab-label><app-ui-icon name="calendar_view_week" class="size-[18px] text-lg"></app-ui-icon> الجدول</ng-template>
+    <mat-card class="mb-4 px-4 py-[0.65rem]">
+      <form [formGroup]="filter" class="flex flex-wrap items-center gap-4">
+        <mat-button-toggle-group [value]="mode" (change)="setMode($event.value)" hideSingleSelectionIndicator class="h-10 overflow-hidden rounded-[10px] [&_.mat-button-toggle-label-content]:inline-flex [&_.mat-button-toggle-label-content]:items-center [&_.mat-button-toggle-label-content]:gap-[0.3rem] [&_.mat-button-toggle-label-content]:px-[0.8rem] [&_.mat-button-toggle-label-content]:leading-[38px]">
+          <mat-button-toggle value="class"><app-ui-icon name="class" class="size-[18px] text-lg"></app-ui-icon> حسب الفصل</mat-button-toggle>
+          <mat-button-toggle value="teacher"><app-ui-icon name="person" class="size-[18px] text-lg"></app-ui-icon> حسب المعلم</mat-button-toggle>
         </mat-button-toggle-group>
         @if (mode === 'class') {
-          <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+          <mat-form-field appearance="outline" class="filter-field w-[170px] text-[0.875rem]" subscriptSizing="dynamic">
             <mat-label>الفصل</mat-label>
             <mat-select formControlName="classId">
-              @for (c of classes; track c.id) { <mat-option [value]="c.id">{{ c.name }} <span class="opt-meta">{{ c.academicStageName }}</span></mat-option> }
+              @for (c of classes; track c.id) { <mat-option [value]="c.id">{{ c.name }} <span class="ms-[0.35rem] text-[0.78rem] text-muted">{{ c.academicStageName }}</span></mat-option> }
             </mat-select>
           </mat-form-field>
         } @else {
-          <mat-form-field appearance="outline" class="filter-field wide" subscriptSizing="dynamic">
+          <mat-form-field appearance="outline" class="filter-field w-60 text-[0.875rem]" subscriptSizing="dynamic">
             <mat-label>المعلم</mat-label>
             <mat-select formControlName="teacherId">
               @for (t of teachers; track t.id) { <mat-option [value]="t.id">{{ t.fullName }}</mat-option> }
@@ -56,7 +67,7 @@
           </mat-form-field>
         }
         @if (!gridLoading) {
-          <span class="slots-count"><app-ui-icon name="event_note"></app-ui-icon>
+          <span class="inline-flex items-center gap-[0.35rem] text-[0.85rem] text-muted"><app-ui-icon name="event_note" class="size-[18px] text-lg"></app-ui-icon>
             @if (mode === 'class') { {{ filledCount }} من {{ classRequired }} حصة مطلوبة · {{ totalSlots - filledCount }} خانة فارغة } @else { {{ filledCount }} حصة أسبوعياً }
           </span>
         }
@@ -65,38 +76,59 @@
 
     <div class="data-card">
       @if (loading || gridLoading) {
-        <div class="schedule-skeleton" aria-busy="true">
-          @for (p of periods; track p) { <div class="sk-row">@for (i of [0, 1, 2, 3, 4, 5]; track i) { <span class="skeleton sk-cell tall"></span> }</div> }
+        <div class="px-4 py-3" aria-busy="true">
+          @for (p of periods; track p) {
+            <div class="flex gap-[0.6rem] py-[0.4rem]">
+              @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                <span class="skeleton h-16 flex-1" [ngClass]="i === 0 ? 'w-[60px] flex-none shrink-0' : ''"></span>
+              }
+            </div>
+          }
         </div>
       } @else if (!classes.length) {
         <app-empty-state icon="calendar_month" title="لا توجد فصول" description="أضف فصولاً من صفحة الطلاب أولاً."></app-empty-state>
       } @else {
         @if (mode === 'class' && classAssignments.length === 0) {
-          <div class="info-banner schedule-hint"><app-ui-icon name="info"></app-ui-icon> لا توجد مواد مكلّفة لهذا الفصل. أضفها من تبويب «المواد والتكليفات» ثم ولّد الجدول.</div>
+          <div class="info-banner mx-4 mt-4 mb-0"><app-ui-icon name="info"></app-ui-icon> لا توجد مواد مكلّفة لهذا الفصل. أضفها من تبويب «المواد والتكليفات» ثم ولّد الجدول.</div>
         } @else if (filledCount === 0) {
-          <div class="info-banner schedule-hint"><app-ui-icon name="info"></app-ui-icon> الجدول فارغ. اضغط «توليد الجدول» أو انقر على خانة لإضافة حصة يدوياً.</div>
+          <div class="info-banner mx-4 mt-4 mb-0"><app-ui-icon name="info"></app-ui-icon> الجدول فارغ. اضغط «توليد الجدول» أو انقر على خانة لإضافة حصة يدوياً.</div>
         }
         <div class="table-scroll">
-          <table class="schedule-table">
-            <thead><tr><th class="period-col">الحصة</th>@for (day of days; track day.key) { <th>{{ day.label }}</th> }</tr></thead>
+          <table class="w-full min-w-[720px] border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th class="sticky top-0 z-[1] w-16 border-b border-border bg-[#f8f9fc] px-[0.4rem] py-[0.6rem] text-center align-middle text-[0.82rem] font-bold text-muted">الحصة</th>
+                @for (day of days; track day.key) {
+                  <th class="sticky top-0 z-[1] border-b border-s border-border bg-[#f8f9fc] px-[0.4rem] py-[0.6rem] text-center align-middle text-[0.82rem] font-bold text-muted">{{ day.label }}</th>
+                }
+              </tr>
+            </thead>
             <tbody>
               @for (period of periods; track period) {
                 <tr>
-                  <td class="period-col"><span class="period-badge">{{ period }}</span></td>
+                  <td class="w-16 border-b border-border bg-[#fafbfe] text-center align-middle">
+                    <span class="inline-flex size-[30px] items-center justify-center rounded-full bg-primary-light text-[0.85rem] font-bold text-primary">{{ period }}</span>
+                  </td>
                   @for (day of days; track day.key) {
                     @let entry = entryAt(day.key, period);
-                    <td class="slot-cell" [class.filled]="!!entry" [class.editable]="canManage() && mode === 'class'" (click)="openSlot(day.key, period, entry)">
+                    <td
+                      class="group h-[68px] border-b border-s border-border p-1 text-center align-middle transition-colors duration-100"
+                      [class.cursor-pointer]="canManage() && mode === 'class'"
+                      [class.hover:bg-primary-bg]="canManage() && mode === 'class'"
+                      (click)="openSlot(day.key, period, entry)">
                       @if (entry) {
-                        <div class="slot-content" [style.--subj]="entry.subjectColor || '#5c6bc0'">
-                          <strong class="slot-subject">{{ entry.subject }}</strong>
-                          <small>{{ mode === 'class' ? entry.teacherName : ('فصل ' + entry.className) }}</small>
-                          @if (entry.room) { <small class="room"><app-ui-icon name="meeting_room"></app-ui-icon> {{ entry.room }}</small> }
-                          @if (entry.locked) { <app-ui-icon name="lock" class="lock" matTooltip="حصة مثبّتة يدوياً"></app-ui-icon> }
+                        <div
+                          class="slot-content relative flex flex-col items-start gap-px rounded-lg px-[0.55rem] py-[0.35rem] text-start"
+                          [style.--subj]="entry.subjectColor || '#5c6bc0'">
+                          <strong class="slot-subject text-[0.85rem]">{{ entry.subject }}</strong>
+                          <small class="text-[0.72rem] text-muted">{{ mode === 'class' ? entry.teacherName : ('فصل ' + entry.className) }}</small>
+                          @if (entry.room) { <small class="inline-flex items-center gap-0.5 text-[0.72rem] text-muted"><app-ui-icon name="meeting_room" class="size-[13px] text-[13px]"></app-ui-icon> {{ entry.room }}</small> }
+                          @if (entry.locked) { <app-ui-icon name="lock" class="absolute top-1 end-1 size-[14px] text-sm text-faint" matTooltip="حصة مثبّتة يدوياً"></app-ui-icon> }
                         </div>
                       } @else if (canManage() && mode === 'class') {
-                        <span class="empty-slot"><app-ui-icon name="add"></app-ui-icon></span>
+                        <span class="inline-flex size-[30px] items-center justify-center rounded-full text-faint opacity-35 transition-opacity duration-150 group-hover:text-primary-mid group-hover:opacity-100"><app-ui-icon name="add" class="size-5 text-xl"></app-ui-icon></span>
                       } @else {
-                        <span class="empty-label">—</span>
+                        <span class="text-faint">—</span>
                       }
                     </td>
                   }
@@ -111,27 +143,31 @@
 
   <!-- ───────── Tab 2: subjects & assignments ───────── -->
   <mat-tab>
-    <ng-template mat-tab-label><app-ui-icon name="menu_book"></app-ui-icon> المواد والتكليفات</ng-template>
-    <div class="two-panels">
-      <mat-card class="panel subjects-panel">
-        <div class="panel-head">
-          <h3><app-ui-icon name="menu_book"></app-ui-icon> المواد</h3>
+    <ng-template mat-tab-label><app-ui-icon name="menu_book" class="size-[18px] text-lg"></app-ui-icon> المواد والتكليفات</ng-template>
+    <div class="grid grid-cols-1 items-start gap-4 min-[900px]:grid-cols-[300px_minmax(0,1fr)]">
+      <mat-card class="mb-4 px-5 py-4">
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+          <h3 class="m-0 inline-flex items-center gap-[0.4rem] text-base text-primary"><app-ui-icon name="menu_book" class="size-5 text-xl"></app-ui-icon> المواد</h3>
           @if (canManage()) { <button mat-stroked-button type="button" (click)="openSubject()"><app-ui-icon name="add"></app-ui-icon> مادة</button> }
         </div>
         @if (!subjects.length) {
           <app-empty-state icon="menu_book" title="لا توجد مواد" description="أضف المواد الدراسية أولاً." [compact]="true"></app-empty-state>
         } @else {
-          <ul class="subject-list">
+          <ul class="m-0 list-none p-0">
             @for (s of subjects; track s.id) {
-              <li>
-                <span class="swatch" [style.background]="s.color || '#90a4ae'"></span>
-                <span class="subject-name">{{ s.name }}</span>
+              <li class="flex items-center gap-2 border-b border-border px-[0.2rem] py-[0.4rem] last:border-b-0">
+                <span class="inline-block size-3 shrink-0 rounded align-middle" [style.background]="s.color || '#90a4ae'"></span>
+                <span class="flex-1 font-semibold">{{ s.name }}</span>
                 @if (s.code) { <code>{{ s.code }}</code> }
-                @if (s.departmentName) { <span class="dept-tag">{{ s.departmentName }}</span> } @else { <span class="dept-tag none">بدون شعبة</span> }
+                @if (s.departmentName) {
+                  <span class="whitespace-nowrap rounded-full bg-primary-bg px-2 py-[0.05rem] text-[0.7rem] text-primary-mid">{{ s.departmentName }}</span>
+                } @else {
+                  <span class="whitespace-nowrap rounded-full border border-dashed border-border bg-transparent px-2 py-[0.05rem] text-[0.7rem] text-muted">بدون شعبة</span>
+                }
                 @if (canManage()) {
-                  <span class="row-actions">
-                    <button mat-icon-button type="button" matTooltip="تعديل" (click)="openSubject(s)"><app-ui-icon name="edit"></app-ui-icon></button>
-                    <button mat-icon-button type="button" class="danger" matTooltip="حذف" (click)="deleteSubject(s)"><app-ui-icon name="delete"></app-ui-icon></button>
+                  <span class="row-actions ms-auto">
+                    <button type="button" class="btn-action btn-action--edit" (click)="openSubject(s)"><app-ui-icon name="edit"></app-ui-icon> تعديل</button>
+                    <button type="button" class="btn-action btn-action--delete" (click)="deleteSubject(s)"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
                   </span>
                 }
               </li>
@@ -140,11 +176,11 @@
         }
       </mat-card>
 
-      <mat-card class="panel assignments-panel">
-        <div class="panel-head">
-          <h3><app-ui-icon name="assignment_ind"></app-ui-icon> تكليفات فصل {{ selectedClass?.name }}</h3>
-          <div class="panel-tools">
-            <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-card class="mb-4 px-5 py-4">
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+          <h3 class="m-0 inline-flex items-center gap-[0.4rem] text-base text-primary"><app-ui-icon name="assignment_ind" class="size-5 text-xl"></app-ui-icon> تكليفات فصل {{ selectedClass?.name }}</h3>
+          <div class="flex flex-wrap items-center gap-[0.6rem]">
+            <mat-form-field appearance="outline" class="filter-field w-[170px] text-[0.875rem]" subscriptSizing="dynamic">
               <mat-label>الفصل</mat-label>
               <mat-select [formControl]="filter.controls.classId">
                 @for (c of classes; track c.id) { <mat-option [value]="c.id">{{ c.name }}</mat-option> }
@@ -153,21 +189,21 @@
             @if (canManage()) { <button mat-flat-button color="primary" type="button" (click)="openAssignment()"><app-ui-icon name="add"></app-ui-icon> إضافة مادة للفصل</button> }
           </div>
         </div>
-        <div class="load-line">
+        <div class="mb-3 flex flex-col gap-1 text-[0.82rem] text-muted">
           <span>{{ classRequired }} من 35 حصة أسبوعياً</span>
-          <mat-progress-bar mode="determinate" [value]="classRequired / 35 * 100" [color]="classRequired > 35 ? 'warn' : 'primary'"></mat-progress-bar>
+          <mat-progress-bar class="rounded-full" mode="determinate" [value]="classRequired / 35 * 100" [color]="classRequired > 35 ? 'warn' : 'primary'"></mat-progress-bar>
         </div>
         @if (!classAssignments.length) {
           <app-empty-state icon="assignment_ind" title="لا توجد تكليفات لهذا الفصل" description="أضف كل مادة مع معلمها وعدد حصصها الأسبوعية." [compact]="true"></app-empty-state>
         } @else {
           <div class="table-scroll">
             <table mat-table [dataSource]="classAssignments">
-              <ng-container matColumnDef="subject"><th mat-header-cell *matHeaderCellDef>المادة</th><td mat-cell *matCellDef="let a"><span class="swatch" [style.background]="a.subjectColor || '#90a4ae'"></span>{{ a.subjectName }}</td></ng-container>
-              <ng-container matColumnDef="teacher"><th mat-header-cell *matHeaderCellDef>المعلم</th><td mat-cell *matCellDef="let a">{{ a.teacherName }} @if (teacherConstraintCount(a.teacherId)) { <span class="chip warning tiny" matTooltip="لديه قيود">{{ teacherConstraintCount(a.teacherId) }} قيد</span> }</td></ng-container>
+              <ng-container matColumnDef="subject"><th mat-header-cell *matHeaderCellDef>المادة</th><td mat-cell *matCellDef="let a"><span class="me-1.5 inline-block size-3 shrink-0 rounded align-middle" [style.background]="a.subjectColor || '#90a4ae'"></span>{{ a.subjectName }}</td></ng-container>
+              <ng-container matColumnDef="teacher"><th mat-header-cell *matHeaderCellDef>المعلم</th><td mat-cell *matCellDef="let a">{{ a.teacherName }} @if (teacherConstraintCount(a.teacherId)) { <span class="chip warning ms-1 px-1.5 text-[0.68rem]" matTooltip="لديه قيود">{{ teacherConstraintCount(a.teacherId) }} قيد</span> }</td></ng-container>
               <ng-container matColumnDef="periods"><th mat-header-cell *matHeaderCellDef>حصص/أسبوع</th><td mat-cell *matCellDef="let a"><strong>{{ a.periodsPerWeek }}</strong></td></ng-container>
               <ng-container matColumnDef="scheduled"><th mat-header-cell *matHeaderCellDef>موزّع</th><td mat-cell *matCellDef="let a"><span class="chip" [class.success]="a.scheduled >= a.periodsPerWeek" [class.warning]="a.scheduled > 0 && a.scheduled < a.periodsPerWeek" [class.neutral]="!a.scheduled">{{ a.scheduled ?? 0 }}/{{ a.periodsPerWeek }}</span></td></ng-container>
-              <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef class="actions-cell"></th><td mat-cell *matCellDef="let a" class="actions-cell">
-                @if (canManage()) { <div class="row-actions"><button mat-icon-button type="button" matTooltip="تعديل" (click)="openAssignment(a)"><app-ui-icon name="edit"></app-ui-icon></button><button mat-icon-button type="button" class="danger" matTooltip="حذف" (click)="deleteAssignment(a)"><app-ui-icon name="delete"></app-ui-icon></button></div> }
+              <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap"></th><td mat-cell *matCellDef="let a" class="w-px whitespace-nowrap">
+                @if (canManage()) { <div class="row-actions"><button type="button" class="btn-action btn-action--edit" (click)="openAssignment(a)"><app-ui-icon name="edit"></app-ui-icon> تعديل</button><button type="button" class="btn-action btn-action--delete" (click)="deleteAssignment(a)"><app-ui-icon name="delete"></app-ui-icon> حذف</button></div> }
               </td></ng-container>
               <tr mat-header-row *matHeaderRowDef="assignmentCols"></tr>
               <tr mat-row *matRowDef="let row; columns: assignmentCols;"></tr>
@@ -180,12 +216,12 @@
 
   <!-- ───────── Tab 3: teacher constraints ───────── -->
   <mat-tab>
-    <ng-template mat-tab-label><app-ui-icon name="rule"></app-ui-icon> قيود المعلمين @if (constraints.length) { <span class="tab-badge">{{ constraints.length }}</span> }</ng-template>
-    <mat-card class="panel">
-      <div class="panel-head">
-        <h3><app-ui-icon name="rule"></app-ui-icon> قيود توفر المعلمين</h3>
-        <div class="panel-tools">
-          <mat-form-field appearance="outline" class="filter-field wide" subscriptSizing="dynamic">
+    <ng-template mat-tab-label><app-ui-icon name="rule" class="size-[18px] text-lg"></app-ui-icon> قيود المعلمين @if (constraints.length) { <span class="ms-1 rounded-full bg-primary px-1.5 text-[0.7rem] text-white">{{ constraints.length }}</span> }</ng-template>
+    <mat-card class="mb-4 px-5 py-4">
+      <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+        <h3 class="m-0 inline-flex items-center gap-[0.4rem] text-base text-primary"><app-ui-icon name="rule" class="size-5 text-xl"></app-ui-icon> قيود توفر المعلمين</h3>
+        <div class="flex flex-wrap items-center gap-[0.6rem]">
+          <mat-form-field appearance="outline" class="filter-field w-60 text-[0.875rem]" subscriptSizing="dynamic">
             <mat-label>المعلم</mat-label>
             <mat-select [(value)]="constraintTeacherId">
               <mat-option [value]="null">كل المعلمين</mat-option>
@@ -195,17 +231,17 @@
           @if (canManage()) { <button mat-flat-button color="primary" type="button" (click)="openConstraint()"><app-ui-icon name="add"></app-ui-icon> إضافة قيد</button> }
         </div>
       </div>
-      <p class="hint">أمثلة: غير متاح يوم الخميس، لا يُسند له الحصة الأولى، بحد أقصى 4 حصص في اليوم. يراعيها المولّد ويمنع مخالفتها عند الإدخال اليدوي.</p>
+      <p class="mb-3 mt-0 text-[0.85rem] text-muted">أمثلة: غير متاح يوم الخميس، لا يُسند له الحصة الأولى، بحد أقصى 4 حصص في اليوم. يراعيها المولّد ويمنع مخالفتها عند الإدخال اليدوي.</p>
       @if (!visibleConstraints.length) {
         <app-empty-state icon="rule" title="لا توجد قيود" description="بدون قيود يستطيع المعلم التدريس في أي حصة من الـ 35." [compact]="true"></app-empty-state>
       } @else {
         <div class="table-scroll">
           <table mat-table [dataSource]="visibleConstraints">
             <ng-container matColumnDef="teacher"><th mat-header-cell *matHeaderCellDef>المعلم</th><td mat-cell *matCellDef="let c"><strong>{{ c.teacherName }}</strong></td></ng-container>
-            <ng-container matColumnDef="description"><th mat-header-cell *matHeaderCellDef>القيد</th><td mat-cell *matCellDef="let c"><span class="chip info">{{ constraintLabels[c.type] }}</span> <span class="desc">{{ c.description }}</span></td></ng-container>
+            <ng-container matColumnDef="description"><th mat-header-cell *matHeaderCellDef>القيد</th><td mat-cell *matCellDef="let c"><span class="chip info">{{ constraintLabels[c.type] }}</span> <span class="ms-[0.4rem]">{{ c.description }}</span></td></ng-container>
             <ng-container matColumnDef="note"><th mat-header-cell *matHeaderCellDef>ملاحظة</th><td mat-cell *matCellDef="let c">{{ c.note || '—' }}</td></ng-container>
-            <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef class="actions-cell"></th><td mat-cell *matCellDef="let c" class="actions-cell">
-              @if (canManage()) { <div class="row-actions"><button mat-icon-button type="button" class="danger" matTooltip="حذف القيد" (click)="deleteConstraint(c)"><app-ui-icon name="delete"></app-ui-icon></button></div> }
+            <ng-container matColumnDef="actions"><th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap"></th><td mat-cell *matCellDef="let c" class="w-px whitespace-nowrap">
+              @if (canManage()) { <div class="row-actions"><button type="button" class="btn-action btn-action--delete" (click)="deleteConstraint(c)"><app-ui-icon name="delete"></app-ui-icon> حذف</button></div> }
             </td></ng-container>
             <tr mat-header-row *matHeaderRowDef="constraintCols"></tr>
             <tr mat-row *matRowDef="let row; columns: constraintCols;"></tr>
@@ -215,14 +251,14 @@
     </mat-card>
 
     @if (overview?.teachers?.length) {
-      <mat-card class="panel">
-        <div class="panel-head"><h3><app-ui-icon name="groups"></app-ui-icon> أعباء المعلمين</h3></div>
-        <div class="loads">
+      <mat-card class="mb-4 px-5 py-4">
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-3"><h3 class="m-0 inline-flex items-center gap-[0.4rem] text-base text-primary"><app-ui-icon name="groups" class="size-5 text-xl"></app-ui-icon> أعباء المعلمين</h3></div>
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-x-5 gap-y-3">
           @for (t of overview!.teachers; track t.teacherId) {
-            <div class="load-row" [class.over]="t.required > t.availableSlots">
-              <span class="load-name">{{ t.teacherName }}</span>
-              <span class="load-nums">{{ t.scheduled }}/{{ t.required }} حصة · متاح {{ t.availableSlots }} خانة</span>
-              <mat-progress-bar mode="determinate" [value]="t.required ? 100 * t.scheduled / t.required : 0"></mat-progress-bar>
+            <div class="flex flex-col gap-[3px] text-[0.85rem]">
+              <span class="font-semibold">{{ t.teacherName }}</span>
+              <span class="text-[0.75rem]" [class.text-muted]="t.required <= t.availableSlots" [class.font-semibold]="t.required > t.availableSlots" [class.text-danger]="t.required > t.availableSlots">{{ t.scheduled }}/{{ t.required }} حصة · متاح {{ t.availableSlots }} خانة</span>
+              <mat-progress-bar class="rounded-full" mode="determinate" [value]="t.required ? 100 * t.scheduled / t.required : 0"></mat-progress-bar>
             </div>
           }
         </div>

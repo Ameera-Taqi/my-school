@@ -1,8 +1,8 @@
 <app-page-header title="مؤشرات الأداء المدرسي" subtitle="متابعة مؤشرات الأداء الرئيسية للمدرسة"></app-page-header>
 
-<mat-card class="filters-card">
-  <form [formGroup]="filters" class="filters-form">
-    <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+<mat-card class="mb-5 px-5 py-4">
+  <form [formGroup]="filters" class="flex flex-wrap items-center gap-x-4 gap-y-3">
+    <mat-form-field appearance="outline" class="filter-field min-w-[200px] flex-1" subscriptSizing="dynamic">
       <mat-label>الفترة</mat-label>
       <mat-select formControlName="period">
         <mat-option value="term">الفصل الدراسي الحالي</mat-option>
@@ -10,7 +10,7 @@
         <mat-option value="year">العام الدراسي</mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+    <mat-form-field appearance="outline" class="filter-field min-w-[200px] flex-1" subscriptSizing="dynamic">
       <mat-label>المرحلة</mat-label>
       <mat-select formControlName="stage">
         <mat-option value="">كل المراحل</mat-option>
@@ -19,14 +19,14 @@
         <mat-option value="الثاني عشر">الثاني عشر</mat-option>
       </mat-select>
     </mat-form-field>
-    <div class="filter-actions">
+    <div class="ms-auto flex flex-wrap items-center gap-2">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
         <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
       </button>
       <button mat-flat-button color="primary" type="button" (click)="load()" [disabled]="loading">
         @if (loading) {
-          <mat-spinner diameter="20"></mat-spinner> جاري التحديث...
+          <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التحديث...
         } @else {
           <ng-container><app-ui-icon name="refresh"></app-ui-icon> تحديث المؤشرات</ng-container>
         }
@@ -36,25 +36,28 @@
 </mat-card>
 
 @if (loading) {
-  <div class="data-card overall-card skeleton-overall">
-    <span class="skeleton sk-score"></span>
-    <div class="sk-lines">
-      <span class="skeleton sk-line w60"></span>
-      <span class="skeleton sk-line w40"></span>
+  <div class="data-card mb-5 flex items-center gap-6 px-7 py-6">
+    <span class="skeleton block h-[72px] w-24 rounded-sp-sm"></span>
+    <div class="flex flex-1 flex-col gap-[0.6rem]">
+      <span class="skeleton block h-3 w-3/5"></span>
+      <span class="skeleton block h-3 w-2/5"></span>
     </div>
   </div>
-  <div class="categories-grid">
+  <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
     @for (i of [0, 1, 2, 3]; track i) {
-      <div class="data-card category-card skeleton-category">
-        <div class="category-header">
-          <span class="skeleton sk-icon"></span>
-          <div class="sk-lines"><span class="skeleton sk-line w70"></span><span class="skeleton sk-line w30"></span></div>
+      <div class="data-card px-5 py-4">
+        <div class="mb-3 flex items-center gap-3">
+          <span class="skeleton size-10 shrink-0 rounded-[10px]"></span>
+          <div class="flex flex-1 flex-col gap-[0.6rem]">
+            <span class="skeleton block h-3 w-[70%]"></span>
+            <span class="skeleton block h-3 w-[30%]"></span>
+          </div>
         </div>
-        <span class="skeleton sk-bar"></span>
+        <span class="skeleton mt-3 block h-1.5"></span>
       </div>
     }
   </div>
-  <div class="data-card table-panel">
+  <div class="data-card mb-5 p-5">
     <app-table-skeleton [rows]="6" [columns]="6"></app-table-skeleton>
   </div>
 } @else if (!overview) {
@@ -64,20 +67,30 @@
     </app-empty-state>
   </div>
 } @else {
-  <div class="data-card overall-card">
-    <div class="overall-content">
-      <div class="overall-score">
-        <span class="score-value">{{ overview.overallScore }}</span>
-        <span class="score-label">مؤشر الأداء العام</span>
-        <span class="chip overall-chip" [class]="'chip overall-chip ' + statusChip(overview.overallStatus)">
-          <app-ui-icon [name]="statusIcon(overview.overallStatus)" class="chip-icon"></app-ui-icon>
+  <div class="data-card mb-5 overflow-hidden p-0">
+    <div class="flex flex-wrap items-center justify-between gap-6 bg-linear-to-br from-primary to-primary-mid px-7 py-6 text-white">
+      <div class="flex flex-col items-start gap-[0.35rem]">
+        <span class="text-5xl font-extrabold leading-none">{{ overview.overallScore }}</span>
+        <span class="text-[1.05rem] opacity-90">مؤشر الأداء العام</span>
+        <span
+          class="inline-flex items-center gap-1 rounded-full px-3 py-[3px] text-[0.82rem] font-semibold"
+          [ngClass]="{
+            'bg-[rgba(200,255,210,0.22)] text-[#d9ffe0]': statusChip(overview.overallStatus) === 'success',
+            'bg-white/20 text-white': statusChip(overview.overallStatus) === 'info',
+            'bg-[rgba(255,214,150,0.28)] text-[#ffe6b3]': statusChip(overview.overallStatus) === 'warning',
+            'bg-[rgba(255,170,170,0.28)] text-[#ffd0d0]': statusChip(overview.overallStatus) === 'danger'
+          }">
+          <app-ui-icon [name]="statusIcon(overview.overallStatus)" class="size-3.5 text-sm"></app-ui-icon>
           {{ statusLabel(overview.overallStatus) }}
         </span>
       </div>
-      <div class="overall-meta">
-        <p><app-ui-icon name="date_range"></app-ui-icon> {{ overview.periodLabel }}</p>
-        <p><app-ui-icon name="update"></app-ui-icon> آخر تحديث: {{ overview.lastUpdated | appDate }}</p>
-        <p class="hint"><span class="chip demo-chip">بيانات تجريبية</span> قابلة للربط بالـ Backend لاحقاً</p>
+      <div>
+        <p class="mb-2 flex items-center gap-2 text-[0.9rem] opacity-90"><app-ui-icon name="date_range" class="size-[18px] text-lg"></app-ui-icon> {{ overview.periodLabel }}</p>
+        <p class="mb-2 flex items-center gap-2 text-[0.9rem] opacity-90"><app-ui-icon name="update" class="size-[18px] text-lg"></app-ui-icon> آخر تحديث: {{ overview.lastUpdated | appDate }}</p>
+        <p class="mt-2 mb-0 flex items-center gap-2 text-[0.8rem] opacity-80">
+          <span class="rounded-full bg-white/20 px-2 py-0.5 text-[0.7rem] font-semibold text-white">بيانات تجريبية</span>
+          قابلة للربط بالـ Backend لاحقاً
+        </p>
       </div>
     </div>
   </div>
@@ -87,60 +100,73 @@
       <app-empty-state icon="category" title="لا توجد فئات مؤشرات" description="لا توجد فئات مؤشرات للفترة المحددة." [compact]="true"></app-empty-state>
     </div>
   } @else {
-    <div class="categories-grid">
+    <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
       @for (cat of overview.categories; track cat.key) {
         <button
           type="button"
-          class="data-card category-card"
-          [class.selected]="selectedCategory?.key === cat.key"
+          class="data-card relative flex cursor-pointer flex-col px-5 py-4 text-start font-inherit text-inherit transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-0.5 hover:border-[#c5cae9] hover:shadow-sp-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-mid"
+          [ngClass]="selectedCategory?.key === cat.key
+            ? '!border-primary-mid shadow-[0_0_0_2px_var(--color-primary-light),var(--shadow-sp-md)]'
+            : ''"
           [attr.aria-pressed]="selectedCategory?.key === cat.key"
           (click)="selectCategory(cat)">
-          <div class="category-header">
-            <span class="category-icon" [style.color]="cat.color"><app-ui-icon [name]="cat.icon"></app-ui-icon></span>
-            <div class="category-text">
-              <h3>{{ cat.name }}</h3>
-              <span class="category-score">{{ cat.score }}%</span>
+          <div class="mb-3 flex items-center gap-3">
+            <span class="flex size-11 shrink-0 items-center justify-center rounded-sp-sm bg-primary-bg" [style.color]="cat.color">
+              <app-ui-icon [name]="cat.icon" class="size-[26px] text-[26px]"></app-ui-icon>
+            </span>
+            <div class="flex min-w-0 flex-col leading-tight">
+              <h3 class="m-0 text-[0.95rem] text-primary">{{ cat.name }}</h3>
+              <span class="text-xl font-bold text-primary">{{ cat.score }}%</span>
             </div>
-            @if (selectedCategory?.key === cat.key) { <app-ui-icon name="check_circle" class="check"></app-ui-icon> }
+            @if (selectedCategory?.key === cat.key) {
+              <app-ui-icon name="check_circle" class="ms-auto size-5 text-xl text-primary-mid"></app-ui-icon>
+            }
           </div>
-          <mat-progress-bar mode="determinate" [value]="cat.score" [color]="scoreColor(cat.score)"></mat-progress-bar>
-          <span class="category-count">{{ cat.indicators.length }} مؤشر</span>
+          <mat-progress-bar mode="determinate" [value]="cat.score" [color]="scoreColor(cat.score)" class="rounded-full"></mat-progress-bar>
+          <span class="mt-2 text-xs text-muted">{{ cat.indicators.length }} مؤشر</span>
         </button>
       }
     </div>
 
     @if (selectedCategory) {
-      <div class="data-card indicators-panel">
-        <h3 class="panel-title">
-          <app-ui-icon [name]="selectedCategory.icon" [style.color]="selectedCategory.color"></app-ui-icon>
+      <div class="data-card mb-5 p-5">
+        <h3 class="mb-4 flex items-center gap-2 text-base text-primary">
+          <app-ui-icon [name]="selectedCategory.icon" class="size-5 text-xl" [style.color]="selectedCategory.color"></app-ui-icon>
           تفاصيل: {{ selectedCategory.name }}
         </h3>
         @if (!selectedCategory.indicators.length) {
           <app-empty-state icon="insights" title="لا توجد مؤشرات في هذه الفئة" [compact]="true"></app-empty-state>
         } @else {
-          <div class="indicators-list">
+          <div class="flex flex-col">
             @for (ind of selectedCategory.indicators; track ind.id) {
-              <div class="indicator-row">
-                <div class="indicator-info">
-                  <span class="indicator-name">{{ ind.name }}</span>
+              <div class="grid grid-cols-1 items-center gap-2 border-b border-border py-[0.85rem] last:border-b-0 min-[901px]:grid-cols-[2fr_1fr_1.5fr_auto_auto] min-[901px]:gap-4">
+                <div>
+                  <span class="block font-semibold text-text">{{ ind.name }}</span>
                   @if (ind.description) {
-                    <small>{{ ind.description }}</small>
+                    <small class="text-xs text-muted">{{ ind.description }}</small>
                   }
                 </div>
-                <div class="indicator-values">
-                  <span class="current">{{ formatValue(ind) }}</span>
-                  <span class="target">الهدف: {{ ind.target }}{{ ind.unit === '%' ? '%' : ' ' + ind.unit }}</span>
+                <div>
+                  <span class="block font-bold text-primary">{{ formatValue(ind) }}</span>
+                  <span class="text-[0.8rem] text-muted">الهدف: {{ ind.target }}{{ ind.unit === '%' ? '%' : ' ' + ind.unit }}</span>
                 </div>
-                <div class="indicator-progress">
-                  <mat-progress-bar mode="determinate" [value]="progressPercent(ind)" [color]="scoreColor(progressPercent(ind))"></mat-progress-bar>
-                  <span class="progress-label">{{ progressPercent(ind) }}%</span>
+                <div class="flex items-center gap-2">
+                  <mat-progress-bar mode="determinate" [value]="progressPercent(ind)" [color]="scoreColor(progressPercent(ind))" class="flex-1 rounded-full"></mat-progress-bar>
+                  <span class="min-w-9 text-[0.8rem] text-muted">{{ progressPercent(ind) }}%</span>
                 </div>
-                <div class="indicator-trend" [class]="'indicator-trend ' + ind.trend.toLowerCase()" [matTooltip]="'الاتجاه مقارنة بالفترة السابقة'">
-                  <app-ui-icon [name]="trendIcon(ind.trend)"></app-ui-icon>
+                <div
+                  class="inline-flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5 text-[0.85rem] font-semibold"
+                  [ngClass]="{
+                    'bg-success-bg text-success': ind.trend === 'UP',
+                    'bg-danger-bg text-danger': ind.trend === 'DOWN',
+                    'bg-slate-100 text-muted': ind.trend === 'STABLE'
+                  }"
+                  [matTooltip]="'الاتجاه مقارنة بالفترة السابقة'">
+                  <app-ui-icon [name]="trendIcon(ind.trend)" class="size-[18px] text-lg"></app-ui-icon>
                   {{ trendLabel(ind) }}
                 </div>
                 <span class="chip" [class]="'chip ' + statusChip(ind.status)">
-                  <app-ui-icon [name]="statusIcon(ind.status)" class="chip-icon"></app-ui-icon>
+                  <app-ui-icon [name]="statusIcon(ind.status)" class="size-3.5 text-sm"></app-ui-icon>
                   {{ statusLabel(ind.status) }}
                 </span>
               </div>
@@ -150,20 +176,24 @@
       </div>
     }
 
-    <div class="data-card table-panel">
-      <h3 class="panel-title"><app-ui-icon name="table_chart"></app-ui-icon> جدول المؤشرات التفصيلي <span class="toolbar-count">{{ tableRows.length }} مؤشر</span></h3>
+    <div class="data-card mb-5 p-5">
+      <h3 class="mb-4 flex items-center gap-2 text-base text-primary">
+        <app-ui-icon name="table_chart" class="size-5 text-xl"></app-ui-icon>
+        جدول المؤشرات التفصيلي
+        <span class="toolbar-count ms-auto font-medium">{{ tableRows.length }} مؤشر</span>
+      </h3>
       @if (!tableRows.length) {
         <app-empty-state icon="table_chart" title="لا توجد مؤشرات لعرضها" [compact]="true"></app-empty-state>
       } @else {
-        <div class="table-scroll">
+        <div class="table-scroll rounded-sp-sm border border-border">
           <table mat-table [dataSource]="tableRows">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>المؤشر</th>
-              <td mat-cell *matCellDef="let r" class="name">{{ r.name }}</td>
+              <td mat-cell *matCellDef="let r" class="font-semibold">{{ r.name }}</td>
             </ng-container>
             <ng-container matColumnDef="value">
               <th mat-header-cell *matHeaderCellDef>القيمة الحالية</th>
-              <td mat-cell *matCellDef="let r"><strong class="value">{{ formatValue(r) }}</strong></td>
+              <td mat-cell *matCellDef="let r"><strong class="text-primary">{{ formatValue(r) }}</strong></td>
             </ng-container>
             <ng-container matColumnDef="target">
               <th mat-header-cell *matHeaderCellDef>الهدف</th>
@@ -172,17 +202,23 @@
             <ng-container matColumnDef="progress">
               <th mat-header-cell *matHeaderCellDef>نسبة الإنجاز</th>
               <td mat-cell *matCellDef="let r">
-                <div class="table-progress">
-                  <mat-progress-bar mode="determinate" [value]="progressPercent(r)" [color]="scoreColor(progressPercent(r))"></mat-progress-bar>
-                  <span>{{ progressPercent(r) }}%</span>
+                <div class="flex min-w-[140px] items-center gap-2">
+                  <mat-progress-bar mode="determinate" [value]="progressPercent(r)" [color]="scoreColor(progressPercent(r))" class="flex-1 rounded-full"></mat-progress-bar>
+                  <span class="min-w-9 text-[0.8rem] text-muted">{{ progressPercent(r) }}%</span>
                 </div>
               </td>
             </ng-container>
             <ng-container matColumnDef="trend">
               <th mat-header-cell *matHeaderCellDef>الاتجاه</th>
               <td mat-cell *matCellDef="let r">
-                <span class="indicator-trend inline" [class]="'indicator-trend inline ' + r.trend.toLowerCase()">
-                  <app-ui-icon [name]="trendIcon(r.trend)"></app-ui-icon>
+                <span
+                  class="inline-flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5 text-[0.85rem] font-semibold"
+                  [ngClass]="{
+                    'bg-success-bg text-success': r.trend === 'UP',
+                    'bg-danger-bg text-danger': r.trend === 'DOWN',
+                    'bg-slate-100 text-muted': r.trend === 'STABLE'
+                  }">
+                  <app-ui-icon [name]="trendIcon(r.trend)" class="size-[18px] text-lg"></app-ui-icon>
                   {{ trendLabel(r) }}
                 </span>
               </td>
@@ -191,7 +227,7 @@
               <th mat-header-cell *matHeaderCellDef>الحالة</th>
               <td mat-cell *matCellDef="let r">
                 <span class="chip" [class]="'chip ' + statusChip(r.status)">
-                  <app-ui-icon [name]="statusIcon(r.status)" class="chip-icon"></app-ui-icon>
+                  <app-ui-icon [name]="statusIcon(r.status)" class="size-3.5 text-sm"></app-ui-icon>
                   {{ statusLabel(r.status) }}
                 </span>
               </td>

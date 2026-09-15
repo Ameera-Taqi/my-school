@@ -28,7 +28,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
     <div class="data-card">
       <div class="list-toolbar">
-        <app-search-field placeholder="ابحث بالرمز أو اسم الشعبة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+        <app-search-field placeholder="ابحث بالرمز أو اسم الشعبة" (search)="onSearch($event)" class="max-w-[440px] flex-1"></app-search-field>
         @if (!loading) {
           <span class="toolbar-count">
             @if (query) { {{ filteredCount }} من {{ total }} شعبة } @else { {{ total }} شعبة }
@@ -53,17 +53,17 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             </ng-container>
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>الاسم</th>
-              <td mat-cell *matCellDef="let r" class="name">{{ r.name }}</td>
+              <td mat-cell *matCellDef="let r" class="font-semibold">{{ r.name }}</td>
             </ng-container>
             <ng-container matColumnDef="description">
               <th mat-header-cell *matHeaderCellDef>الوصف</th>
-              <td mat-cell *matCellDef="let r" class="muted">{{ r.description || '—' }}</td>
+              <td mat-cell *matCellDef="let r" class="text-muted">{{ r.description || '—' }}</td>
             </ng-container>
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-              <td mat-cell *matCellDef="let r" class="actions-cell">
+              <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+              <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap">
                 <div class="row-actions">
-                  <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteDept(r)"><app-ui-icon name="delete"></app-ui-icon></button>
+                  <button type="button" class="btn-action btn-action--delete" (click)="deleteDept(r)"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
                 </div>
               </td>
             </ng-container>
@@ -71,16 +71,10 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <tr mat-row *matRowDef="let row; columns: cols;"></tr>
           </table>
         </div>
-        <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
       }
     </div>
-  `,
-  styles: [`
-    .toolbar-search { flex: 1; max-width: 440px; }
-    .actions-cell { width: 1%; white-space: nowrap; }
-    .name { font-weight: 600; }
-    .muted { color: var(--sp-text-muted); }
-  `]
+  `
 })
 export class DepartmentListComponent implements OnInit, AfterViewInit {
   private readonly deptService = inject(DepartmentApiService);

@@ -14,13 +14,13 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل درجة' : 'إضافة درجة' }}</h2>
     <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>اسم الطالب</mat-label>
           <input matInput formControlName="studentName" cdkFocusInitial autocomplete="off">
           <mat-error>اسم الطالب مطلوب</mat-error>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الفصل</mat-label>
             <input matInput formControlName="className" autocomplete="off">
@@ -32,7 +32,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>المادة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الدرجة</mat-label>
             <input matInput type="number" formControlName="score">
@@ -44,7 +44,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>الدرجة الكاملة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الفصل الدراسي</mat-label>
           <input matInput formControlName="term" autocomplete="off">
           <mat-error>الفصل الدراسي مطلوب</mat-error>
@@ -55,13 +55,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-  `]
+  `
 })
 export class GradeFormDialogComponent {
   readonly data: StudentGrade | null = inject(MAT_DIALOG_DATA);

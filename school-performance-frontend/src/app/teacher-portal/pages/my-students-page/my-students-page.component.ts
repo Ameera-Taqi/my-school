@@ -29,8 +29,7 @@ function normalizeArabic(text: string): string {
     MatTableModule, MatPaginatorModule, MatSortModule, PageHeaderComponent, SearchFieldComponent,
     EmptyStateComponent, TableSkeletonComponent
   ],
-  templateUrl: './my-students-page.component.html',
-  styleUrl: './my-students-page.component.scss'
+  templateUrl: './my-students-page.component.html'
 })
 export class MyStudentsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(TeacherPortalMockService);

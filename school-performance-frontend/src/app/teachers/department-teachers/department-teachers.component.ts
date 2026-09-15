@@ -27,8 +27,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-department-teachers',
   standalone: true,
   imports: [UiIconComponent, RouterModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
-  templateUrl: './department-teachers.component.html',
-  styleUrl: './department-teachers.component.scss'
+  templateUrl: './department-teachers.component.html'
 })
 export class DepartmentTeachersComponent implements OnInit, AfterViewInit {
   private readonly route = inject(ActivatedRoute);
@@ -107,7 +106,7 @@ export class DepartmentTeachersComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(TeacherFormDialogComponent, {
       width: '640px',
       maxWidth: '95vw',
-
+      panelClass: 'sp-form-dialog',
       data: { teacher, departmentName: this.department?.name ?? '' }
     });
 

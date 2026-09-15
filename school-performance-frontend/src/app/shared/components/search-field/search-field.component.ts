@@ -11,9 +11,10 @@ import { UiIconComponent } from '../../icons/ui-icon.component';
   selector: 'app-search-field',
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  host: { class: 'block' },
   template: `
-    <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <app-ui-icon name="search" matPrefix></app-ui-icon>
+    <mat-form-field appearance="outline" class="search-field w-full min-w-[220px] max-sm:min-w-0" subscriptSizing="dynamic">
+      <app-ui-icon name="search" matPrefix class="px-1.5 text-faint"></app-ui-icon>
       <input matInput [formControl]="control" [placeholder]="placeholder" type="search" autocomplete="off" [attr.aria-label]="placeholder">
       @if (control.value) {
         <button mat-icon-button matSuffix type="button" (click)="clear()" aria-label="مسح البحث">
@@ -21,16 +22,7 @@ import { UiIconComponent } from '../../icons/ui-icon.component';
         </button>
       }
     </mat-form-field>
-  `,
-  styles: [`
-    :host { display: block; }
-    .search-field { width: 100%; min-width: 220px; }
-    .search-field ::ng-deep .mat-mdc-text-field-wrapper { height: 42px; }
-    .search-field ::ng-deep .mat-mdc-form-field-flex { height: 42px; align-items: center; }
-    .search-field ::ng-deep .mat-mdc-form-field-infix { padding-top: 8px !important; padding-bottom: 8px !important; min-height: 0; }
-    .search-field ::ng-deep .mat-mdc-form-field-icon-prefix .app-ui-icon { color: var(--sp-text-faint); padding: 0 6px; }
-    @media (max-width: 599px) { .search-field { min-width: 0; } }
-  `]
+  `
 })
 export class SearchFieldComponent implements OnInit, OnDestroy {
   @Input() placeholder = 'بحث...';

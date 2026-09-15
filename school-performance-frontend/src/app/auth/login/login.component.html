@@ -1,36 +1,45 @@
-<div class="login-page">
-  <div class="login-art" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="art-content">
-      <img class="art-logo" src="assets/images/logo.png" width="160" height="160" alt="" />
-      <h2>نظام مؤشر الأداء المدرسي الذكي</h2>
-      <p>منصة واحدة لمتابعة الطلاب والمعلمين والأداء المدرسي، بصلاحيات مرنة لكل دور.</p>
-      <ul class="art-points">
-        <li><app-ui-icon name="check_circle"></app-ui-icon> متابعة الحضور والسلوك والدرجات</li>
-        <li><app-ui-icon name="check_circle"></app-ui-icon> لوحات تحكم لرؤساء الشعب والإدارة</li>
-        <li><app-ui-icon name="check_circle"></app-ui-icon> تقويم مدرسي وتنبيهات ذكية</li>
+<div class="grid min-h-screen grid-cols-[1.1fr_1fr] bg-app-bg max-[899px]:grid-cols-1">
+  <div class="relative flex items-center justify-center overflow-hidden bg-linear-to-br from-primary via-primary-dark to-violet-600 p-12 text-white max-[899px]:hidden" aria-hidden="true">
+    <div class="absolute -top-[120px] -end-20 size-[360px] rounded-full bg-indigo-400 opacity-35 blur-[2px]"></div>
+    <div class="absolute -bottom-[100px] -start-[60px] size-[260px] rounded-full bg-violet-400 opacity-35 blur-[2px]"></div>
+    <div class="relative max-w-[460px]">
+      <img class="mb-5 block size-40 rounded-[20px] bg-white object-contain shadow-[0_16px_40px_rgba(0,0,0,0.35)]" src="assets/images/logo.png" width="160" height="160" alt="" />
+      <h2 class="mb-3 text-[1.7rem] leading-snug font-extrabold">نظام مؤشر الأداء المدرسي الذكي</h2>
+      <p class="mb-6 text-base leading-8 opacity-85">منصة واحدة لمتابعة الطلاب والمعلمين والأداء المدرسي، بصلاحيات مرنة لكل دور.</p>
+      <ul class="m-0 flex list-none flex-col gap-[0.6rem] p-0">
+        <li class="flex items-center gap-2 opacity-90">
+          <app-ui-icon name="check_circle" class="text-[1.05rem] text-green-300"></app-ui-icon>
+          متابعة الحضور والسلوك والدرجات
+        </li>
+        <li class="flex items-center gap-2 opacity-90">
+          <app-ui-icon name="check_circle" class="text-[1.05rem] text-green-300"></app-ui-icon>
+          لوحات تحكم لرؤساء الشعب والإدارة
+        </li>
+        <li class="flex items-center gap-2 opacity-90">
+          <app-ui-icon name="check_circle" class="text-[1.05rem] text-green-300"></app-ui-icon>
+          تقويم مدرسي وتنبيهات ذكية
+        </li>
       </ul>
     </div>
   </div>
 
-  <div class="login-side">
-    <mat-card class="login-card">
-      <div class="login-header">
-        <img class="logo-badge" src="assets/images/logo.png" width="72" height="72" alt="" />
-        <h1>تسجيل الدخول</h1>
-        <p>أدخل بيانات حسابك للمتابعة</p>
+  <div class="flex flex-col items-center justify-center gap-4 p-8 max-[899px]:min-h-screen max-[899px]:bg-linear-to-br max-[899px]:from-[#1a237e] max-[899px]:via-[#3949ab] max-[899px]:to-[#5c6bc0]">
+    <mat-card class="w-full max-w-[440px] !rounded-sp-lg px-8 pt-9 pb-6">
+      <div class="mb-6 text-center">
+        <img class="mx-auto mb-3 block size-[72px] rounded-sp bg-white object-contain shadow-[0_12px_28px_rgba(15,23,42,0.25)]" src="assets/images/logo.png" width="72" height="72" alt="" />
+        <h1 class="mb-1 text-[1.4rem] font-extrabold text-primary">تسجيل الدخول</h1>
+        <p class="m-0 text-muted">أدخل بيانات حسابك للمتابعة</p>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>اسم المستخدم</mat-label>
           <input matInput formControlName="username" autocomplete="username" dir="ltr" cdkFocusInitial>
           <app-ui-icon name="person" matPrefix></app-ui-icon>
           <mat-error>اسم المستخدم مطلوب</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>كلمة المرور</mat-label>
           <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password" dir="ltr">
           <app-ui-icon name="lock" matPrefix></app-ui-icon>
@@ -42,18 +51,18 @@
           <mat-error>كلمة المرور مطلوبة</mat-error>
         </mat-form-field>
 
-        <div class="form-row">
+        <div class="-mt-1 mb-3 flex items-center justify-between">
           <mat-checkbox formControlName="remember">تذكر اسم المستخدم</mat-checkbox>
         </div>
 
         @if (errorMessage) {
-          <div class="error-banner" role="alert">
-            <app-ui-icon name="error_outline"></app-ui-icon>
+          <div class="mb-4 flex items-center gap-2 rounded-sp-sm border border-rose-200 bg-danger-bg px-[0.85rem] py-[0.7rem] text-[0.9rem] text-danger" role="alert">
+            <app-ui-icon name="error_outline" class="shrink-0"></app-ui-icon>
             <span>{{ errorMessage }}</span>
           </div>
         }
 
-        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit" [disabled]="loading">
+        <button mat-flat-button color="primary" class="h-12 w-full text-base" type="submit" [disabled]="loading">
           @if (loading) {
             <mat-spinner diameter="22"></mat-spinner>
           } @else {
@@ -62,8 +71,8 @@
         </button>
       </form>
 
-      <p class="help-text">نسيت كلمة المرور؟ تواصل مع مدير النظام لإعادة تعيينها.</p>
+      <p class="mt-5 mb-0 text-center text-[0.82rem] text-muted">نسيت كلمة المرور؟ تواصل مع مدير النظام لإعادة تعيينها.</p>
     </mat-card>
-    <p class="copyright">© {{ year }} نظام مؤشر الأداء المدرسي الذكي</p>
+    <p class="m-0 text-[0.78rem] text-faint max-[899px]:text-white/80">© {{ year }} نظام مؤشر الأداء المدرسي الذكي</p>
   </div>
 </div>

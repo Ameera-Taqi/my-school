@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -18,9 +19,8 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-alerts-page',
   standalone: true,
-  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './alerts-page.component.html',
-  styleUrl: './alerts-page.component.scss'
+  imports: [UiIconComponent, NgClass, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
+  templateUrl: './alerts-page.component.html'
 })
 export class AlertsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(AlertMockService);

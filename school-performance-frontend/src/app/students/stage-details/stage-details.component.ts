@@ -21,8 +21,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-stage-details',
   standalone: true,
   imports: [UiIconComponent, RouterModule, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, EmptyStateComponent, HasPermissionPipe],
-  templateUrl: './stage-details.component.html',
-  styleUrl: './stage-details.component.scss'
+  templateUrl: './stage-details.component.html'
 })
 export class StageDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

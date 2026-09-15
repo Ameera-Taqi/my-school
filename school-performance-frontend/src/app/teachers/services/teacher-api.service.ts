@@ -8,6 +8,10 @@ import { Teacher } from '../../core/models';
 export class TeacherApiService {
   constructor(private readonly http: HttpClient) {}
 
+  getAll(): Observable<Teacher[]> {
+    return this.http.get<Teacher[]>(`${environment.apiUrl}/teachers`);
+  }
+
   getByDepartment(departmentId: number): Observable<Teacher[]> {
     return this.http.get<Teacher[]>(`${environment.apiUrl}/departments/${departmentId}/teachers`);
   }

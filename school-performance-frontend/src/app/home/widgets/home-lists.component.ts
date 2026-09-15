@@ -13,47 +13,75 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-home-lists',
   standalone: true,
   imports: [UiIconComponent, RouterLink, MatCardModule, MatButtonModule, AppDatePipe],
+  host: { class: 'block' },
   template: `
-    <div class="lists-row">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
       @if (can('meetings.view')) {
-        <mat-card class="list-card">
-          <div class="card-head"><h3><app-ui-icon name="groups"></app-ui-icon> آخر الاجتماعات</h3><a mat-button routerLink="/meetings">الكل</a></div>
-          @if (!stats?.recentMeetings?.length) { <p class="muted">لا توجد اجتماعات</p> } @else {
-            <ul class="simple-list">@for (m of stats?.recentMeetings; track m.id) { <li><span class="li-title">{{ m.title }}</span><span class="li-meta">{{ m.date | appDate:'withTime' }}</span></li> }</ul>
+        <mat-card class="px-5 py-4">
+          <div class="mb-2 flex items-center justify-between">
+            <h3 class="m-0 flex items-center gap-1.5 text-base text-primary"><app-ui-icon name="groups" class="size-5 text-[20px]"></app-ui-icon> آخر الاجتماعات</h3>
+            <a mat-button routerLink="/meetings">الكل</a>
+          </div>
+          @if (!stats?.recentMeetings?.length) {
+            <p class="my-2 text-[0.9rem] text-muted">لا توجد اجتماعات</p>
+          } @else {
+            <ul class="m-0 flex list-none flex-col p-0">
+              @for (m of stats?.recentMeetings; track m.id) {
+                <li class="flex flex-col gap-[0.15rem] border-b border-border py-[0.55rem] last:border-b-0">
+                  <span class="text-[0.92rem] font-semibold">{{ m.title }}</span>
+                  <span class="text-[0.8rem] text-muted">{{ m.date | appDate:'withTime' }}</span>
+                </li>
+              }
+            </ul>
           }
         </mat-card>
       }
       @if (can('tasks.view')) {
-        <mat-card class="list-card">
-          <div class="card-head"><h3><app-ui-icon name="task_alt"></app-ui-icon> المهام القادمة</h3><a mat-button routerLink="/tasks">الكل</a></div>
-          @if (!stats?.recentTasks?.length) { <p class="muted">لا توجد مهام</p> } @else {
-            <ul class="simple-list">@for (t of stats?.recentTasks; track t.id) { <li><span class="li-title">{{ t.title }}</span><span class="li-meta"><span class="chip" [class]="'chip ' + taskChip(t.status)">{{ taskStatusLabels[t.status] || t.status }}</span> {{ t.dueDate | appDate }}</span></li> }</ul>
+        <mat-card class="px-5 py-4">
+          <div class="mb-2 flex items-center justify-between">
+            <h3 class="m-0 flex items-center gap-1.5 text-base text-primary"><app-ui-icon name="task_alt" class="size-5 text-[20px]"></app-ui-icon> المهام القادمة</h3>
+            <a mat-button routerLink="/tasks">الكل</a>
+          </div>
+          @if (!stats?.recentTasks?.length) {
+            <p class="my-2 text-[0.9rem] text-muted">لا توجد مهام</p>
+          } @else {
+            <ul class="m-0 flex list-none flex-col p-0">
+              @for (t of stats?.recentTasks; track t.id) {
+                <li class="flex flex-col gap-[0.15rem] border-b border-border py-[0.55rem] last:border-b-0">
+                  <span class="text-[0.92rem] font-semibold">{{ t.title }}</span>
+                  <span class="flex items-center gap-1.5 text-[0.8rem] text-muted">
+                    <span class="chip" [class]="'chip ' + taskChip(t.status)">{{ taskStatusLabels[t.status] || t.status }}</span>
+                    {{ t.dueDate | appDate }}
+                  </span>
+                </li>
+              }
+            </ul>
           }
         </mat-card>
       }
       @if (can('alerts.view')) {
-        <mat-card class="list-card">
-          <div class="card-head"><h3><app-ui-icon name="notifications_active"></app-ui-icon> آخر التنبيهات</h3><a mat-button routerLink="/alerts">الكل</a></div>
-          @if (!stats?.recentAlerts?.length) { <p class="muted">لا توجد تنبيهات</p> } @else {
-            <ul class="alert-list">@for (a of stats?.recentAlerts; track a.id) { <li [class.reviewed]="a.status === 'REVIEWED'"><span class="chip" [class]="'chip ' + severityChip(a.severity)">{{ alertTypeLabels[a.alertType] || a.alertType }}</span><span class="li-title">{{ a.title }}</span><span class="li-date">{{ a.alertDate | appDate }}</span></li> }</ul>
+        <mat-card class="px-5 py-4">
+          <div class="mb-2 flex items-center justify-between">
+            <h3 class="m-0 flex items-center gap-1.5 text-base text-primary"><app-ui-icon name="notifications_active" class="size-5 text-[20px]"></app-ui-icon> آخر التنبيهات</h3>
+            <a mat-button routerLink="/alerts">الكل</a>
+          </div>
+          @if (!stats?.recentAlerts?.length) {
+            <p class="my-2 text-[0.9rem] text-muted">لا توجد تنبيهات</p>
+          } @else {
+            <ul class="m-0 flex list-none flex-col p-0">
+              @for (a of stats?.recentAlerts; track a.id) {
+                <li class="flex flex-wrap items-center gap-1.5 border-b border-border py-[0.55rem] last:border-b-0" [class.opacity-60]="a.status === 'REVIEWED'">
+                  <span class="chip" [class]="'chip ' + severityChip(a.severity)">{{ alertTypeLabels[a.alertType] || a.alertType }}</span>
+                  <span class="basis-full text-[0.92rem] font-semibold">{{ a.title }}</span>
+                  <span class="ms-auto text-[0.78rem] whitespace-nowrap text-faint">{{ a.alertDate | appDate }}</span>
+                </li>
+              }
+            </ul>
           }
         </mat-card>
       }
     </div>
-  `,
-  styles: [`
-    :host { display: block; }
-    .lists-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
-    .list-card { padding: 1rem 1.25rem; }
-    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; h3 { margin: 0; font-size: 1rem; color: var(--sp-primary); display: flex; align-items: center; gap: 0.4rem; app-ui-icon { font-size: 20px; width: 20px; height: 20px; } } }
-    .muted { color: var(--sp-text-muted); margin: 0.5rem 0; font-size: 0.9rem; }
-    .simple-list, .alert-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-    .simple-list li { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0; border-bottom: 1px solid var(--sp-border); &:last-child { border-bottom: none; } }
-    .li-title { font-weight: 600; font-size: 0.92rem; }
-    .li-meta { font-size: 0.8rem; color: var(--sp-text-muted); display: flex; align-items: center; gap: 0.4rem; }
-    .li-date { font-size: 0.78rem; color: var(--sp-text-faint); margin-inline-start: auto; white-space: nowrap; }
-    .alert-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; padding: 0.55rem 0; border-bottom: 1px solid var(--sp-border); &:last-child { border-bottom: none; } &.reviewed { opacity: 0.6; } .li-title { flex-basis: 100%; } }
-  `]
+  `
 })
 export class HomeListsComponent {
   @Input() stats: HomeStats | null = null;

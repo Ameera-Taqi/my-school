@@ -28,8 +28,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-class-details',
   standalone: true,
   imports: [UiIconComponent, RouterModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
-  templateUrl: './class-details.component.html',
-  styleUrl: './class-details.component.scss'
+  templateUrl: './class-details.component.html'
 })
 export class ClassDetailsComponent implements OnInit, AfterViewInit {
   private readonly route = inject(ActivatedRoute);

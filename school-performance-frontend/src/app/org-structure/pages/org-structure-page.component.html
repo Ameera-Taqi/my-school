@@ -1,25 +1,25 @@
-<section class="org-hero">
-  <div class="hero-brand">
-    <div class="hero-icon" aria-hidden="true">
-      <app-ui-icon name="account_tree"></app-ui-icon>
+<section class="mb-5">
+  <div class="flex items-center gap-4">
+    <div class="flex size-12 shrink-0 items-center justify-center rounded-sp bg-linear-to-br from-primary-mid to-[#8b5cf6] text-white shadow-[0_10px_22px_rgba(79,70,229,0.32)]" aria-hidden="true">
+      <app-ui-icon name="account_tree" class="text-[1.35rem]"></app-ui-icon>
     </div>
     <div>
-      <div class="hero-title-row">
-        <h1>الهيكل التنظيمي</h1>
-        <span class="hero-chip">يتحدّث تلقائياً</span>
+      <div class="flex flex-wrap items-center gap-[0.55rem]">
+        <h1 class="m-0 bg-linear-to-r from-primary-mid to-[#7c3aed] bg-clip-text text-[1.25rem] font-extrabold text-transparent">الهيكل التنظيمي</h1>
+        <span class="rounded-full border border-[#c7d2fe] bg-primary-bg px-[0.65rem] py-[0.15rem] text-[0.7rem] font-bold text-primary-mid">يتحدّث تلقائياً</span>
       </div>
-      <p class="hero-sub">شجرة ديناميكية: كل فرع يرتبط بأصله من المدير حتى المعلمين</p>
+      <p class="mt-[0.2rem] mb-0 text-[0.78rem] text-muted">مدير المدرسة → الوكلاء → الشعب → المواد → المدرسين</p>
     </div>
   </div>
 </section>
 
-<div class="org-toolbar">
-  <div class="toolbar-summary">
-    <div class="stat-pill">
-      <div class="stat-icon"><app-ui-icon name="groups"></app-ui-icon></div>
+<div class="mb-7 flex flex-wrap items-center justify-between gap-4 rounded-sp-lg border border-border bg-white p-[1.1rem_1.25rem] shadow-sp max-[700px]:p-[0.9rem]">
+  <div class="flex flex-wrap items-center gap-5">
+    <div class="flex flex-wrap items-center gap-3 rounded-sp border border-slate-100 bg-slate-50 px-[0.9rem] py-[0.55rem]">
+      <div class="flex size-10 items-center justify-center rounded-sp-sm bg-[rgba(99,102,241,0.1)] text-primary-mid"><app-ui-icon name="groups"></app-ui-icon></div>
       <div>
-        <div class="stat-label">إجمالي القوى العاملة</div>
-        <div class="stat-value">
+        <div class="text-[0.72rem] text-muted">إجمالي القوى العاملة</div>
+        <div class="text-[0.95rem] font-extrabold text-text">
           @if (data) {
             {{ data.totalPeople }} شخص • {{ data.departments.length }} شعبة
           } @else {
@@ -29,61 +29,61 @@
       </div>
     </div>
 
-    <div class="legend hide-mobile">
+    <div class="hide-mobile flex flex-wrap items-center gap-4 text-[0.75rem] font-semibold text-muted">
       @for (level of levels; track level.key) {
-        <span class="legend-item">
-          <span class="legend-dot" [style.background]="level.color"></span>
+        <span class="inline-flex items-center gap-[0.4rem]">
+          <span class="size-3 rounded-full" [style.background]="level.color"></span>
           {{ level.label }}
         </span>
       }
     </div>
   </div>
 
-  <div class="toolbar-actions">
-    <div class="search-wrap">
-      <app-ui-icon name="search" class="search-icon"></app-ui-icon>
+  <div class="flex flex-wrap items-center gap-3 max-[700px]:w-full">
+    <div class="relative min-w-40 max-w-[260px] flex-[1_1_180px] max-[700px]:max-w-none max-[700px]:flex-[1_1_100%]">
+      <app-ui-icon name="search" class="pointer-events-none absolute start-3 top-[50%] -translate-y-[50%] text-[0.95rem] text-faint"></app-ui-icon>
       <input
         type="search"
-        class="search-input"
+        class="h-10 w-full rounded-sp-sm border border-slate-200 bg-slate-100 py-0 pe-[0.9rem] ps-[2.2rem] font-inherit text-[0.85rem] text-text outline-none focus:border-primary-mid focus:bg-white focus:shadow-[0_0_0_3px_rgba(79,70,229,0.15)]"
         placeholder="بحث عن شعبة أو معلم..."
         [value]="searchQuery"
         (input)="onSearch($event)"
         autocomplete="off">
     </div>
 
-    <div class="view-switch" role="tablist" aria-label="طريقة العرض">
-      <button type="button" role="tab" [class.active]="viewMode === 'tree'" [attr.aria-selected]="viewMode === 'tree'" (click)="setView('tree')">
-        <app-ui-icon name="account_tree"></app-ui-icon>
+    <div class="flex rounded-sp-sm border border-slate-200 bg-slate-100 p-1" role="tablist" aria-label="طريقة العرض">
+      <button type="button" role="tab" class="box-border inline-flex cursor-pointer items-center gap-[0.4rem] rounded-lg border-0 bg-transparent px-[0.7rem] py-[0.4rem] text-[0.72rem] font-extrabold text-muted transition-[background,color,box-shadow] duration-150" [class.bg-white]="viewMode === 'tree'" [class.text-primary-mid]="viewMode === 'tree'" [class.shadow-sm]="viewMode === 'tree'" [attr.aria-selected]="viewMode === 'tree'" (click)="setView('tree')">
+        <app-ui-icon name="account_tree" class="text-[0.9rem]"></app-ui-icon>
         <span class="hide-mobile">الهيكل الشجري</span>
       </button>
-      <button type="button" role="tab" [class.active]="viewMode === 'grid'" [attr.aria-selected]="viewMode === 'grid'" (click)="setView('grid')">
-        <app-ui-icon name="apps"></app-ui-icon>
+      <button type="button" role="tab" class="box-border inline-flex cursor-pointer items-center gap-[0.4rem] rounded-lg border-0 bg-transparent px-[0.7rem] py-[0.4rem] text-[0.72rem] font-extrabold text-muted transition-[background,color,box-shadow] duration-150" [class.bg-white]="viewMode === 'grid'" [class.text-primary-mid]="viewMode === 'grid'" [class.shadow-sm]="viewMode === 'grid'" [attr.aria-selected]="viewMode === 'grid'" (click)="setView('grid')">
+        <app-ui-icon name="apps" class="text-[0.9rem]"></app-ui-icon>
         <span class="hide-mobile">شبكة الشعب</span>
       </button>
-      <button type="button" role="tab" [class.active]="viewMode === 'analytics'" [attr.aria-selected]="viewMode === 'analytics'" (click)="setView('analytics')">
-        <app-ui-icon name="analytics"></app-ui-icon>
+      <button type="button" role="tab" class="box-border inline-flex cursor-pointer items-center gap-[0.4rem] rounded-lg border-0 bg-transparent px-[0.7rem] py-[0.4rem] text-[0.72rem] font-extrabold text-muted transition-[background,color,box-shadow] duration-150" [class.bg-white]="viewMode === 'analytics'" [class.text-primary-mid]="viewMode === 'analytics'" [class.shadow-sm]="viewMode === 'analytics'" [attr.aria-selected]="viewMode === 'analytics'" (click)="setView('analytics')">
+        <app-ui-icon name="analytics" class="text-[0.9rem]"></app-ui-icon>
         <span class="hide-mobile">التحليلات</span>
       </button>
     </div>
 
     @if (viewMode === 'tree') {
-      <button type="button" class="sync-btn" (click)="expandAll()" matTooltip="توسيع الكل">
+      <button type="button" class="box-border inline-flex h-10 cursor-pointer items-center gap-[0.4rem] rounded-sp-sm border border-solid border-[#c7d2fe] bg-primary-bg px-[0.95rem] text-[0.85rem] font-extrabold text-primary-mid transition-colors duration-150 hover:bg-primary-light disabled:cursor-default disabled:opacity-60" (click)="expandAll()" matTooltip="توسيع الكل">
         <app-ui-icon name="unfold_more"></app-ui-icon>
         <span class="hide-mobile">توسيع</span>
       </button>
-      <button type="button" class="sync-btn" (click)="collapseBranches()" matTooltip="طي الشعب">
+      <button type="button" class="box-border inline-flex h-10 cursor-pointer items-center gap-[0.4rem] rounded-sp-sm border border-solid border-[#c7d2fe] bg-primary-bg px-[0.95rem] text-[0.85rem] font-extrabold text-primary-mid transition-colors duration-150 hover:bg-primary-light disabled:cursor-default disabled:opacity-60" (click)="collapseBranches()" matTooltip="طي الشعب">
         <app-ui-icon name="unfold_less"></app-ui-icon>
         <span class="hide-mobile">طي</span>
       </button>
     }
 
-    <button type="button" class="sync-btn" (click)="load()" [disabled]="loading" matTooltip="تحديث">
-      <app-ui-icon name="refresh" [class.spin]="loading"></app-ui-icon>
+    <button type="button" class="box-border inline-flex h-10 cursor-pointer items-center gap-[0.4rem] rounded-sp-sm border border-solid border-[#c7d2fe] bg-primary-bg px-[0.95rem] text-[0.85rem] font-extrabold text-primary-mid transition-colors duration-150 hover:bg-primary-light disabled:cursor-default disabled:opacity-60" (click)="load()" [disabled]="loading" matTooltip="تحديث">
+      <app-ui-icon name="refresh" [class.animate-spin]="loading"></app-ui-icon>
       <span class="hide-mobile">تحديث</span>
     </button>
 
     @if (canManageDepartments) {
-      <button type="button" class="add-btn" (click)="openAddSection()">
+      <button type="button" class="box-border inline-flex h-10 cursor-pointer items-center gap-[0.4rem] rounded-sp-sm border-0 bg-primary-mid px-[0.95rem] text-[0.85rem] font-extrabold text-white shadow-[0_10px_22px_rgba(79,70,229,0.28)] transition-colors duration-150 hover:bg-primary-dark" (click)="openAddSection()">
         <app-ui-icon name="add"></app-ui-icon>
         <span>إضافة</span>
       </button>
@@ -92,14 +92,14 @@
 </div>
 
 @if (loading) {
-  <div class="org-skeleton">
-    <span class="skeleton node"></span>
-    <div class="skel-line"></div>
-    <div class="skel-grid">
-      <span class="skeleton dept"></span>
-      <span class="skeleton dept"></span>
-      <span class="skeleton dept"></span>
-      <span class="skeleton dept"></span>
+  <div class="flex flex-col items-center gap-4 py-2 pb-4">
+    <span class="skeleton block h-[88px] w-[min(100%,24rem)] rounded-sp"></span>
+    <div class="h-9 w-0.5 rounded-full bg-[#c7d2fe]"></div>
+    <div class="grid w-full grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
+      <span class="skeleton block h-[260px] rounded-sp"></span>
+      <span class="skeleton block h-[260px] rounded-sp"></span>
+      <span class="skeleton block h-[260px] rounded-sp"></span>
+      <span class="skeleton block h-[260px] rounded-sp"></span>
     </div>
   </div>
 } @else if (!data || isEmpty) {
@@ -115,105 +115,107 @@
 
   <!-- TREE VIEW: parent → children hierarchy -->
   @if (viewMode === 'tree') {
-    <div class="org-tree" role="tree">
+    <div class="org-tree-canvas overflow-auto rounded-sp-lg border border-border bg-[linear-gradient(180deg,#fafbff_0%,#fff_40%)] px-4 pt-6 pb-8 shadow-sp" role="tree">
       @for (root of treeRoots; track root.id) {
-        <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: root, depth: 0 }"></ng-container>
+        <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: root, depth: 0, last: true }"></ng-container>
       }
     </div>
   }
 
   <!-- GRID VIEW -->
   @if (viewMode === 'grid') {
-    <section class="org-root">
-      <div class="level-kicker">مدير المدرسة</div>
+    <section class="mb-1 flex flex-col items-center">
+      <div class="mb-3 text-[0.7rem] font-extrabold tracking-wider text-muted uppercase">مدير المدرسة</div>
       @for (p of data.managers; track p.id) {
-        <button type="button" class="leader-card" (click)="showPerson(p)" [class.inactive]="!p.active">
-          <span class="leader-badge">القيادة العليا</span>
-          <span class="avatar leader">{{ initials(p.fullName) }}</span>
-          <span class="leader-text">
-            <span class="name">{{ p.fullName }}</span>
-            <span class="meta">{{ p.roleName }}</span>
+        <button type="button" class="group relative box-border flex w-full max-w-96 cursor-pointer items-center gap-4 rounded-sp border-2 border-solid border-primary-mid bg-white p-4 shadow-[0_16px_32px_rgba(79,70,229,0.12)] transition-[box-shadow,transform] duration-200 hover:shadow-[0_20px_40px_rgba(79,70,229,0.18)] max-[700px]:max-w-none" [class.opacity-60]="!p.active" (click)="showPerson(p)">
+          <span class="absolute -top-2.5 end-5 rounded-full bg-primary-mid px-[0.7rem] py-[0.15rem] text-[0.62rem] font-extrabold text-white shadow-[0_4px_10px_rgba(79,70,229,0.3)]">القيادة العليا</span>
+          <span class="flex size-14 shrink-0 items-center justify-center rounded-sp bg-primary text-[1.05rem] font-extrabold text-white">{{ initials(p.fullName) }}</span>
+          <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+            <span class="font-extrabold text-text group-hover:text-primary-mid">{{ p.fullName }}</span>
+            <span class="text-[0.75rem] text-muted">{{ p.roleName }}</span>
           </span>
-          <span class="leader-go"><app-ui-icon name="chevron_left"></app-ui-icon></span>
+          <span class="ms-auto flex size-8 items-center justify-center rounded-full bg-primary-bg text-primary-mid transition-transform duration-150 group-hover:scale-[1.08]"><app-ui-icon name="chevron_left" class="text-[0.85rem]"></app-ui-icon></span>
         </button>
       } @empty {
-        <div class="leader-card placeholder">
-          <span class="avatar leader empty"><app-ui-icon name="person_off"></app-ui-icon></span>
-          <span class="leader-text">
-            <span class="name">لم يُعيَّن مدير مدرسة بعد</span>
-            <span class="meta">عيّن مدير المدرسة من صفحة المستخدمين</span>
+        <div class="relative box-border flex w-full max-w-96 cursor-default items-center gap-4 rounded-sp border-2 border-dashed border-primary-mid bg-white p-4 max-[700px]:max-w-none">
+          <span class="flex size-14 shrink-0 items-center justify-center rounded-sp bg-slate-300 text-[1.05rem] font-extrabold text-white"><app-ui-icon name="person_off"></app-ui-icon></span>
+          <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+            <span class="font-extrabold text-text">لم يُعيَّن مدير مدرسة بعد</span>
+            <span class="text-[0.75rem] text-muted">عيّن مدير المدرسة من صفحة المستخدمين</span>
           </span>
         </div>
       }
-      <div class="connector"></div>
-      <div class="branch-label">رؤساء الشعب والمعلمون (عدد الشعب: {{ data.departments.length }})</div>
-      <div class="connector short"></div>
+      <div class="my-1 h-10 w-0.5 bg-indigo-300"></div>
+      <div class="max-w-80 rounded-sp-sm bg-[rgba(226,232,240,0.6)] px-4 py-[0.4rem] text-center text-[0.75rem] font-bold text-muted shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)]">رؤساء الشعب والمعلمون (عدد الشعب: {{ data.departments.length }})</div>
+      <div class="mt-0 mb-6 h-6 w-0.5 bg-indigo-300"></div>
     </section>
 
-    <div class="sections-grid">
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
       @for (dept of filteredDepartments; track dept.id) {
-        <article class="section-card" [class.inactive]="!dept.active">
-          <header class="section-head">
-            <div class="section-title-wrap">
-              <div class="section-icon"><app-ui-icon name="domain"></app-ui-icon></div>
+        <article class="group flex flex-col overflow-hidden rounded-sp border border-border bg-white shadow-sp transition-[box-shadow,transform] duration-200 hover:shadow-sp-md" [class.opacity-65]="!dept.active">
+          <header class="flex items-start justify-between gap-2 border-b border-slate-100 bg-linear-to-l from-[rgba(248,250,252,0.7)] to-transparent p-[0.85rem]">
+            <div class="flex min-w-0 items-center gap-[0.65rem]">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-sp-sm bg-amber-100 text-warning"><app-ui-icon name="domain" class="text-[0.9rem]"></app-ui-icon></div>
               <div>
-                <h3>{{ dept.name }}</h3>
-                <p>{{ dept.teachers.length }} معلم • {{ dept.head ? 'برئيس شعبة' : 'بدون رئيس' }}</p>
+                <h3 class="m-0 text-[0.88rem] font-extrabold text-text transition-colors duration-150 group-hover:text-primary-mid">{{ dept.name }}</h3>
+                <p class="mt-[0.15rem] mb-0 text-[0.68rem] text-muted">{{ dept.teachers.length }} معلم • {{ dept.head ? 'برئيس شعبة' : 'بدون رئيس' }}</p>
               </div>
             </div>
-            <a class="icon-btn" [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة الشعبة" aria-label="فتح صفحة الشعبة">
-              <app-ui-icon name="open_in_new"></app-ui-icon>
+            <a class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-faint no-underline transition-colors hover:bg-slate-100 hover:text-primary-mid" [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة الشعبة" aria-label="فتح صفحة الشعبة">
+              <app-ui-icon name="open_in_new" class="text-[0.75rem]"></app-ui-icon>
             </a>
           </header>
 
-          <div class="section-body">
-            <div class="head-slot">
+          <div class="flex flex-1 flex-col gap-[0.65rem] p-[0.85rem]">
+            <div class="flex items-center justify-between gap-2 rounded-sp-sm border border-dashed border-slate-300 bg-[rgba(248,250,252,0.7)] px-[0.7rem] py-[0.6rem]">
               @if (dept.head) {
-                <button type="button" class="head-person" (click)="showPerson(dept.head!)">
-                  <span class="avatar head">{{ initials(dept.head.fullName) }}</span>
-                  <span>
-                    <span class="name">{{ dept.head.fullName }}</span>
-                    <span class="role-tag">رئيس الشعبة</span>
+                <button type="button" class="box-border flex min-w-0 cursor-pointer items-center gap-[0.6rem] border-0 bg-transparent p-0" (click)="showPerson(dept.head!)">
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-lg bg-[#d97706] text-[0.72rem] font-extrabold text-white">{{ initials(dept.head.fullName) }}</span>
+                  <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+                    <span class="font-extrabold text-text">{{ dept.head.fullName }}</span>
+                    <span class="block text-[0.58rem] font-bold text-warning">رئيس الشعبة</span>
                   </span>
                 </button>
               } @else {
-                <span class="head-empty">
-                  <app-ui-icon name="person_add"></app-ui-icon>
+                <span class="inline-flex items-center gap-[0.35rem] text-[0.75rem] text-faint">
+                  <app-ui-icon name="person_add" class="text-[0.7rem]"></app-ui-icon>
                   بدون رئيس
                 </span>
               }
 
               @if (canManageTeachers) {
-                <button type="button" class="link-btn" [matMenuTriggerFor]="headMenu" [matMenuTriggerData]="{ dept: dept }">
+                <button type="button" class="cursor-pointer whitespace-nowrap border-0 bg-transparent p-0 text-[0.7rem] font-extrabold text-primary-mid hover:underline" [matMenuTriggerFor]="headMenu" [matMenuTriggerData]="{ dept: dept }">
                   {{ dept.head ? 'تغيير' : 'تعيين' }}
                 </button>
               }
             </div>
 
-            <div class="teachers-slot">
-              @for (t of dept.teachers; track t.id) {
-                <div class="teacher-row">
-                  <button type="button" class="teacher-person" (click)="showPerson(t)">
-                    <span class="avatar teacher">{{ initials(t.fullName) }}</span>
-                    <span>
-                      <span class="name">{{ t.fullName }}</span>
-                      <span class="meta">{{ t.specialization || t.roleName }}</span>
+            <div class="flex flex-1 flex-col gap-[0.4rem]">
+      @for (t of deptTeachers(dept); track t.id) {
+                @if (!dept.head || t.id !== dept.head.id) {
+                <div class="flex items-center gap-[0.35rem] rounded-[10px] border border-slate-200 bg-white px-2 py-[0.45rem] shadow-[0_1px_1px_rgba(15,23,42,0.03)]">
+                  <button type="button" class="box-border flex min-w-0 flex-1 cursor-pointer items-center gap-[0.6rem] border-0 bg-transparent p-0" (click)="showPerson(t)">
+                    <span class="flex size-7 shrink-0 items-center justify-center rounded-[7px] bg-[#059669] text-[0.65rem] font-extrabold text-white">{{ initials(t.fullName) }}</span>
+                    <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+                      <span class="text-[0.72rem] font-extrabold text-text">{{ t.fullName }}</span>
+                      <span class="text-[0.58rem] text-muted">{{ t.specialization || t.roleName }}</span>
                     </span>
                   </button>
                   @if (canManageTeachers) {
-                    <button type="button" class="icon-btn danger" (click)="removeTeacher(dept, t)" matTooltip="إزالة المعلم" aria-label="إزالة المعلم">
-                      <app-ui-icon name="close"></app-ui-icon>
+                    <button type="button" class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent text-faint hover:bg-danger-bg hover:text-danger" (click)="removeTeacher(dept, t)" matTooltip="إزالة المعلم" aria-label="إزالة المعلم">
+                      <app-ui-icon name="close" class="text-[0.75rem]"></app-ui-icon>
                     </button>
                   }
                 </div>
+                }
               } @empty {
-                <div class="teachers-empty">لا يوجد معلمون</div>
+                <div class="rounded-sp-sm border border-dashed border-slate-200 px-2 py-[0.7rem] text-center text-[0.7rem] text-faint">لا يوجد معلمون</div>
               }
             </div>
 
             @if (canManageTeachers) {
-              <button type="button" class="add-teacher-btn" (click)="openAddTeacher(dept)">
-                <app-ui-icon name="person_add"></app-ui-icon>
+              <button type="button" class="mt-auto box-border flex w-full cursor-pointer items-center justify-center gap-[0.4rem] rounded-sp-sm border border-solid border-[#c7d2fe] bg-transparent py-[0.55rem] text-[0.7rem] font-extrabold text-primary-mid transition-colors duration-150 hover:bg-primary-bg" (click)="openAddTeacher(dept)">
+                <app-ui-icon name="person_add" class="text-[0.75rem]"></app-ui-icon>
                 إضافة معلم
               </button>
             }
@@ -222,32 +224,32 @@
       }
 
       @if (showUnassigned) {
-        <article class="section-card unassigned">
-          <header class="section-head">
-            <div class="section-title-wrap">
-              <div class="section-icon muted"><app-ui-icon name="help_outline"></app-ui-icon></div>
+        <article class="flex flex-col overflow-hidden rounded-sp border border-dashed border-border bg-white shadow-sp">
+          <header class="flex items-start justify-between gap-2 border-b border-slate-100 bg-linear-to-l from-[rgba(248,250,252,0.7)] to-transparent p-[0.85rem]">
+            <div class="flex min-w-0 items-center gap-[0.65rem]">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-sp-sm bg-slate-100 text-faint"><app-ui-icon name="help_outline" class="text-[0.9rem]"></app-ui-icon></div>
               <div>
-                <h3>بدون شعبة</h3>
-                <p>{{ data.unassignedHeads.length + data.unassignedTeachers.length }} شخص غير مرتبط بشعبة</p>
+                <h3 class="m-0 text-[0.88rem] font-extrabold text-text">بدون شعبة</h3>
+                <p class="mt-[0.15rem] mb-0 text-[0.68rem] text-muted">{{ data.unassignedHeads.length + data.unassignedTeachers.length }} شخص غير مرتبط بشعبة</p>
               </div>
             </div>
           </header>
-          <div class="section-body">
+          <div class="flex flex-1 flex-col gap-[0.65rem] p-[0.85rem]">
             @for (p of data.unassignedHeads; track p.id) {
-              <button type="button" class="teacher-person wide" (click)="showPerson(p)">
-                <span class="avatar head">{{ initials(p.fullName) }}</span>
-                <span>
-                  <span class="name">{{ p.fullName }}</span>
-                  <span class="role-tag">{{ p.roleName }}</span>
+              <button type="button" class="box-border flex w-full cursor-pointer items-center gap-[0.6rem] rounded-[10px] border border-solid border-slate-200 bg-white px-2 py-[0.45rem]" (click)="showPerson(p)">
+                <span class="flex size-[30px] shrink-0 items-center justify-center rounded-lg bg-[#d97706] text-[0.72rem] font-extrabold text-white">{{ initials(p.fullName) }}</span>
+                <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+                  <span class="font-extrabold text-text">{{ p.fullName }}</span>
+                  <span class="block text-[0.58rem] font-bold text-warning">{{ p.roleName }}</span>
                 </span>
               </button>
             }
             @for (t of data.unassignedTeachers; track t.id) {
-              <button type="button" class="teacher-person wide" (click)="showPerson(t)">
-                <span class="avatar teacher">{{ initials(t.fullName) }}</span>
-                <span>
-                  <span class="name">{{ t.fullName }}</span>
-                  <span class="meta">{{ t.specialization || t.roleName }}</span>
+              <button type="button" class="box-border flex w-full cursor-pointer items-center gap-[0.6rem] rounded-[10px] border border-solid border-slate-200 bg-white px-2 py-[0.45rem]" (click)="showPerson(t)">
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-[7px] bg-[#059669] text-[0.65rem] font-extrabold text-white">{{ initials(t.fullName) }}</span>
+                <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+                  <span class="font-extrabold text-text">{{ t.fullName }}</span>
+                  <span class="text-[0.75rem] text-muted">{{ t.specialization || t.roleName }}</span>
                 </span>
               </button>
             }
@@ -262,124 +264,137 @@
   }
 
   @if (viewMode === 'analytics') {
-    <div class="analytics-grid">
-      <article class="analytics-card">
-        <div class="analytics-label">اكتمال رؤساء الشعب</div>
-        <div class="analytics-value indigo">{{ headsCount }} / {{ data.departments.length }}</div>
-        <div class="meter">
-          <span class="meter-fill indigo" [style.width.%]="headsCoverage"></span>
+    <div class="grid grid-cols-1 gap-5 min-[901px]:grid-cols-3">
+      <article class="rounded-sp-lg border border-border bg-white p-6 shadow-sp">
+        <div class="mb-2 text-[0.85rem] font-extrabold text-muted">اكتمال رؤساء الشعب</div>
+        <div class="mb-4 text-[1.85rem] font-extrabold text-primary-mid">{{ headsCount }} / {{ data.departments.length }}</div>
+        <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+          <span class="block h-full rounded-full bg-primary-mid transition-[width] duration-[450ms] ease-out" [style.width.%]="headsCoverage"></span>
         </div>
-        <p>نسبة تغطية المناصب الإشرافية للشعب الدراسية.</p>
+        <p class="mt-3 mb-0 text-[0.75rem] text-faint">نسبة تغطية المناصب الإشرافية للشعب الدراسية.</p>
       </article>
 
-      <article class="analytics-card">
-        <div class="analytics-label">توزيع الكوادر التعليمية</div>
-        <div class="analytics-value emerald">{{ data.totalPeople }}</div>
-        <div class="meter stacked">
-          <span class="seg manager" [style.width.%]="leadershipShare"></span>
-          <span class="seg head" [style.width.%]="headsShare"></span>
-          <span class="seg teacher" [style.width.%]="teachersShare"></span>
+      <article class="rounded-sp-lg border border-border bg-white p-6 shadow-sp">
+        <div class="mb-2 text-[0.85rem] font-extrabold text-muted">توزيع الكوادر التعليمية</div>
+        <div class="mb-4 text-[1.85rem] font-extrabold text-success">{{ data.totalPeople }}</div>
+        <div class="flex h-3 overflow-hidden rounded-full bg-slate-100">
+          <span class="h-full bg-primary-mid" [style.width.%]="leadershipShare"></span>
+          <span class="h-full bg-amber-500" [style.width.%]="headsShare"></span>
+          <span class="h-full bg-emerald-500" [style.width.%]="teachersShare"></span>
         </div>
-        <p>توزيع بين القيادة، الإشراف، والمعلمين.</p>
+        <p class="mt-3 mb-0 text-[0.75rem] text-faint">توزيع بين القيادة، الإشراف، والمعلمين.</p>
       </article>
 
-      <article class="analytics-card">
-        <div class="analytics-label">حالة التحديث الآلي</div>
-        <div class="live-row">
-          <span class="live-dot" aria-hidden="true"></span>
+      <article class="rounded-sp-lg border border-border bg-white p-6 shadow-sp">
+        <div class="mb-2 text-[0.85rem] font-extrabold text-muted">حالة التحديث الآلي</div>
+        <div class="mt-2 flex items-center gap-[0.7rem] text-[0.9rem] font-extrabold text-text">
+          <span class="org-live-dot size-3 rounded-full bg-emerald-500" aria-hidden="true"></span>
           <span>متصل بقاعدة البيانات المركزية</span>
         </div>
-        <p>آخر مزامنة: {{ data.generatedAt | appDate:'withTime' }}</p>
+        <p class="mt-3 mb-0 text-[0.75rem] text-faint">آخر مزامنة: {{ data.generatedAt | appDate:'withTime' }}</p>
       </article>
     </div>
   }
 
-  <p class="generated">آخر تحديث: {{ data.generatedAt | appDate:'withTime' }}</p>
+  <p class="mt-5 mb-0 text-center text-[0.75rem] text-faint">آخر تحديث: {{ data.generatedAt | appDate:'withTime' }}</p>
 }
 
-<!-- Recursive tree node -->
-<ng-template #treeNode let-node let-depth="depth">
-  <div class="tree-node" [attr.data-kind]="node.kind" [style.--depth]="depth" role="treeitem" [attr.aria-expanded]="node.children.length ? isExpanded(node) : null">
-    <div class="tree-row" [class.has-children]="node.children.length" [class.expanded]="isExpanded(node)">
+<!-- Recursive tree node with visible branches -->
+<ng-template #treeNode let-node let-depth="depth" let-last="last">
+  <div
+    class="org-tree-node relative"
+    [class.org-tree-node--last]="last"
+    [attr.data-kind]="node.kind"
+    role="treeitem"
+    [attr.aria-expanded]="node.children.length ? isExpanded(node) : null">
+    <div class="org-tree-row flex min-h-12 items-center gap-2 py-1" [style.padding-inline-start.rem]="depth === 0 ? 0.25 : 0">
       @if (node.children.length) {
-        <button type="button" class="twist" (click)="toggleNode(node, $event)" [attr.aria-label]="isExpanded(node) ? 'طي' : 'توسيع'">
-          <app-ui-icon [name]="isExpanded(node) ? 'expand_more' : 'chevron_left'"></app-ui-icon>
+        <button type="button" class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent text-muted hover:bg-primary-bg hover:text-primary-mid" (click)="toggleNode(node, $event)" [attr.aria-label]="isExpanded(node) ? 'طي' : 'توسيع'">
+          <app-ui-icon [name]="isExpanded(node) ? 'expand_more' : 'chevron_left'" class="text-[0.95rem]"></app-ui-icon>
         </button>
       } @else {
-        <span class="twist spacer" aria-hidden="true"></span>
+        <span class="org-tree-leaf-dot relative size-7 shrink-0" aria-hidden="true"></span>
       }
 
       <button
         type="button"
-        class="tree-card"
-        [class]="'tree-card kind-' + node.kind"
-        [class.inactive]="node.person && !node.person.active"
+        class="org-tree-card box-border flex min-w-0 flex-1 cursor-pointer items-center gap-[0.7rem] rounded-[14px] border border-transparent bg-white px-[0.8rem] py-[0.55rem] text-start transition-[border-color,box-shadow,background] duration-150 hover:border-slate-200 hover:shadow-[0_6px_18px_rgba(15,23,42,0.06)]"
+        [attr.data-kind]="node.kind"
+        [class.opacity-55]="node.person && !node.person.active"
         (click)="node.person ? showPerson(node.person) : (node.children.length ? toggleNode(node) : null)">
-        @if (node.kind === 'department' || node.kind === 'group') {
-          <span class="avatar icon-av" [class]="node.kind">
-            <app-ui-icon [name]="node.kind === 'department' ? 'domain' : 'account_tree'"></app-ui-icon>
+        @if (node.kind === 'department' || node.kind === 'group' || node.kind === 'subject') {
+          <span class="org-tree-icon inline-flex size-9 shrink-0 items-center justify-center rounded-[11px] font-extrabold" [attr.data-kind]="node.kind">
+            <app-ui-icon [name]="node.kind === 'department' ? 'domain' : node.kind === 'subject' ? 'menu_book' : 'account_tree'" class="text-base"></app-ui-icon>
           </span>
         } @else if (node.kind === 'empty') {
-          <span class="avatar icon-av empty"><app-ui-icon name="person_off"></app-ui-icon></span>
+          <span class="org-tree-icon inline-flex size-9 shrink-0 items-center justify-center rounded-[11px] bg-slate-200 font-extrabold text-faint" data-kind="empty"><app-ui-icon name="person_off" class="text-base"></app-ui-icon></span>
         } @else {
-          <span class="avatar" [class]="node.kind">{{ initials(node.label) }}</span>
+          <span class="org-tree-avatar inline-flex size-[34px] shrink-0 items-center justify-center rounded-[11px] text-[0.78rem] font-extrabold text-white" [attr.data-kind]="node.kind">{{ initials(node.label) }}</span>
         }
-        <span class="tree-text">
-          <span class="name">{{ node.label }}</span>
-          @if (node.meta) { <span class="meta">{{ node.meta }}</span> }
+        <span class="flex min-w-0 flex-col text-start leading-[1.3]">
+          <span class="truncate font-extrabold text-text">{{ node.label }}</span>
+          @if (node.meta) { <span class="text-[0.72rem] text-muted">{{ node.meta }}</span> }
         </span>
         @if (node.kind === 'manager') {
-          <span class="pill">القيادة العليا</span>
+          <span class="ms-auto whitespace-nowrap rounded-full bg-primary-mid px-[0.65rem] py-[0.15rem] text-[0.62rem] font-extrabold text-white">مدير المدرسة</span>
+        }
+        @if (node.kind === 'assistant') {
+          <span class="ms-auto whitespace-nowrap rounded-full bg-[#0891b2] px-[0.65rem] py-[0.15rem] text-[0.62rem] font-extrabold text-white">وكيل</span>
+        }
+        @if (node.kind === 'head') {
+          <span class="ms-auto whitespace-nowrap rounded-full bg-[#d97706] px-[0.65rem] py-[0.15rem] text-[0.62rem] font-extrabold text-white">رئيس شعبة</span>
         }
       </button>
 
       @if (node.kind === 'department' && node.dept) {
-        <div class="tree-actions">
-          <a class="icon-btn" [routerLink]="['/teachers/departments', node.dept.id]" matTooltip="فتح صفحة الشعبة" aria-label="فتح صفحة الشعبة" (click)="$event.stopPropagation()">
-            <app-ui-icon name="open_in_new"></app-ui-icon>
+        <div class="flex shrink-0 items-center gap-1">
+          <a class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-faint no-underline hover:bg-slate-100 hover:text-primary-mid" [routerLink]="['/teachers/departments', node.dept.id]" matTooltip="فتح صفحة الشعبة" aria-label="فتح صفحة الشعبة" (click)="$event.stopPropagation()">
+            <app-ui-icon name="open_in_new" class="text-[0.75rem]"></app-ui-icon>
           </a>
           @if (canManageTeachers) {
-            <button type="button" class="link-btn" [matMenuTriggerFor]="headMenu" [matMenuTriggerData]="{ dept: node.dept }" (click)="$event.stopPropagation()">
+            <button type="button" class="cursor-pointer whitespace-nowrap border-0 bg-transparent p-0 text-[0.7rem] font-extrabold text-primary-mid hover:underline max-[700px]:hidden" [matMenuTriggerFor]="headMenu" [matMenuTriggerData]="{ dept: node.dept }" (click)="$event.stopPropagation()">
               {{ node.dept.head ? 'تغيير الرئيس' : 'تعيين رئيس' }}
             </button>
-            <button type="button" class="icon-btn" matTooltip="إضافة معلم" (click)="openAddTeacher(node.dept!); $event.stopPropagation()">
-              <app-ui-icon name="person_add"></app-ui-icon>
+            <button type="button" class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent text-faint hover:bg-slate-100 hover:text-primary-mid" matTooltip="إضافة معلم" (click)="openAddTeacher(node.dept!); $event.stopPropagation()">
+              <app-ui-icon name="person_add" class="text-[0.75rem]"></app-ui-icon>
             </button>
           }
         </div>
       }
 
       @if (node.kind === 'teacher' && node.dept && node.person && canManageTeachers) {
-        <button type="button" class="icon-btn danger" matTooltip="إزالة المعلم" (click)="removeTeacher(node.dept!, node.person!); $event.stopPropagation()">
-          <app-ui-icon name="close"></app-ui-icon>
+        <button type="button" class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent text-faint hover:bg-danger-bg hover:text-danger" matTooltip="إزالة المعلم" (click)="removeTeacher(node.dept!, node.person!); $event.stopPropagation()">
+          <app-ui-icon name="close" class="text-[0.75rem]"></app-ui-icon>
         </button>
       }
     </div>
 
     @if (node.children.length && isExpanded(node)) {
-      <div class="tree-children" role="group">
-        @for (child of node.children; track child.id) {
-          <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+      <ul class="org-tree-branch ms-[0.9rem] list-none border-s-2 border-[#c7d2fe] p-0 ps-[1.15rem]" role="group">
+        @for (child of node.children; track child.id; let lastChild = $last) {
+          <li class="org-tree-branch-item relative py-[0.15rem]" [class.org-tree-branch-item--last]="lastChild">
+            <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: child, depth: depth + 1, last: lastChild }"></ng-container>
+          </li>
         }
-      </div>
+      </ul>
     }
   </div>
 </ng-template>
 
-<mat-menu #headMenu="matMenu" class="head-pick-menu">
+<mat-menu #headMenu="matMenu">
   <ng-template matMenuContent let-dept="dept">
-    @if (dept.teachers.length) {
-      @for (t of dept.teachers; track t.id) {
+      @if (deptTeachers(dept).length) {
+      @for (t of deptTeachers(dept); track t.id) {
         <button mat-menu-item type="button" (click)="assignHead(dept, t)">
-          <span class="avatar teacher sm">{{ initials(t.fullName) }}</span>
-          <span class="menu-text">
-            <strong>{{ t.fullName }}</strong>
-            <small>{{ t.specialization || t.roleName }}</small>
+          <span class="me-2 inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-[#059669] text-[0.58rem] font-extrabold text-white">{{ initials(t.fullName) }}</span>
+          <span class="inline-flex flex-col leading-[1.25]">
+            <strong class="text-[0.85rem]">{{ t.fullName }}</strong>
+            <small class="text-[0.7rem] text-muted">{{ t.specialization || t.roleName }}</small>
           </span>
         </button>
       }
     } @else {
-      <div class="menu-hint">لا يوجد معلمون في هذه الشعبة بعد</div>
+      <div class="px-4 pt-[0.55rem] pb-1 text-[0.75rem] text-muted">لا يوجد معلمون في هذه الشعبة بعد</div>
     }
     <button mat-menu-item type="button" (click)="openAddTeacher(dept, true)">
       <app-ui-icon name="person_add"></app-ui-icon>

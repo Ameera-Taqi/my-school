@@ -21,8 +21,7 @@ import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
   selector: 'app-teacher-notes-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './teacher-notes-page.component.html',
-  styleUrl: './teacher-notes-page.component.scss'
+  templateUrl: './teacher-notes-page.component.html'
 })
 export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(TeacherPortalMockService);

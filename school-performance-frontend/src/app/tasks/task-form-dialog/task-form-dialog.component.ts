@@ -15,18 +15,18 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل مهمة' : 'مهمة جديدة' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>عنوان المهمة</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
           <mat-error>عنوان المهمة مطلوب</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الوصف</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>المسؤول</mat-label>
             <input matInput formControlName="assignee" autocomplete="off">
@@ -41,7 +41,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>تاريخ الاستحقاق مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الأولوية</mat-label>
             <mat-select formControlName="priority">
@@ -62,7 +62,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>الحالة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>ربط باجتماع (اختياري)</mat-label>
           <input matInput formControlName="meetingTitle" placeholder="اسم الاجتماع" autocomplete="off">
           <app-ui-icon name="groups" matSuffix></app-ui-icon>
@@ -75,14 +75,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة المهمة' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .full-width { width: 100%; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class TaskFormDialogComponent {
   readonly data: SchoolTask | null = inject(MAT_DIALOG_DATA);

@@ -32,8 +32,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-academic-notes-page',
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './academic-notes-page.component.html',
-  styleUrl: './academic-notes-page.component.scss'
+  templateUrl: './academic-notes-page.component.html'
 })
 export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(AcademicNotesMockService);

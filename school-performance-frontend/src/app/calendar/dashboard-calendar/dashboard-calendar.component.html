@@ -1,22 +1,24 @@
-<mat-card class="calendar-card">
+<mat-card class="!mb-0 !p-5">
   <!-- Header: title, month navigation, actions -->
-  <div class="cal-header">
-    <div class="cal-title">
-      <span class="cal-title-icon"><app-ui-icon name="calendar_month"></app-ui-icon></span>
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <span class="flex size-[42px] shrink-0 items-center justify-center rounded-sp-sm bg-primary-light text-primary">
+        <app-ui-icon name="calendar_month"></app-ui-icon>
+      </span>
       <div>
-        <h3>{{ 'calendar.title' | translate }}</h3>
-        <span class="cal-subtitle">{{ eventsInMonthLabel }}</span>
+        <h3 class="m-0 text-[1.05rem] text-primary">{{ 'calendar.title' | translate }}</h3>
+        <span class="text-xs text-muted">{{ eventsInMonthLabel }}</span>
       </div>
     </div>
 
-    <div class="cal-nav">
+    <div class="flex items-center gap-1 rounded-full bg-[#f4f5fa] px-[0.35rem] py-[0.15rem]">
       <button mat-icon-button type="button" (click)="nextMonth()" [matTooltip]="'calendar.nextMonth' | translate" [attr.aria-label]="'calendar.nextMonth' | translate"><app-ui-icon name="chevron_right"></app-ui-icon></button>
-      <span class="month-label">{{ monthLabel }}</span>
+      <span class="min-w-[120px] text-center font-bold text-primary">{{ monthLabel }}</span>
       <button mat-icon-button type="button" (click)="prevMonth()" [matTooltip]="'calendar.prevMonth' | translate" [attr.aria-label]="'calendar.prevMonth' | translate"><app-ui-icon name="chevron_left"></app-ui-icon></button>
-      <button mat-stroked-button type="button" class="today-btn" (click)="goToToday()" [disabled]="isCurrentMonthShown && isSelectedToday">{{ 'calendar.today' | translate }}</button>
+      <button mat-stroked-button type="button" class="ms-[0.35rem] !h-8 !rounded-full !px-[0.85rem] !leading-8" (click)="goToToday()" [disabled]="isCurrentMonthShown && isSelectedToday">{{ 'calendar.today' | translate }}</button>
     </div>
 
-    <div class="cal-actions">
+    <div class="@max-[560px]:w-full [&_button]:@max-[560px]:w-full">
       @if ('calendar.personal.create' | hasPermission) {
         <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">
           <app-ui-icon name="add"></app-ui-icon>
@@ -26,65 +28,95 @@
     </div>
   </div>
 
-  <div class="legend">
-    <span class="legend-item"><span class="dot public"></span> {{ 'calendar.legend.school' | translate }}</span>
-    <span class="legend-item"><span class="dot role"></span> {{ 'calendar.legend.meeting' | translate }}</span>
-    <span class="legend-item"><span class="dot personal"></span> {{ 'calendar.legend.personal' | translate }}</span>
+  <div class="mt-[0.9rem] mb-3 flex gap-4 text-xs text-muted">
+    <span class="inline-flex items-center gap-[0.35rem]"><span class="inline-block size-2.5 rounded-[3px] bg-[#1976d2]"></span> {{ 'calendar.legend.school' | translate }}</span>
+    <span class="inline-flex items-center gap-[0.35rem]"><span class="inline-block size-2.5 rounded-[3px] bg-[#7b1fa2]"></span> {{ 'calendar.legend.meeting' | translate }}</span>
+    <span class="inline-flex items-center gap-[0.35rem]"><span class="inline-block size-2.5 rounded-[3px] bg-[#388e3c]"></span> {{ 'calendar.legend.personal' | translate }}</span>
   </div>
 
   @if (loading) {
-    <div class="calendar-layout" aria-busy="true">
-      <div class="calendar-main">
-        <div class="weekdays">@for (day of weekDays; track day) { <div class="weekday">{{ day }}</div> }</div>
-        <div class="days-grid">
-          @for (i of skeletonCells; track i) { <span class="skeleton sk-day"></span> }
+    <div class="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 @max-[860px]:grid-cols-1" aria-busy="true">
+      <div>
+        <div class="mb-1 grid grid-cols-7">
+          @for (day of weekDays; track day) {
+            <div class="px-0 py-[0.35rem] text-center text-xs font-bold text-muted">{{ day }}</div>
+          }
+        </div>
+        <div class="grid grid-cols-7 gap-[5px] @max-[560px]:gap-[3px]">
+          @for (i of skeletonCells; track i) {
+            <span class="skeleton block min-h-[92px] rounded-sp-sm @max-[560px]:min-h-[52px]"></span>
+          }
         </div>
       </div>
-      <div class="agenda">
-        <span class="skeleton sk-line w60"></span>
-        <span class="skeleton sk-event"></span>
-        <span class="skeleton sk-event"></span>
+      <div class="flex min-h-[300px] flex-col rounded-sp border border-border bg-[#f8f9fc] p-[0.9rem]">
+        <span class="skeleton mb-3 block h-3.5 w-3/5"></span>
+        <span class="skeleton mb-2 block h-12 rounded-[10px]"></span>
+        <span class="skeleton mb-2 block h-12 rounded-[10px]"></span>
       </div>
     </div>
   } @else {
-    <div class="calendar-layout">
+    <div class="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5 @max-[860px]:grid-cols-1">
       <!-- Month grid -->
-      <div class="calendar-main">
-        <div class="weekdays">
+      <div>
+        <div class="mb-1 grid grid-cols-7">
           @for (day of weekDays; track day; let i = $index) {
-            <div class="weekday" [class.weekend]="i === 0 || i === 6"><span class="wd-long">{{ day }}</span><span class="wd-short">{{ weekDaysShort[i] }}</span></div>
+            <div
+              class="px-0 py-[0.35rem] text-center text-xs font-bold"
+              [ngClass]="i === 0 || i === 6 ? 'text-[#b26a00]' : 'text-muted'"
+            >
+              <span class="@max-[560px]:hidden">{{ day }}</span>
+              <span class="hidden @max-[560px]:inline">{{ weekDaysShort[i] }}</span>
+            </div>
           }
         </div>
 
-        <div class="days-grid">
+        <div class="grid grid-cols-7 gap-[5px] @max-[560px]:gap-[3px]">
           @for (day of calendarDays; track day.date) {
-            <button type="button"
-              class="day-cell"
-              [class.outside]="!day.inMonth"
-              [class.today]="day.isToday"
-              [class.weekend]="day.isWeekend"
-              [class.selected]="selectedDate === day.date"
-              [class.has-events]="hasEvents(day.date)"
+            <button
+              type="button"
+              class="relative box-border flex min-h-[92px] cursor-pointer flex-col overflow-hidden rounded-sp-sm border border-border bg-white p-1.5 transition-[border-color,box-shadow,background] duration-150 hover:border-indigo-200 hover:shadow-[0_4px_12px_rgba(26,35,126,0.08)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-mid @max-[560px]:min-h-[52px] @max-[560px]:rounded-[9px] @max-[560px]:p-1"
+              [ngClass]="{
+                'bg-[#fbfbfd]': day.isWeekend && day.inMonth && selectedDate !== day.date,
+                'bg-[#fafafa]': !day.inMonth && selectedDate !== day.date,
+                'border-primary-mid bg-[#f5f6ff] shadow-[inset_0_0_0_1px_var(--color-primary-mid)]': selectedDate === day.date
+              }"
               [attr.aria-label]="day.date"
               [matTooltip]="dayEventsTitle(day.date)"
               matTooltipShowDelay="500"
-              (click)="selectDay(day)">
-              <span class="day-number">{{ day.dayNumber }}</span>
+              (click)="selectDay(day)"
+            >
+              <span
+                class="inline-flex size-[26px] items-center justify-center self-start rounded-full text-[0.82rem] font-bold text-text @max-[560px]:size-6 @max-[560px]:text-[0.78rem]"
+                [class.bg-primary]="day.isToday"
+                [class.text-white]="day.isToday"
+                [class.text-faint]="!day.inMonth && !day.isToday"
+              >{{ day.dayNumber }}</span>
 
-              <div class="pills">
+              <div
+                class="mt-1 flex flex-col gap-[3px] @max-[560px]:hidden"
+                [class.opacity-45]="!day.inMonth"
+              >
                 @for (ev of visiblePills(day.date); track ev.id) {
-                  <span class="pill" [class.continues]="continuesFrom(ev, day.date)" [style.--pill]="eventColor(ev)">
-                    <span class="pill-text">{{ ev.title }}</span>
+                  <span
+                    class="flex h-[18px] items-center overflow-hidden rounded-[5px] border-s-[3px] border-[var(--pill)] bg-[color-mix(in_srgb,var(--pill)_14%,#fff)] px-1.5 text-[0.7rem] font-semibold leading-none text-[color-mix(in_srgb,var(--pill)_80%,#000)]"
+                    [class.border-s-0]="continuesFrom(ev, day.date)"
+                    [class.opacity-85]="continuesFrom(ev, day.date)"
+                    [style.--pill]="eventColor(ev)"
+                  >
+                    <span class="truncate whitespace-nowrap">{{ ev.title }}</span>
                   </span>
                 }
                 @if (overflowCount(day.date) > 0) {
-                  <span class="pill more">+{{ overflowCount(day.date) }}</span>
+                  <span class="flex h-[18px] items-center justify-center rounded-[5px] border-0 bg-[#eef0f6] px-1.5 text-[0.7rem] font-bold leading-none text-muted">+{{ overflowCount(day.date) }}</span>
                 }
               </div>
 
-              <div class="dots">
+              <div
+                class="mt-auto hidden flex-wrap gap-[3px] pt-1 @max-[560px]:flex"
+                [class.opacity-45]="!day.inMonth"
+              >
                 @for (ev of eventsForDay(day.date).slice(0, 4); track ev.id) {
-                  <span class="dot" [style.background]="eventColor(ev)"></span>
+                  <span class="size-1.5 rounded-full" [style.background]="eventColor(ev)"></span>
                 }
               </div>
             </button>
@@ -93,13 +125,13 @@
       </div>
 
       <!-- Agenda for the selected day -->
-      <aside class="agenda">
-        <div class="agenda-head">
-          <div class="agenda-date">
-            <span class="agenda-day">{{ selectedDate ? selectedDate.slice(8) : '' }}</span>
-            <div class="agenda-text">
-              <strong>{{ isSelectedToday ? ('calendar.today' | translate) : selectedWeekday }}</strong>
-              <span>{{ selectedDate | appDate }}</span>
+      <aside class="flex min-h-[300px] flex-col rounded-sp border border-border bg-[#f8f9fc] p-[0.9rem]">
+        <div class="mb-3 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-[0.65rem]">
+            <span class="flex size-[46px] shrink-0 items-center justify-center rounded-sp-sm bg-primary text-[1.3rem] font-bold text-white">{{ selectedDate ? selectedDate.slice(8) : '' }}</span>
+            <div class="flex flex-col leading-tight">
+              <strong class="text-[0.95rem] text-primary">{{ isSelectedToday ? ('calendar.today' | translate) : selectedWeekday }}</strong>
+              <span class="text-[0.78rem] text-muted">{{ selectedDate | appDate }}</span>
             </div>
           </div>
           @if ('calendar.personal.create' | hasPermission) {
@@ -108,25 +140,30 @@
         </div>
 
         @if (selectedDayEvents.length === 0) {
-          <div class="agenda-empty">
-            <app-ui-icon name="event_available"></app-ui-icon>
-            <p>{{ 'calendar.emptyDay' | translate }}</p>
+          <div class="flex flex-col items-center justify-center gap-[0.35rem] px-2 py-5 text-center text-muted">
+            <app-ui-icon name="event_available" class="size-[34px] text-[34px] text-indigo-200"></app-ui-icon>
+            <p class="m-0 text-[0.88rem]">{{ 'calendar.emptyDay' | translate }}</p>
           </div>
         } @else {
-          <ul class="agenda-list">
+          <ul class="m-0 flex list-none flex-col gap-1.5 p-0">
             @for (ev of selectedDayEvents; track ev.id) {
               <li>
-                <button type="button" class="agenda-item" [style.--pill]="eventColor(ev)" (click)="openEventDetail(ev)">
-                  <span class="bar"></span>
-                  <div class="agenda-item-body">
-                    <span class="agenda-item-title">{{ ev.title }}</span>
-                    <span class="agenda-item-meta">
-                      <span class="type">{{ eventTypeLabel(ev) }}</span>
-                      <span class="range">{{ eventDateRange(ev) }}</span>
-                      @if (ev.createdByName && ev.eventType !== 'PERSONAL') { <span class="by">· {{ ev.createdByName }}</span> }
+                <button
+                  type="button"
+                  class="group box-border flex w-full cursor-pointer items-center gap-[0.6rem] rounded-[10px] border border-border bg-white px-[0.6rem] py-[0.55rem] text-start transition-[box-shadow,border-color] duration-150 hover:border-indigo-200 hover:shadow-[0_3px_10px_rgba(26,35,126,0.08)] focus-visible:outline-2 focus-visible:outline-primary-mid"
+                  [style.--pill]="eventColor(ev)"
+                  (click)="openEventDetail(ev)"
+                >
+                  <span class="w-1 shrink-0 self-stretch rounded bg-[var(--pill)]"></span>
+                  <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span class="truncate whitespace-nowrap text-[0.88rem] font-semibold">{{ ev.title }}</span>
+                    <span class="flex flex-wrap items-center gap-[0.35rem] text-[0.74rem] text-muted">
+                      <span class="font-bold text-[var(--pill)]">{{ eventTypeLabel(ev) }}</span>
+                      <span>{{ eventDateRange(ev) }}</span>
+                      @if (ev.createdByName && ev.eventType !== 'PERSONAL') { <span>· {{ ev.createdByName }}</span> }
                     </span>
                   </div>
-                  <app-ui-icon name="chevron_left" class="agenda-arrow"></app-ui-icon>
+                  <app-ui-icon name="chevron_left" class="size-5 text-xl text-faint opacity-0 transition-opacity duration-150 group-hover:opacity-100 ltr:-scale-x-100"></app-ui-icon>
                 </button>
               </li>
             }
@@ -134,15 +171,22 @@
         }
 
         @if (upcomingEvents.length) {
-          <div class="agenda-sub">{{ 'calendar.upcoming' | translate }}</div>
-          <ul class="agenda-list compact">
+          <div class="mt-[0.9rem] mb-1.5 text-[0.72rem] font-bold tracking-[0.3px] text-muted">{{ 'calendar.upcoming' | translate }}</div>
+          <ul class="m-0 flex list-none flex-col gap-1.5 p-0">
             @for (ev of upcomingEvents; track ev.id) {
               <li>
-                <button type="button" class="agenda-item" [style.--pill]="eventColor(ev)" (click)="openEventDetail(ev)">
-                  <span class="bar"></span>
-                  <div class="agenda-item-body">
-                    <span class="agenda-item-title">{{ ev.title }}</span>
-                    <span class="agenda-item-meta"><span class="range">{{ eventDateRange(ev) }}</span></span>
+                <button
+                  type="button"
+                  class="box-border flex w-full cursor-pointer items-center gap-[0.6rem] rounded-[10px] border border-border bg-white px-[0.55rem] py-1.5 text-start transition-[box-shadow,border-color] duration-150 hover:border-indigo-200 hover:shadow-[0_3px_10px_rgba(26,35,126,0.08)] focus-visible:outline-2 focus-visible:outline-primary-mid"
+                  [style.--pill]="eventColor(ev)"
+                  (click)="openEventDetail(ev)"
+                >
+                  <span class="w-1 shrink-0 self-stretch rounded bg-[var(--pill)]"></span>
+                  <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span class="truncate whitespace-nowrap text-[0.82rem] font-semibold">{{ ev.title }}</span>
+                    <span class="flex flex-wrap items-center gap-[0.35rem] text-[0.74rem] text-muted">
+                      <span>{{ eventDateRange(ev) }}</span>
+                    </span>
                   </div>
                 </button>
               </li>

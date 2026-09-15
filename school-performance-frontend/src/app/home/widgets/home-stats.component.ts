@@ -23,60 +23,47 @@ interface StatCard {
   selector: 'app-home-stats',
   standalone: true,
   imports: [UiIconComponent, RouterLink, MatTooltipModule, TranslatePipe],
+  host: { class: 'block' },
   template: `
     @if (loading) {
-      <div class="stats-grid">
+      <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4">
         @for (i of [1,2,3,4]; track i) {
-          <div class="stat-card skeleton-card"><span class="skeleton icon"></span><div><span class="skeleton line w40"></span><span class="skeleton line w70"></span></div></div>
+          <div class="flex min-h-[118px] flex-col justify-between gap-[0.85rem] rounded-2xl border border-border bg-white/90 p-4 shadow-sp backdrop-blur-md">
+            <span class="skeleton size-[38px] rounded-sp-sm"></span>
+            <div class="flex flex-1 flex-col gap-2">
+              <span class="skeleton block h-[18px] w-2/5"></span>
+              <span class="skeleton block h-3 w-[70%]"></span>
+            </div>
+          </div>
         }
       </div>
     } @else if (cards.length) {
-      <div class="stats-grid">
+      <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-4">
         @for (stat of cards; track stat.labelKey) {
-          <a class="stat-card link" [routerLink]="stat.route" [matTooltip]="('common.open' | translate) + ' ' + (stat.labelKey | translate)">
-            <div class="stat-top">
-              <span class="stat-label">
+          <a
+            class="group relative flex min-h-[118px] cursor-pointer flex-col justify-between gap-[0.85rem] rounded-2xl border border-border bg-white/90 p-4 text-inherit no-underline shadow-sp backdrop-blur-md transition hover:-translate-y-[3px] hover:border-indigo-200 hover:shadow-sp-md"
+            [routerLink]="stat.route"
+            [matTooltip]="('common.open' | translate) + ' ' + (stat.labelKey | translate)">
+            <div class="flex items-center justify-between gap-2">
+              <span class="flex flex-wrap items-center gap-[0.35rem] text-xs font-bold text-muted">
                 {{ stat.labelKey | translate }}
                 @if (!stat.live) {
-                  <span class="demo-tag" [matTooltip]="'common.demoHint' | translate">{{ 'common.demo' | translate }}</span>
+                  <span class="rounded-full bg-amber-50 px-1.5 text-[0.65rem] font-semibold text-amber-700" [matTooltip]="'common.demoHint' | translate">{{ 'common.demo' | translate }}</span>
                 }
               </span>
-              <span class="stat-icon" [style.background]="stat.bg" [style.color]="stat.color"><app-ui-icon [name]="stat.icon"></app-ui-icon></span>
+              <span class="flex size-[38px] shrink-0 items-center justify-center rounded-sp-sm" [style.background]="stat.bg" [style.color]="stat.color">
+                <app-ui-icon [name]="stat.icon" class="text-[1.1rem]"></app-ui-icon>
+              </span>
             </div>
-            <div class="stat-info">
-              <span class="stat-value">{{ stat.value }}<small>{{ stat.suffix }}</small></span>
+            <div class="flex min-w-0 flex-col leading-tight">
+              <span class="text-[1.55rem] font-black tracking-tight text-text">{{ stat.value }}<small class="ms-px text-[0.9rem]">{{ stat.suffix }}</small></span>
             </div>
-            <app-ui-icon name="arrow_back" class="stat-arrow"></app-ui-icon>
+            <app-ui-icon name="arrow_back" class="absolute end-2.5 top-1/2 -mt-2.5 text-base text-faint opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100 -translate-x-1"></app-ui-icon>
           </a>
         }
       </div>
     }
-  `,
-  styles: [`
-    :host { display: block; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
-    .stat-card {
-      position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 0.85rem;
-      padding: 1rem 1.05rem; min-height: 118px;
-      background: var(--sp-surface); backdrop-filter: blur(12px);
-      border: 1px solid var(--sp-border); border-radius: 1rem; box-shadow: var(--sp-shadow);
-      color: inherit; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-      &.link { cursor: pointer; }
-      &.link:hover { transform: translateY(-3px); box-shadow: var(--sp-shadow-md); border-color: #c7d2fe; .stat-arrow { opacity: 1; transform: translateX(0); } }
-    }
-    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-    .stat-icon {
-      width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      .app-ui-icon { font-size: 1.1rem; }
-    }
-    .stat-info { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
-    .stat-value { font-size: 1.55rem; font-weight: 900; letter-spacing: -0.02em; color: var(--sp-text); small { font-size: 0.9rem; margin-inline-start: 1px; } }
-    .stat-label { color: var(--sp-text-muted); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
-    .demo-tag { font-size: 0.65rem; background: #fff8e1; color: #b26a00; border-radius: 999px; padding: 0 6px; font-weight: 600; }
-    .stat-arrow { position: absolute; inset-inline-end: 10px; top: 50%; margin-top: -10px; font-size: 1rem; color: var(--sp-text-faint); opacity: 0; transform: translateX(-4px); transition: all 0.15s; }
-    .skeleton-card { .icon { width: 38px; height: 38px; border-radius: 12px; } > div { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; } .line { height: 12px; display: block; } .w40 { width: 40%; height: 18px; } .w70 { width: 70%; } }
-  `]
+  `
 })
 export class HomeStatsComponent implements OnChanges {
   @Input() stats: HomeStats | null = null;

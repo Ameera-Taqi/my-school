@@ -18,15 +18,15 @@ export interface ClassFormDialogData {
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data.schoolClass ? 'تعديل فصل' : 'إضافة فصل' }}</h2>
-    <mat-dialog-content>
+    <mat-dialog-content class="max-h-[70vh]">
       @if (data.stageName) {
-        <p class="stage-hint">
-          <app-ui-icon name="school"></app-ui-icon>
+        <p class="mb-2 flex items-center gap-2 rounded-sp-sm bg-primary-light px-[0.85rem] py-[0.6rem] text-[0.9rem] text-primary-mid">
+          <app-ui-icon name="school" class="size-5 shrink-0 text-xl"></app-ui-icon>
           <span>المرحلة: <strong>{{ data.stageName }}</strong></span>
         </p>
       }
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <div class="two-col">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>اسم الفصل</mat-label>
             <input matInput formControlName="name" placeholder="10-1" cdkFocusInitial autocomplete="off">
@@ -40,7 +40,7 @@ export interface ClassFormDialogData {
             @if (form.controls.capacity.hasError('min')) { <mat-error>يجب أن تكون 1 على الأقل</mat-error> }
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>ملاحظات</mat-label>
           <textarea matInput formControlName="notes" rows="2"></textarea>
         </mat-form-field>
@@ -52,20 +52,7 @@ export interface ClassFormDialogData {
         <app-ui-icon name="check"></app-ui-icon> {{ data.schoolClass ? 'حفظ التعديلات' : 'إضافة الفصل' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    .stage-hint {
-      display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.5rem;
-      padding: 0.6rem 0.85rem; border-radius: 8px;
-      background: var(--sp-primary-light); color: var(--sp-primary-mid); font-size: 0.9rem;
-      app-ui-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
-    }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class ClassFormDialogComponent {
   readonly data: ClassFormDialogData = inject(MAT_DIALOG_DATA);

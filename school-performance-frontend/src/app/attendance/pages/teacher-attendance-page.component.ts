@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -40,9 +41,8 @@ interface TeacherMonthRow {
 @Component({
   selector: 'app-teacher-attendance-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatMenuModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, MatTabsModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './teacher-attendance-page.component.html',
-  styleUrl: './teacher-attendance-page.component.scss'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatMenuModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, MatTabsModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
+  templateUrl: './teacher-attendance-page.component.html'
 })
 export class TeacherAttendancePageComponent implements OnInit {
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;

@@ -1,36 +1,36 @@
 <app-page-header [title]="title" [subtitle]="subtitle">
-  @if (scope?.scope === 'DEPARTMENT') { <span class="chip info scope-chip"><app-ui-icon name="domain"></app-ui-icon> {{ scope?.departmentName }}</span> }
-  @if (scope?.scope === 'SELF') { <span class="chip info scope-chip"><app-ui-icon name="person"></app-ui-icon> {{ scope?.teacherName }}</span> }
+  @if (scope?.scope === 'DEPARTMENT') { <span class="chip info self-center [&_app-ui-icon]:size-4 [&_app-ui-icon]:text-base"><app-ui-icon name="domain"></app-ui-icon> {{ scope?.departmentName }}</span> }
+  @if (scope?.scope === 'SELF') { <span class="chip info self-center [&_app-ui-icon]:size-4 [&_app-ui-icon]:text-base"><app-ui-icon name="person"></app-ui-icon> {{ scope?.teacherName }}</span> }
 </app-page-header>
 
 @if (scope?.scope === 'NONE') {
-  <div class="data-card"><app-empty-state icon="lock" title="لا يوجد نطاق عرض لحسابك" description="حسابك غير مرتبط بمعلم أو شعبة. تواصل مع مدير النظام."></app-empty-state></div>
+  <div class="data-card"><app-empty-state icon="lock" title="لا يوجد نطاق صالح لحسابك" description="حسابك غير مرتبط بمعلم أو شعبة. تواصل مع مدير النظام."></app-empty-state></div>
 } @else {
   <mat-tab-group animationDuration="150ms">
     <!-- Day view -->
     <mat-tab>
-      <ng-template mat-tab-label><app-ui-icon name="today" class="tab-icon"></app-ui-icon> سجل اليوم</ng-template>
-      <mat-card class="filters-card">
-        <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <ng-template mat-tab-label><app-ui-icon name="today" class="me-[0.35rem] size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon> سجل اليوم</ng-template>
+      <mat-card class="my-5 flex flex-row flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+        <mat-form-field appearance="outline" class="filter-field m-0 w-[200px] max-sm:w-full" subscriptSizing="dynamic">
           <mat-label>التاريخ</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="filters.controls.date">
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
         @if (canRecord) {
-          <label class="school-start" matTooltip="البصمة بعد هذا الوقت تُسجَّل «متأخر» تلقائياً">
+          <label class="inline-flex items-center gap-[0.4rem] text-[0.85rem] text-muted [&_app-ui-icon]:size-[18px] [&_app-ui-icon]:text-[18px] [&_app-ui-icon]:text-primary-mid" matTooltip="البصمة بعد هذا الوقت تُسجَّل «متأخر» تلقائياً">
             <app-ui-icon name="alarm"></app-ui-icon>
             <span>بداية الدوام</span>
-            <input type="time" class="time-input small" [value]="schoolStart" (change)="setSchoolStart($any($event.target).value)" aria-label="بداية الدوام">
+            <input type="time" class="w-24 border border-border bg-surface px-[0.4rem] py-[0.2rem] font-inherit text-[0.85rem] text-text rounded-lg [direction:ltr] focus:border-transparent focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary-mid disabled:opacity-45" [value]="schoolStart" (change)="setSchoolStart($any($event.target).value)" aria-label="بداية الدوام">
           </label>
         }
-        <div class="filter-actions">
+        <div class="ms-auto flex flex-wrap items-center gap-2 max-sm:w-full max-sm:justify-end">
           <button mat-stroked-button type="button" (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> اليوم</button>
           <button mat-flat-button color="primary" type="button" (click)="loadDay()"><app-ui-icon name="search"></app-ui-icon> عرض</button>
         </div>
       </mat-card>
       @if (canRecord) {
-        <div class="info-banner recording-hint"><app-ui-icon name="fingerprint"></app-ui-icon> سجّل وقت الحضور (البصمة) بزر «الآن» أو بإدخال الوقت، وستُحدَّد الحالة تلقائياً: حاضر أو متأخر حسب بداية الدوام. الغياب والاستئذان يُسجَّلان من قائمة الحالة.</div>
+        <div class="info-banner mb-4"><app-ui-icon name="fingerprint"></app-ui-icon> سجّل وقت الحضور (البصمة) بزر «الآن» أو بإدخال الوقت، وستُحدَّد الحالة تلقائياً: حاضر أو متأخر حسب بداية الدوام. الغياب والاستئذان يُسجَّلان من قائمة الحالة.</div>
       }
 
       <div class="data-card">
@@ -40,22 +40,22 @@
           <app-empty-state icon="badge" title="لا توجد سجلات" description="لا يوجد معلمون ضمن نطاقك أو لا توجد سجلات لهذا التاريخ."></app-empty-state>
         } @else {
           <div class="list-toolbar">
-            <div class="summary-chips">
+            <div class="flex flex-wrap gap-[0.4rem]">
               @if (!isSelf) { <span class="chip neutral">{{ records.length }} معلم</span> }
               @for (s of statusOptions; track s) {
                 @if (!isSelf || countByStatus(s) > 0) {
-                  <span class="chip" [class]="'chip ' + statusChip(s)"><app-ui-icon [name]="statusIcon(s)" class="chip-icon"></app-ui-icon> {{ statusLabels[s] }}@if (!isSelf) { : {{ countByStatus(s) }} }</span>
+                  <span class="chip" [class]="'chip ' + statusChip(s)"><app-ui-icon [name]="statusIcon(s)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[s] }}@if (!isSelf) { : {{ countByStatus(s) }} }</span>
                 }
               }
-              @if (notRecordedCount > 0) { <span class="chip neutral"><app-ui-icon name="radio_button_unchecked" class="chip-icon"></app-ui-icon> غير مسجّل@if (!isSelf) { : {{ notRecordedCount }} }</span> }
+              @if (notRecordedCount > 0) { <span class="chip neutral"><app-ui-icon name="radio_button_unchecked" class="size-3.5 text-sm"></app-ui-icon> غير مسجّل@if (!isSelf) { : {{ notRecordedCount }} }</span> }
             </div>
-            @if (!canRecord) { <span class="toolbar-count"><app-ui-icon name="visibility" class="chip-icon"></app-ui-icon> عرض فقط</span> }
+            @if (!canRecord) { <span class="toolbar-count"><app-ui-icon name="visibility" class="size-3.5 text-sm"></app-ui-icon> عرض فقط</span> }
           </div>
           <div class="table-scroll">
             <table mat-table [dataSource]="records">
               <ng-container matColumnDef="personName">
                 <th mat-header-cell *matHeaderCellDef>اسم المعلم</th>
-                <td mat-cell *matCellDef="let row" class="name">{{ row.personName }}</td>
+                <td mat-cell *matCellDef="let row" class="font-semibold">{{ row.personName }}</td>
               </ng-container>
               <ng-container matColumnDef="department">
                 <th mat-header-cell *matHeaderCellDef>الشعبة</th>
@@ -65,54 +65,63 @@
                 <th mat-header-cell *matHeaderCellDef>الحالة</th>
                 <td mat-cell *matCellDef="let row">
                   @if (canRecord) {
-                    <button type="button" class="status-btn" [class]="'status-btn ' + statusChip(row.status)" [matMenuTriggerFor]="statusMenu" [matMenuTriggerData]="{ row: row }" matTooltip="تغيير الحالة">
+                    <button type="button"
+                      class="[all:unset] box-border inline-flex cursor-pointer items-center gap-[0.35rem] rounded-full border border-transparent py-1 pe-2 ps-[0.35rem] text-[0.8rem] font-semibold transition-shadow duration-150 hover:shadow-[0_0_0_2px_rgba(26,35,126,0.12)] [&_app-ui-icon]:size-[18px] [&_app-ui-icon]:text-[18px]"
+                      [ngClass]="{
+                        'bg-success-bg text-success': statusChip(row.status) === 'success',
+                        'bg-danger-bg text-danger': statusChip(row.status) === 'danger',
+                        'bg-warning-bg text-warning': statusChip(row.status) === 'warning',
+                        'bg-info-bg text-info': statusChip(row.status) === 'info',
+                        'border-dashed border-[#cbd5e1] bg-[#f3f4f6] text-[#4b5563]': statusChip(row.status) === 'neutral'
+                      }"
+                      [matMenuTriggerFor]="statusMenu" [matMenuTriggerData]="{ row: row }" matTooltip="تغيير الحالة">
                       <app-ui-icon [name]="statusIcon(row.status)"></app-ui-icon>
                       <span>{{ statusLabels[row.status] }}</span>
-                      <app-ui-icon name="expand_more" class="caret"></app-ui-icon>
+                      <app-ui-icon name="expand_more" class="size-4 opacity-70"></app-ui-icon>
                     </button>
                   } @else {
-                    <span class="chip" [class]="'chip ' + statusChip(row.status)" [matTooltip]="row.status === 'NOT_RECORDED' ? 'لا توجد بصمة حضور لهذا اليوم' : ''"><app-ui-icon [name]="statusIcon(row.status)" class="chip-icon"></app-ui-icon> {{ statusLabels[row.status] }}</span>
+                    <span class="chip" [class]="'chip ' + statusChip(row.status)" [matTooltip]="row.status === 'NOT_RECORDED' ? 'لا توجد بصمة حضور لهذا اليوم' : ''"><app-ui-icon [name]="statusIcon(row.status)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[row.status] }}</span>
                   }
                 </td>
               </ng-container>
               <ng-container matColumnDef="checkIn">
                 <th mat-header-cell *matHeaderCellDef>وقت الحضور</th>
-                <td mat-cell *matCellDef="let row" class="time-cell">
+                <td mat-cell *matCellDef="let row" class="whitespace-nowrap">
                   @if (canRecord) {
-                    <span class="time-group">
-                      <input type="time" class="time-input" [value]="row.checkInTime || ''" [disabled]="row.status === 'ABSENT'" (change)="setTime(row, 'checkInTime', $any($event.target).value)" aria-label="وقت الحضور">
-                      <button mat-icon-button type="button" class="now-btn" matTooltip="تسجيل بصمة الحضور الآن" [disabled]="row.status === 'ABSENT'" (click)="punchNow(row, 'checkInTime')"><app-ui-icon name="fingerprint"></app-ui-icon></button>
+                    <span class="inline-flex items-center gap-0.5">
+                      <input type="time" class="w-[108px] border border-border bg-surface px-2 py-[0.3rem] font-inherit text-[0.85rem] text-text rounded-lg [direction:ltr] focus:border-transparent focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary-mid disabled:opacity-45" [value]="row.checkInTime || ''" [disabled]="row.status === 'ABSENT'" (change)="setTime(row, 'checkInTime', $any($event.target).value)" aria-label="وقت الحضور">
+                      <button mat-icon-button type="button" class="!size-[30px] !p-[3px] text-primary-mid hover:bg-primary-bg [&_.app-ui-icon]:size-[18px] [&_.app-ui-icon]:text-[18px]" matTooltip="تسجيل بصمة الحضور الآن" [disabled]="row.status === 'ABSENT'" (click)="punchNow(row, 'checkInTime')"><app-ui-icon name="fingerprint"></app-ui-icon></button>
                     </span>
-                  } @else { <span class="time-text">{{ row.checkInTime || '—' }}</span> }
+                  } @else { <span class="inline-block tabular-nums [direction:ltr]">{{ row.checkInTime || '—' }}</span> }
                 </td>
               </ng-container>
               <ng-container matColumnDef="checkOut">
                 <th mat-header-cell *matHeaderCellDef>وقت الانصراف</th>
-                <td mat-cell *matCellDef="let row" class="time-cell">
+                <td mat-cell *matCellDef="let row" class="whitespace-nowrap">
                   @if (canRecord) {
-                    <span class="time-group">
-                      <input type="time" class="time-input" [class.invalid]="hasTimeError(row)" [value]="row.checkOutTime || ''" [disabled]="row.status === 'ABSENT'" (change)="setTime(row, 'checkOutTime', $any($event.target).value)" aria-label="وقت الانصراف">
-                      <button mat-icon-button type="button" class="now-btn" matTooltip="تسجيل بصمة الانصراف الآن" [disabled]="row.status === 'ABSENT'" (click)="punchNow(row, 'checkOutTime')"><app-ui-icon name="fingerprint"></app-ui-icon></button>
+                    <span class="inline-flex items-center gap-0.5">
+                      <input type="time" class="w-[108px] border bg-surface px-2 py-[0.3rem] font-inherit text-[0.85rem] text-text rounded-lg [direction:ltr] focus:border-transparent focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary-mid disabled:opacity-45" [class.border-danger]="hasTimeError(row)" [class.border-border]="!hasTimeError(row)" [value]="row.checkOutTime || ''" [disabled]="row.status === 'ABSENT'" (change)="setTime(row, 'checkOutTime', $any($event.target).value)" aria-label="وقت الانصراف">
+                      <button mat-icon-button type="button" class="!size-[30px] !p-[3px] text-primary-mid hover:bg-primary-bg [&_.app-ui-icon]:size-[18px] [&_.app-ui-icon]:text-[18px]" matTooltip="تسجيل بصمة الانصراف الآن" [disabled]="row.status === 'ABSENT'" (click)="punchNow(row, 'checkOutTime')"><app-ui-icon name="fingerprint"></app-ui-icon></button>
                     </span>
-                  } @else { <span class="time-text">{{ row.checkOutTime || '—' }}</span> }
-                  @if (hasTimeError(row)) { <div class="time-error">الانصراف قبل الحضور</div> }
-                  @else if (presenceOf(row) !== null) { <div class="time-hint">دوام {{ formatMinutes(row.presenceMinutes ?? presenceOf(row)) }}</div> }
+                  } @else { <span class="inline-block tabular-nums [direction:ltr]">{{ row.checkOutTime || '—' }}</span> }
+                  @if (hasTimeError(row)) { <div class="mt-0.5 text-[0.7rem] text-danger">الانصراف قبل الحضور</div> }
+                  @else if (presenceOf(row) !== null) { <div class="mt-0.5 text-[0.7rem] text-muted">دوام {{ formatMinutes(row.presenceMinutes ?? presenceOf(row)) }}</div> }
                 </td>
               </ng-container>
               <ng-container matColumnDef="presence">
                 <th mat-header-cell *matHeaderCellDef>وقت التواجد</th>
-                <td mat-cell *matCellDef="let row" class="time-cell">
+                <td mat-cell *matCellDef="let row" class="whitespace-nowrap">
                   @if (canRecord) {
-                    <span class="time-group">
-                      <input type="time" class="time-input" [class.invalid]="hasPresenceError(row)" [value]="row.presenceTime || ''" [disabled]="row.status === 'ABSENT'" (change)="setTime(row, 'presenceTime', $any($event.target).value)" aria-label="وقت التواجد">
-                      <button mat-icon-button type="button" class="now-btn" matTooltip="تسجيل التواجد الآن" [disabled]="row.status === 'ABSENT'" (click)="punchNow(row, 'presenceTime')"><app-ui-icon name="fingerprint"></app-ui-icon></button>
+                    <span class="inline-flex items-center gap-0.5">
+                      <input type="time" class="w-[108px] border bg-surface px-2 py-[0.3rem] font-inherit text-[0.85rem] text-text rounded-lg [direction:ltr] focus:border-transparent focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary-mid disabled:opacity-45" [class.border-danger]="hasPresenceError(row)" [class.border-border]="!hasPresenceError(row)" [value]="row.presenceTime || ''" [disabled]="row.status === 'ABSENT'" (change)="setTime(row, 'presenceTime', $any($event.target).value)" aria-label="وقت التواجد">
+                      <button mat-icon-button type="button" class="!size-[30px] !p-[3px] text-primary-mid hover:bg-primary-bg [&_.app-ui-icon]:size-[18px] [&_.app-ui-icon]:text-[18px]" matTooltip="تسجيل التواجد الآن" [disabled]="row.status === 'ABSENT'" (click)="punchNow(row, 'presenceTime')"><app-ui-icon name="fingerprint"></app-ui-icon></button>
                     </span>
-                  } @else { <span class="time-text">{{ row.presenceTime || '—' }}</span> }
+                  } @else { <span class="inline-block tabular-nums [direction:ltr]">{{ row.presenceTime || '—' }}</span> }
                 </td>
               </ng-container>
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="actions-cell"></th>
-                <td mat-cell *matCellDef="let row" class="actions-cell">
+                <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap"></th>
+                <td mat-cell *matCellDef="let row" class="w-px whitespace-nowrap">
                   @if (canRecord && row.status !== 'NOT_RECORDED') {
                     <button mat-icon-button type="button" class="danger" matTooltip="إلغاء تسجيل اليوم" (click)="setTime(row, 'checkInTime', ''); setStatus(row, 'NOT_RECORDED')"><app-ui-icon name="backspace"></app-ui-icon></button>
                   }
@@ -122,9 +131,9 @@
               <tr mat-row *matRowDef="let row; columns: dayCols;"></tr>
             </table>
           </div>
-          <div class="save-row">
+          <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
             <button mat-stroked-button color="primary" type="button" matTooltip="تصدير كملف PDF" (click)="exportPdf()" [disabled]="exporting">
-              @if (exporting) { <mat-spinner diameter="20"></mat-spinner> } @else { <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container> }
+              @if (exporting) { <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> } @else { <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container> }
             </button>
             @if (canRecord) {
               <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="save"></app-ui-icon> حفظ الحضور</button>
@@ -136,9 +145,9 @@
 
     <!-- Month view -->
     <mat-tab>
-      <ng-template mat-tab-label><app-ui-icon name="calendar_month" class="tab-icon"></app-ui-icon> ملخص الشهر</ng-template>
-      <mat-card class="filters-card">
-        <mat-form-field appearance="outline" class="filter-field wide" subscriptSizing="dynamic">
+      <ng-template mat-tab-label><app-ui-icon name="calendar_month" class="me-[0.35rem] size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon> ملخص الشهر</ng-template>
+      <mat-card class="my-5 flex flex-row flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+        <mat-form-field appearance="outline" class="filter-field m-0 w-[220px] max-sm:w-full" subscriptSizing="dynamic">
           <mat-label>الشهر</mat-label>
           <mat-select [formControl]="monthFilter.controls.month" (selectionChange)="loadMonth()">
             @for (m of monthOptions(); track m.value) { <mat-option [value]="m.value">{{ m.label }}</mat-option> }
@@ -154,22 +163,22 @@
           <div class="table-scroll">
             <table mat-table [dataSource]="history">
               <ng-container matColumnDef="date"><th mat-header-cell *matHeaderCellDef>اليوم</th><td mat-cell *matCellDef="let r">{{ r.date | appDate }}</td></ng-container>
-              <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>الحالة</th><td mat-cell *matCellDef="let r"><span class="chip" [class]="'chip ' + statusChip(r.status)"><app-ui-icon [name]="statusIcon(r.status)" class="chip-icon"></app-ui-icon> {{ statusLabels[r.status] }}</span></td></ng-container>
-              <ng-container matColumnDef="checkIn"><th mat-header-cell *matHeaderCellDef>وقت الحضور</th><td mat-cell *matCellDef="let r"><span class="time-text">{{ r.checkInTime || '—' }}</span></td></ng-container>
-              <ng-container matColumnDef="presence"><th mat-header-cell *matHeaderCellDef>وقت التواجد</th><td mat-cell *matCellDef="let r"><span class="time-text">{{ r.presenceTime || '—' }}</span></td></ng-container>
-              <ng-container matColumnDef="checkOut"><th mat-header-cell *matHeaderCellDef>وقت الانصراف</th><td mat-cell *matCellDef="let r"><span class="time-text">{{ r.checkOutTime || '—' }}</span></td></ng-container>
-              <ng-container matColumnDef="hours"><th mat-header-cell *matHeaderCellDef>ساعات الدوام</th><td mat-cell *matCellDef="let r"><span class="presence">{{ formatMinutes(r.presenceMinutes) }}</span></td></ng-container>
+              <ng-container matColumnDef="status"><th mat-header-cell *matHeaderCellDef>الحالة</th><td mat-cell *matCellDef="let r"><span class="chip" [class]="'chip ' + statusChip(r.status)"><app-ui-icon [name]="statusIcon(r.status)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[r.status] }}</span></td></ng-container>
+              <ng-container matColumnDef="checkIn"><th mat-header-cell *matHeaderCellDef>وقت الحضور</th><td mat-cell *matCellDef="let r"><span class="inline-block tabular-nums [direction:ltr]">{{ r.checkInTime || '—' }}</span></td></ng-container>
+              <ng-container matColumnDef="presence"><th mat-header-cell *matHeaderCellDef>وقت التواجد</th><td mat-cell *matCellDef="let r"><span class="inline-block tabular-nums [direction:ltr]">{{ r.presenceTime || '—' }}</span></td></ng-container>
+              <ng-container matColumnDef="checkOut"><th mat-header-cell *matHeaderCellDef>وقت الانصراف</th><td mat-cell *matCellDef="let r"><span class="inline-block tabular-nums [direction:ltr]">{{ r.checkOutTime || '—' }}</span></td></ng-container>
+              <ng-container matColumnDef="hours"><th mat-header-cell *matHeaderCellDef>ساعات الدوام</th><td mat-cell *matCellDef="let r"><span class="font-semibold text-primary">{{ formatMinutes(r.presenceMinutes) }}</span></td></ng-container>
               <tr mat-header-row *matHeaderRowDef="monthCols"></tr>
               <tr mat-row *matRowDef="let row; columns: monthCols;"></tr>
             </table>
           </div>
-          <div class="list-toolbar month-summary">
-            <div class="summary-chips">
+          <div class="list-toolbar border-t border-border border-b-0">
+            <div class="flex flex-wrap gap-[0.4rem]">
               @for (r of monthRows; track r.teacherId) {
                 <span class="chip neutral">{{ r.recorded }} يوم مسجّل</span>
                 <span class="chip success">حاضر {{ r.present }}</span><span class="chip danger">غائب {{ r.absent }}</span>
                 <span class="chip warning">متأخر {{ r.late }}</span><span class="chip info">مستأذن {{ r.excused }}</span>
-                <span class="chip neutral"><app-ui-icon name="timer" class="chip-icon"></app-ui-icon> إجمالي ساعات الدوام {{ formatMinutes(r.presenceMinutes) }}</span>
+                <span class="chip neutral"><app-ui-icon name="timer" class="size-3.5 text-sm"></app-ui-icon> إجمالي ساعات الدوام {{ formatMinutes(r.presenceMinutes) }}</span>
                 @if (r.rate !== null) { <span class="chip" [class.success]="r.rate >= 90" [class.warning]="r.rate < 90 && r.rate >= 75" [class.danger]="r.rate < 75">نسبة الحضور {{ r.rate }}%</span> }
               }
             </div>
@@ -177,14 +186,14 @@
         } @else {
           <div class="table-scroll">
             <table mat-table [dataSource]="monthRows">
-              <ng-container matColumnDef="teacherName"><th mat-header-cell *matHeaderCellDef>المعلم</th><td mat-cell *matCellDef="let r" class="name">{{ r.teacherName }} @if (scope?.scope === 'ALL' && r.departmentName) { <small class="muted">· {{ r.departmentName }}</small> }</td></ng-container>
+              <ng-container matColumnDef="teacherName"><th mat-header-cell *matHeaderCellDef>المعلم</th><td mat-cell *matCellDef="let r" class="font-semibold">{{ r.teacherName }} @if (scope?.scope === 'ALL' && r.departmentName) { <small class="text-[0.8rem] text-muted">· {{ r.departmentName }}</small> }</td></ng-container>
               <ng-container matColumnDef="recorded"><th mat-header-cell *matHeaderCellDef>أيام مسجّلة</th><td mat-cell *matCellDef="let r">{{ r.recorded }}</td></ng-container>
               <ng-container matColumnDef="present"><th mat-header-cell *matHeaderCellDef>حاضر</th><td mat-cell *matCellDef="let r"><span class="chip success">{{ r.present }}</span></td></ng-container>
               <ng-container matColumnDef="absent"><th mat-header-cell *matHeaderCellDef>غائب</th><td mat-cell *matCellDef="let r"><span class="chip danger">{{ r.absent }}</span></td></ng-container>
               <ng-container matColumnDef="late"><th mat-header-cell *matHeaderCellDef>متأخر</th><td mat-cell *matCellDef="let r"><span class="chip warning">{{ r.late }}</span></td></ng-container>
               <ng-container matColumnDef="excused"><th mat-header-cell *matHeaderCellDef>مستأذن</th><td mat-cell *matCellDef="let r"><span class="chip info">{{ r.excused }}</span></td></ng-container>
-              <ng-container matColumnDef="presenceTotal"><th mat-header-cell *matHeaderCellDef>إجمالي ساعات الدوام</th><td mat-cell *matCellDef="let r"><span class="presence">{{ formatMinutes(r.presenceMinutes) }}</span></td></ng-container>
-              <ng-container matColumnDef="rate"><th mat-header-cell *matHeaderCellDef>نسبة الحضور</th><td mat-cell *matCellDef="let r">@if (r.rate !== null) { <strong [class.rate-low]="r.rate < 75">{{ r.rate }}%</strong> } @else { — }</td></ng-container>
+              <ng-container matColumnDef="presenceTotal"><th mat-header-cell *matHeaderCellDef>إجمالي ساعات الدوام</th><td mat-cell *matCellDef="let r"><span class="font-semibold text-primary">{{ formatMinutes(r.presenceMinutes) }}</span></td></ng-container>
+              <ng-container matColumnDef="rate"><th mat-header-cell *matHeaderCellDef>نسبة الحضور</th><td mat-cell *matCellDef="let r">@if (r.rate !== null) { <strong [class.text-danger]="r.rate < 75">{{ r.rate }}%</strong> } @else { — }</td></ng-container>
               <tr mat-header-row *matHeaderRowDef="monthCols"></tr>
               <tr mat-row *matRowDef="let row; columns: monthCols;"></tr>
             </table>

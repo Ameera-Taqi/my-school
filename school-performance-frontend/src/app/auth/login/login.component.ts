@@ -18,8 +18,7 @@ const REMEMBER_KEY = 'sp_remembered_username';
   selector: 'app-login',
   standalone: true,
   imports: [UiIconComponent, CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCheckboxModule, MatProgressSpinnerModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);

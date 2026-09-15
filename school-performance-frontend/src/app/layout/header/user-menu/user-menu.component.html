@@ -1,50 +1,60 @@
 <button
   type="button"
-  class="user-trigger"
-  [matMenuTriggerFor]="userMenu"
+  class="um-trigger inline-flex cursor-pointer items-center gap-2.5 rounded-xl px-2 py-1.5 transition-colors hover:bg-slate-50"
+  [class.bg-slate-50]="open()"
+  [attr.aria-expanded]="open()"
   [attr.aria-label]="'menu.greeting' | translate"
-  [attr.aria-haspopup]="true">
-  <span class="user-avatar" aria-hidden="true">{{ initials() }}</span>
-  <span class="user-trigger-info">
-    <span class="user-name">{{ greetingLine() }}</span>
-    <span class="user-role">{{ roleLine() }}</span>
+  [attr.aria-haspopup]="true"
+  (click)="toggle($event)">
+  <span class="flex min-w-0 flex-col text-start leading-tight max-md:hidden">
+    <span class="max-w-44 truncate text-[0.92rem] font-bold text-slate-800">{{ displayName() }}</span>
+    <span class="max-w-44 truncate text-[0.78rem] text-slate-500" dir="ltr">{{ username() || '—' }}</span>
   </span>
-  <app-ui-icon name="expand_more" class="chevron"></app-ui-icon>
+  <span
+    class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#f1eee8] text-[0.82rem] font-bold text-slate-700"
+    aria-hidden="true">
+    {{ initials() }}
+  </span>
+  <app-ui-icon
+    name="expand_more"
+    class="text-[1.1rem] text-slate-400 transition-transform duration-200 max-md:hidden"
+    [class.rotate-180]="open()"></app-ui-icon>
 </button>
 
-<mat-menu
-  #userMenu="matMenu"
-  panelClass="user-menu-panel"
-  [xPosition]="menuPosition()"
-  [overlapTrigger]="false">
-  <div class="menu-profile" (click)="$event.stopPropagation()">
-    <span class="menu-avatar" aria-hidden="true">{{ initials() }}</span>
-    <div class="menu-profile-text">
-      <span class="menu-profile-greeting">{{ 'menu.greeting' | translate }}</span>
-      <span class="menu-profile-name">{{ fullName() || username() }}</span>
-      <span class="menu-profile-role">{{ roleLine() }}</span>
-      @if (username()) {
-        <span class="menu-profile-user">{{ '@' + username() }}</span>
+@if (open()) {
+  <div
+    class="absolute end-0 top-[calc(100%+0.45rem)] z-50 w-[min(17.5rem,calc(100vw-1.25rem))] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.12)]"
+    role="menu"
+    (click)="$event.stopPropagation()">
+    <div class="px-4 py-3.5 text-start">
+      <div class="truncate text-[0.95rem] font-bold text-slate-800">{{ displayName() }}</div>
+      <div class="mt-0.5 truncate text-[0.8rem] text-slate-500" dir="ltr">{{ username() || '—' }}</div>
+      <div class="mt-0.5 truncate text-[0.78rem] text-slate-400">{{ identityLine() }}</div>
+    </div>
+
+    <div class="border-t border-slate-100">
+      @if (canOpenSettings()) {
+        <a
+          class="um-item"
+          role="menuitem"
+          routerLink="/settings"
+          (click)="close()">
+          <app-ui-icon name="person" class="text-[1.15rem] text-slate-500"></app-ui-icon>
+          <span>{{ 'menu.profile' | translate }}</span>
+        </a>
+      } @else {
+        <button type="button" class="um-item" role="menuitem" (click)="goToDashboard()">
+          <app-ui-icon name="dashboard" class="text-[1.15rem] text-slate-500"></app-ui-icon>
+          <span>{{ 'menu.dashboard' | translate }}</span>
+        </button>
       }
     </div>
+
+    <div class="border-t border-slate-100">
+      <button type="button" class="um-item um-item--danger" role="menuitem" (click)="logout()">
+        <app-ui-icon name="logout" class="text-[1.15rem]"></app-ui-icon>
+        <span>{{ 'menu.logout' | translate }}</span>
+      </button>
+    </div>
   </div>
-
-  <button mat-menu-item type="button" class="menu-item" (click)="goToDashboard()">
-    <app-ui-icon name="dashboard"></app-ui-icon>
-    <span>{{ 'menu.dashboard' | translate }}</span>
-  </button>
-
-  @if (canOpenSettings()) {
-    <a mat-menu-item class="menu-item" routerLink="/settings">
-      <app-ui-icon name="settings"></app-ui-icon>
-      <span>{{ 'menu.settings' | translate }}</span>
-    </a>
-  }
-
-  <mat-divider></mat-divider>
-
-  <button mat-menu-item type="button" class="menu-item menu-logout" (click)="logout()">
-    <app-ui-icon name="logout"></app-ui-icon>
-    <span>{{ 'menu.logout' | translate }}</span>
-  </button>
-</mat-menu>
+}

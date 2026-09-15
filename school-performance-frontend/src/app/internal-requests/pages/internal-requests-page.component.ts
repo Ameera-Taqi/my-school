@@ -25,8 +25,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-internal-requests-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
-  templateUrl: './internal-requests-page.component.html',
-  styleUrl: './internal-requests-page.component.scss'
+  templateUrl: './internal-requests-page.component.html'
 })
 export class InternalRequestsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(InternalRequestMockService);

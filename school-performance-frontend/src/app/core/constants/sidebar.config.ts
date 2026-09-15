@@ -12,7 +12,7 @@ const TEACHERS_PERMISSIONS = [
 
 const SYSTEM_PERMISSIONS = [
   'users.view', 'roles.view', 'permissions.view',
-  'role_permissions.manage', 'departments.view', 'settings.view'
+  'role_permissions.manage', 'settings.view'
 ];
 
 export { HEADS_PERMISSIONS, TEACHERS_PERMISSIONS, SYSTEM_PERMISSIONS };
@@ -39,6 +39,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: 'nav.students', icon: 'school', route: '/students', permission: 'students.view' },
       { labelKey: 'nav.teachers', icon: 'how_to_reg', route: '/teachers', permission: 'teachers.view' },
+      { labelKey: 'nav.departments', icon: 'domain', route: '/departments', permission: 'departments.view' },
       { labelKey: 'nav.classSchedule', icon: 'menu_book', route: '/class-schedule', permission: 'class_schedule.view' },
       { labelKey: 'nav.attendanceStudents', icon: 'event_available', route: '/attendance/students', permission: 'attendance.view' },
       { labelKey: 'nav.attendanceTeachers', icon: 'schedule', route: '/attendance/teachers', permission: 'teacher_attendance.view' },
@@ -81,7 +82,6 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { labelKey: 'nav.roles', icon: 'admin_panel_settings', route: '/roles', permission: 'roles.view' },
       { labelKey: 'nav.permissions', icon: 'security', route: '/permissions', permission: 'permissions.view' },
       { labelKey: 'nav.rolePermissions', icon: 'link', route: '/role-permissions', permission: 'role_permissions.manage' },
-      { labelKey: 'nav.departments', icon: 'domain', route: '/departments', permission: 'departments.view' },
       { labelKey: 'nav.settings', icon: 'settings', route: '/settings', permission: 'settings.view' }
     ]
   }

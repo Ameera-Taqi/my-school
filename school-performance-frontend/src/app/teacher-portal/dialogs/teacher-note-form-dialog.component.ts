@@ -15,9 +15,9 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل ملاحظة' : 'ملاحظة جديدة' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <div class="two-col">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>اسم الطالب</mat-label>
             <input matInput formControlName="studentName" cdkFocusInitial autocomplete="off">
@@ -29,7 +29,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>الفصل مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>نوع الملاحظة</mat-label>
             <mat-select formControlName="noteType">
@@ -46,7 +46,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             <mat-error>التاريخ مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الملاحظة</mat-label>
           <textarea matInput formControlName="content" rows="3"></textarea>
           <mat-error>نص الملاحظة مطلوب</mat-error>
@@ -57,14 +57,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class TeacherNoteFormDialogComponent {
   readonly data: TeacherNote | null = inject(MAT_DIALOG_DATA);

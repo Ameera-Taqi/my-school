@@ -24,8 +24,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-lesson-plans-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
-  templateUrl: './lesson-plans-page.component.html',
-  styleUrl: './lesson-plans-page.component.scss'
+  templateUrl: './lesson-plans-page.component.html'
 })
 export class LessonPlansPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(LessonPlanMockService);

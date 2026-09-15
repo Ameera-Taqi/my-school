@@ -21,8 +21,7 @@ import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
   selector: 'app-assignments-page',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './assignments-page.component.html',
-  styleUrl: './assignments-page.component.scss'
+  templateUrl: './assignments-page.component.html'
 })
 export class AssignmentsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(TeacherPortalMockService);

@@ -3,10 +3,10 @@
   [subtitle]="departmentScope.isScoped() ? 'ملاحظات طلاب ' + departmentScope.departmentName() : 'متابعة الملاحظات الأكاديمية المسجلة على الطلاب'">
 </app-page-header>
 
-<mat-card class="filters-card">
-  <form [formGroup]="filters" class="filters-form">
+<mat-card class="mb-5 px-5 py-4">
+  <form [formGroup]="filters" class="flex flex-wrap items-end gap-4">
     @if (!departmentScope.isScoped()) {
-      <mat-form-field appearance="outline" class="filter-field">
+      <mat-form-field appearance="outline" class="min-w-40 flex-1">
         <mat-label>المادة</mat-label>
         <mat-select formControlName="subject">
           <mat-option value="">كل المواد</mat-option>
@@ -16,7 +16,7 @@
         </mat-select>
       </mat-form-field>
     }
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>المرحلة</mat-label>
       <mat-select formControlName="stage">
         <mat-option value="">كل المراحل</mat-option>
@@ -25,7 +25,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>الفصل</mat-label>
       <mat-select formControlName="className">
         <mat-option value="">كل الفصول</mat-option>
@@ -34,7 +34,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>التصنيف</mat-label>
       <mat-select formControlName="category">
         <mat-option value="">الكل</mat-option>
@@ -43,7 +43,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>الأولوية</mat-label>
       <mat-select formControlName="priority">
         <mat-option value="">الكل</mat-option>
@@ -52,7 +52,7 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>الحالة</mat-label>
       <mat-select formControlName="status">
         <mat-option value="">الكل</mat-option>
@@ -61,11 +61,11 @@
         }
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>بحث</mat-label>
       <input matInput formControlName="search" placeholder="اسم الطالب أو المعلم">
     </mat-form-field>
-    <div class="filter-actions">
+    <div class="flex flex-wrap items-center gap-2">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
         <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
@@ -82,33 +82,33 @@
 </mat-card>
 
 @if (!loading) {
-  <div class="stats-grid">
-    <mat-card class="stat-card">
-      <app-ui-icon name="notes"></app-ui-icon>
+  <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="notes" class="size-9 text-[36px] text-primary"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.total }}</span>
-        <span class="stat-label">إجمالي الملاحظات</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.total }}</span>
+        <span class="text-[0.85rem] text-muted">إجمالي الملاحظات</span>
       </div>
     </mat-card>
-    <mat-card class="stat-card">
-      <app-ui-icon name="pending_actions" class="warning"></app-ui-icon>
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="pending_actions" class="size-9 text-[36px] text-warning"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.open }}</span>
-        <span class="stat-label">مفتوحة</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.open }}</span>
+        <span class="text-[0.85rem] text-muted">مفتوحة</span>
       </div>
     </mat-card>
-    <mat-card class="stat-card">
-      <app-ui-icon name="priority_high" class="danger"></app-ui-icon>
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="priority_high" class="size-9 text-[36px] text-danger"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.highPriority }}</span>
-        <span class="stat-label">أولوية عالية</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.highPriority }}</span>
+        <span class="text-[0.85rem] text-muted">أولوية عالية</span>
       </div>
     </mat-card>
-    <mat-card class="stat-card">
-      <app-ui-icon name="task_alt" class="success"></app-ui-icon>
+    <mat-card class="flex items-center gap-4 px-5 py-4">
+      <app-ui-icon name="task_alt" class="size-9 text-[36px] text-success"></app-ui-icon>
       <div>
-        <span class="stat-value">{{ stats.handled }}</span>
-        <span class="stat-label">تمت معالجتها</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.handled }}</span>
+        <span class="text-[0.85rem] text-muted">تمت معالجتها</span>
       </div>
     </mat-card>
   </div>
@@ -116,7 +116,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <span class="toolbar-title"><app-ui-icon name="note_alt"></app-ui-icon> سجل الملاحظات</span>
+    <span class="inline-flex items-center gap-[0.4rem] font-bold text-primary"><app-ui-icon name="note_alt" class="size-5 text-xl"></app-ui-icon> سجل الملاحظات</span>
     @if (!loading) {
       <span class="toolbar-count">{{ total }} ملاحظة</span>
     }
@@ -136,11 +136,11 @@
         <ng-container matColumnDef="studentName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>الطالب</th>
           <td mat-cell *matCellDef="let r">
-            <div class="name-cell">
-              <span class="avatar">{{ r.studentName?.charAt(0) }}</span>
-              <div class="name-text">
-                <span class="name">{{ r.studentName }}</span>
-                <span class="sub">{{ r.stageName }}</span>
+            <div class="flex items-center gap-[0.7rem]">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.studentName?.charAt(0) }}</span>
+              <div class="flex flex-col leading-[1.3]">
+                <span class="font-semibold">{{ r.studentName }}</span>
+                <span class="text-[0.78rem] text-muted">{{ r.stageName }}</span>
               </div>
             </div>
           </td>
@@ -178,8 +178,8 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-          <td mat-cell *matCellDef="let r" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap">
             <div class="row-actions">
               <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
             </div>
@@ -189,6 +189,6 @@
         <tr mat-row *matRowDef="let row; columns: cols;" class="clickable" (click)="view(row)"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

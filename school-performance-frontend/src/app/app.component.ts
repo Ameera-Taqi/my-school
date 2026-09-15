@@ -6,8 +6,8 @@ import { LanguageService } from './core/services/language.service';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  template: `<router-outlet></router-outlet>`,
-  styles: [`:host { display: block; }`]
+  host: { class: 'block' },
+  template: `<router-outlet></router-outlet>`
 })
 export class AppComponent {
   constructor() {

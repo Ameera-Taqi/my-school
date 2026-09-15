@@ -21,13 +21,13 @@ export interface StudentFormDialogData {
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data.student ? 'تعديل طالب' : 'إضافة طالب' }}</h2>
-    <mat-dialog-content>
-      <p class="context-hint">
-        <app-ui-icon name="school"></app-ui-icon>
+    <mat-dialog-content class="max-h-[70vh]">
+      <p class="mb-2 flex items-center gap-2 rounded-lg bg-primary-light px-[0.85rem] py-[0.6rem] text-[0.9rem] text-primary-mid">
+        <app-ui-icon name="school" class="size-5 shrink-0 text-xl"></app-ui-icon>
         <span>{{ data.stageName }} — فصل <strong>{{ data.className }}</strong></span>
       </p>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <div class="two-col">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الرقم المدني</mat-label>
             <input matInput formControlName="civilId" [readonly]="!!data.student" cdkFocusInitial autocomplete="off" dir="ltr">
@@ -40,7 +40,7 @@ export interface StudentFormDialogData {
             <mat-error>اسم الطالب مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>تاريخ الميلاد</mat-label>
             <input matInput [matDatepicker]="birthPicker" formControlName="birthDate" placeholder="اختر التاريخ">
@@ -58,7 +58,7 @@ export interface StudentFormDialogData {
             <mat-error>الجنس مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>رقم ولي الأمر</mat-label>
             <input matInput formControlName="guardianPhone" autocomplete="off" dir="ltr">
@@ -74,7 +74,7 @@ export interface StudentFormDialogData {
             <mat-error>الحالة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>ملاحظات</mat-label>
           <textarea matInput formControlName="notes" rows="2"></textarea>
         </mat-form-field>
@@ -86,20 +86,7 @@ export interface StudentFormDialogData {
         <app-ui-icon name="check"></app-ui-icon> {{ data.student ? 'حفظ التعديلات' : 'إضافة الطالب' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    .context-hint {
-      display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.5rem;
-      padding: 0.6rem 0.85rem; border-radius: 8px;
-      background: var(--sp-primary-light); color: var(--sp-primary-mid); font-size: 0.9rem;
-      app-ui-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
-    }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class StudentFormDialogComponent {
   readonly data: StudentFormDialogData = inject(MAT_DIALOG_DATA);

@@ -1,48 +1,28 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-page-header',
   standalone: true,
-  imports: [CommonModule],
   template: `
-    <div class="page-header">
-      <div>
-        <h1>{{ title }}</h1>
-        @if (subtitle) {
-          <p class="subtitle">{{ subtitle }}</p>
-        }
-      </div>
-      <div class="actions">
-        <ng-content></ng-content>
+    <div class="sp-hero mb-4">
+      <div class="sp-hero__glow" aria-hidden="true"></div>
+      <div class="sp-hero__fade" aria-hidden="true"></div>
+      <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+          <h1 class="sp-hero__title">{{ title }}</h1>
+          @if (subtitle) {
+            <p class="sp-hero__subtitle">
+              <span class="sp-hero__dot" aria-hidden="true"></span>
+              {{ subtitle }}
+            </p>
+          }
+        </div>
+        <div class="flex shrink-0 flex-wrap items-center gap-2">
+          <ng-content></ng-content>
+        </div>
       </div>
     </div>
-  `,
-  styles: [`
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1.5rem;
-      gap: 1rem;
-    }
-    h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--sp-primary);
-    }
-    .subtitle {
-      margin: 0.25rem 0 0;
-      color: var(--sp-text-muted);
-      font-size: 0.9rem;
-    }
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-      flex-shrink: 0;
-    }
-  `]
+  `
 })
 export class PageHeaderComponent {
   @Input() title = '';

@@ -4,15 +4,53 @@
   }
 </app-page-header>
 
-<div class="data-card">
-  <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالاسم أو اسم المستخدم أو البريد أو الدور" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
-    @if (!loading) {
-      <span class="toolbar-count">
-        @if (query) { {{ filteredCount }} من {{ total }} مستخدم } @else { {{ total }} مستخدم }
-      </span>
-    }
+<section class="filters-panel" [attr.aria-expanded]="filtersOpen">
+  <div class="filters-panel__head">
+    <div class="filters-panel__title">
+      <span class="filters-panel__icon" aria-hidden="true"><app-ui-icon name="filter_alt"></app-ui-icon></span>
+      الفلاتر
+    </div>
+    <div class="filters-panel__meta">
+      @if (filtersOpen) {
+        <span class="filters-panel__badge">{{ activeFilterCount }} نشط</span>
+        <button type="button" class="filters-panel__icon-btn" matTooltip="إعادة تعيين" (click)="resetFilters()">
+          <app-ui-icon name="refresh"></app-ui-icon>
+        </button>
+      }
+      <button type="button" class="filters-panel__icon-btn" [attr.aria-label]="filtersOpen ? 'طي الفلاتر' : 'توسيع الفلاتر'" (click)="filtersOpen = !filtersOpen">
+        <app-ui-icon [name]="filtersOpen ? 'expand_less' : 'expand_more'"></app-ui-icon>
+      </button>
+    </div>
   </div>
+
+  @if (filtersOpen) {
+    <div class="filters-panel__body">
+      <div class="filters-panel__grid">
+        <label class="filters-panel__field">
+          <span class="filters-panel__label">بحث</span>
+          <input class="filters-panel__control" type="search" [(ngModel)]="draftQuery" placeholder="الاسم، اسم المستخدم، البريد..." autocomplete="off" (keydown.enter)="applyFilters()">
+        </label>
+        <label class="filters-panel__field">
+          <span class="filters-panel__label">الحالة</span>
+          <select class="filters-panel__control" [(ngModel)]="draftStatus">
+            <option value="all">الكل</option>
+            <option value="active">نشط</option>
+            <option value="inactive">غير نشط</option>
+          </select>
+        </label>
+      </div>
+      <div class="filters-panel__actions">
+        <button type="button" class="filters-panel__apply" (click)="applyFilters()">
+          <app-ui-icon name="search"></app-ui-icon>
+          تطبيق
+        </button>
+      </div>
+    </div>
+  }
+</section>
+
+<div class="data-card">
+  <h2 class="data-card__title">المستخدمون</h2>
 
   @if (loading) {
     <app-table-skeleton [rows]="5" [columns]="5"></app-table-skeleton>
@@ -23,18 +61,18 @@
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {
-    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد مستخدماً يطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" description="عدّل الفلاتر ثم اضغط تطبيق." [compact]="true"></app-empty-state>
   } @else {
     <div class="table-scroll">
       <table mat-table [dataSource]="dataSource" matSort matSortActive="fullName" matSortDirection="asc">
         <ng-container matColumnDef="fullName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>المستخدم</th>
           <td mat-cell *matCellDef="let r">
-            <div class="user-cell">
-              <span class="avatar" [class.me]="r.username === currentUsername">{{ r.fullName?.charAt(0) }}</span>
-              <div class="user-text">
-                <span class="name">{{ r.fullName }} @if (r.username === currentUsername) { <span class="chip neutral me-chip">أنت</span> }</span>
-                <span class="sub">{{ r.email || '—' }}</span>
+            <div class="flex items-center gap-[0.7rem]">
+              <span [class]="'flex size-9 shrink-0 items-center justify-center rounded-full font-bold ' + (r.username === currentUsername ? 'bg-primary text-white' : 'bg-primary-light text-primary')">{{ r.fullName?.charAt(0) }}</span>
+              <div class="flex min-w-0 flex-col leading-snug">
+                <span class="flex items-center gap-[0.4rem] font-semibold">{{ r.fullName }} @if (r.username === currentUsername) { <span class="chip neutral px-[7px] text-[0.68rem]">أنت</span> }</span>
+                <span class="text-[0.8rem] text-muted">{{ r.email || '—' }}</span>
               </div>
             </div>
           </td>
@@ -42,9 +80,9 @@
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم المستخدم / الدور</th>
           <td mat-cell *matCellDef="let r">
-            <div class="username-cell">
+            <div class="flex flex-col items-start gap-[0.15rem] leading-tight">
               <code>{{ r.username }}</code>
-              <span class="username-role">{{ r.roleName || '—' }}</span>
+              <span class="text-[0.8rem] text-muted">{{ r.roleName || '—' }}</span>
             </div>
           </td>
         </ng-container>
@@ -54,18 +92,23 @@
         </ng-container>
         <ng-container matColumnDef="active">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
-          <td mat-cell *matCellDef="let r"><span class="chip" [class.success]="r.active" [class.danger]="!r.active">{{ r.active ? 'نشط' : 'غير نشط' }}</span></td>
+          <td mat-cell *matCellDef="let r">
+            <span class="chip" [class.success]="r.active" [class.danger]="!r.active">
+              <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
+              {{ r.active ? 'نشط' : 'غير نشط' }}
+            </span>
+          </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-head">الإجراءات</th>
-          <td mat-cell *matCellDef="let r" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap">
             @if ('users.manage' | hasPermission) {
               <div class="row-actions">
-                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r)"><app-ui-icon name="edit"></app-ui-icon></button>
+                <button type="button" class="btn-action btn-action--edit" (click)="openDialog(r)"><app-ui-icon name="edit"></app-ui-icon> تعديل</button>
                 <button mat-icon-button [matTooltip]="r.active ? 'تعطيل الحساب' : 'تفعيل الحساب'" [class.success]="!r.active" (click)="toggleActive(r)">
                   <app-ui-icon [name]="r.active ? 'person_off' : 'how_to_reg'"></app-ui-icon>
                 </button>
-                <button mat-icon-button class="danger" matTooltip="حذف" [disabled]="r.username === currentUsername" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon></button>
+                <button type="button" class="btn-action btn-action--delete" [disabled]="r.username === currentUsername" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
               </div>
             }
           </td>
@@ -74,6 +117,6 @@
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

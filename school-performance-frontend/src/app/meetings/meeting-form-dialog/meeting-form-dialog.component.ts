@@ -17,16 +17,16 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule, MatDatepickerModule, MatTimepickerModule, MatCheckboxModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل اجتماع' : 'اجتماع جديد' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>عنوان الاجتماع</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
           <app-ui-icon name="title" matSuffix></app-ui-icon>
           <mat-error>عنوان الاجتماع مطلوب</mat-error>
         </mat-form-field>
 
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>التاريخ</mat-label>
             <input matInput [matDatepicker]="datePicker" formControlName="meetingDay">
@@ -44,15 +44,15 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
           </mat-form-field>
         </div>
 
-        <div class="roles-group" [class.invalid]="form.controls.targetRoleKeys.invalid && form.controls.targetRoleKeys.touched">
-          <div class="roles-group-header">
-            <app-ui-icon name="groups"></app-ui-icon>
+        <div [class]="'mb-4 rounded-sp-sm border px-4 py-[0.9rem] transition-[border-color,background] duration-150 ' + (form.controls.targetRoleKeys.invalid && form.controls.targetRoleKeys.touched ? 'border-danger bg-danger-bg' : 'border-border bg-primary-bg')">
+          <div class="mb-3 flex items-start gap-[0.6rem] text-primary">
+            <app-ui-icon name="groups" class="mt-0.5"></app-ui-icon>
             <div>
-              <strong>الأدوار المستهدفة</strong>
-              <span>يظهر الاجتماع في تقويم من يملك أحد هذه الأدوار</span>
+              <strong class="mb-[0.15rem] block text-[0.95rem]">الأدوار المستهدفة</strong>
+              <span class="block text-[0.8rem] leading-snug text-muted">يظهر الاجتماع في تقويم من يملك أحد هذه الأدوار</span>
             </div>
           </div>
-          <div class="roles-checkboxes">
+          <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-x-3 gap-y-[0.35rem]">
             @for (role of roles; track role.roleKey) {
               <mat-checkbox
                 [checked]="isRoleSelected(role.roleKey)"
@@ -62,23 +62,23 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             }
           </div>
           @if (form.controls.targetRoleKeys.invalid && form.controls.targetRoleKeys.touched) {
-            <p class="roles-error"><app-ui-icon name="error_outline"></app-ui-icon> اختر دوراً واحداً على الأقل</p>
+            <p class="mt-[0.6rem] mb-0 flex items-center gap-[0.3rem] text-[0.8rem] text-danger"><app-ui-icon name="error_outline" class="size-4 text-base"></app-ui-icon> اختر دوراً واحداً على الأقل</p>
           }
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>الحضور</mat-label>
           <textarea matInput formControlName="attendees" rows="2"></textarea>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>جدول الأعمال</mat-label>
           <textarea matInput formControlName="agenda" rows="2"></textarea>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>محضر الاجتماع</mat-label>
           <textarea matInput formControlName="minutes" rows="2"></textarea>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>المهام الناتجة</mat-label>
           <textarea matInput formControlName="followUpTasks" rows="2"></textarea>
         </mat-form-field>
@@ -90,48 +90,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'حفظ الاجتماع' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .full-width { width: 100%; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    mat-dialog-content { max-height: 70vh; }
-    .roles-group {
-      border: 1px solid var(--sp-border);
-      border-radius: var(--sp-radius-sm);
-      padding: 0.9rem 1rem;
-      margin-bottom: 1rem;
-      background: var(--sp-primary-bg);
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .roles-group.invalid {
-      border-color: var(--sp-danger);
-      background: var(--sp-danger-bg);
-    }
-    .roles-group-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.6rem;
-      margin-bottom: 0.75rem;
-      color: var(--sp-primary);
-    }
-    .roles-group-header app-ui-icon { margin-top: 2px; }
-    .roles-group-header strong { display: block; font-size: 0.95rem; margin-bottom: 0.15rem; }
-    .roles-group-header span { display: block; font-size: 0.8rem; color: var(--sp-text-muted); line-height: 1.4; }
-    .roles-checkboxes {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 0.35rem 0.75rem;
-    }
-    .roles-error {
-      display: flex; align-items: center; gap: 0.3rem;
-      margin: 0.6rem 0 0;
-      color: var(--sp-danger);
-      font-size: 0.8rem;
-      app-ui-icon { font-size: 16px; width: 16px; height: 16px; }
-    }
-  `]
+  `
 })
 export class MeetingFormDialogComponent implements OnInit {
   readonly data: Meeting | null = inject(MAT_DIALOG_DATA);

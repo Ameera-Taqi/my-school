@@ -16,6 +16,15 @@ public class TeacherService
         _db = db;
     }
 
+    public async Task<List<TeacherDto>> FindAllAsync()
+    {
+        var teachers = await TeachersWithDetails()
+            .OrderBy(t => t.Department != null ? t.Department.Name : "")
+            .ThenBy(t => t.FullName)
+            .ToListAsync();
+        return teachers.Select(EntityMapper.ToTeacherDto).ToList();
+    }
+
     public async Task<List<TeacherDto>> FindByDepartmentIdAsync(long departmentId)
     {
         if (!await _db.Departments.AnyAsync(d => d.Id == departmentId))

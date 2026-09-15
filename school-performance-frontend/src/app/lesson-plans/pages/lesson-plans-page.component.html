@@ -8,7 +8,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالمادة أو المعلم أو الفصل أو عنوان الخطة" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    <app-search-field placeholder="ابحث بالمادة أو المعلم أو الفصل أو عنوان الخطة" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
         @if (query) { {{ filteredCount }} من {{ total }} خطة } @else { {{ total }} خطة }
@@ -48,10 +48,10 @@
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>عنوان الخطة</th>
           <td mat-cell *matCellDef="let r">
-            <div class="title-cell">
-              <span class="title">{{ r.title }}</span>
+            <div class="flex flex-col leading-snug">
+              <span class="font-semibold">{{ r.title }}</span>
               @if (r.attachmentName) {
-                <span class="sub"><app-ui-icon name="attach_file"></app-ui-icon>{{ r.attachmentName }}</span>
+                <span class="inline-flex items-center gap-[0.2rem] text-[0.78rem] text-muted"><app-ui-icon name="attach_file" class="text-sm"></app-ui-icon>{{ r.attachmentName }}</span>
               }
             </div>
           </td>
@@ -67,12 +67,12 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-          <td mat-cell *matCellDef="let r" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let r" class="w-px whitespace-nowrap">
             @if ('lesson_plans.manage' | hasPermission) {
               <div class="row-actions">
-                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r)"><app-ui-icon name="edit"></app-ui-icon></button>
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon></button>
+                <button type="button" class="btn-action btn-action--edit" (click)="openDialog(r)"><app-ui-icon name="edit"></app-ui-icon> تعديل</button>
+                <button type="button" class="btn-action btn-action--delete" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
               </div>
             }
           </td>
@@ -81,6 +81,6 @@
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

@@ -20,18 +20,18 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatSlideToggleModule, MatProgressSpinnerModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل مستخدم' : 'إضافة مستخدم' }}</h2>
-    <mat-dialog-content>
+    <mat-dialog-content class="max-h-[70vh]">
       @if (rolesLoading) {
-        <div class="loading"><mat-spinner diameter="32"></mat-spinner></div>
+        <div class="flex justify-center p-8"><mat-spinner diameter="32"></mat-spinner></div>
       } @else {
-        <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-          <mat-form-field appearance="outline" class="full-width">
+        <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+          <mat-form-field appearance="outline" class="w-full">
             <mat-label>الاسم الكامل</mat-label>
             <input matInput formControlName="fullName" cdkFocusInitial autocomplete="off">
             <mat-error>الاسم مطلوب</mat-error>
           </mat-form-field>
 
-          <div class="two-col">
+          <div class="grid grid-cols-2 gap-3 max-[599px]:grid-cols-1">
             <mat-form-field appearance="outline">
               <mat-label>اسم المستخدم</mat-label>
               <input matInput formControlName="username" [readonly]="!!data" autocomplete="off" dir="ltr">
@@ -48,7 +48,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             </mat-form-field>
           </div>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="w-full">
             <mat-label>{{ data ? 'كلمة مرور جديدة (اختياري)' : 'كلمة المرور' }}</mat-label>
             <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password" dir="ltr">
             <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="hidePassword ? 'إظهار' : 'إخفاء'">
@@ -59,7 +59,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             @if (form.controls.password.hasError('minlength')) { <mat-error>6 أحرف على الأقل</mat-error> }
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="w-full">
             <mat-label>الأدوار</mat-label>
             <mat-select formControlName="roleIds" multiple (selectionChange)="updateDepartmentValidators()">
               @for (role of roles; track role.id) {
@@ -71,7 +71,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
           </mat-form-field>
 
           @if (isTeacherRole) {
-            <mat-form-field appearance="outline" class="full-width">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>الشعبة</mat-label>
               <mat-select formControlName="departmentId">
                 @for (dept of departments; track dept.id) {
@@ -83,7 +83,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
             </mat-form-field>
           }
 
-          <mat-slide-toggle formControlName="active" class="active-toggle">الحساب نشط</mat-slide-toggle>
+          <mat-slide-toggle formControlName="active" class="mt-2 mb-1">الحساب نشط</mat-slide-toggle>
         </form>
       }
     </mat-dialog-content>
@@ -93,16 +93,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة المستخدم' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    .loading { display: flex; justify-content: center; padding: 2rem; }
-    .active-toggle { margin: 0.5rem 0 0.25rem; }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class UserFormDialogComponent implements OnInit {
   readonly data: AppUser | null = inject(MAT_DIALOG_DATA);

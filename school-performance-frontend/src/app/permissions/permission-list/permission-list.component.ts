@@ -20,8 +20,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   selector: 'app-permission-list',
   standalone: true,
   imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent],
-  templateUrl: './permission-list.component.html',
-  styleUrl: './permission-list.component.scss'
+  templateUrl: './permission-list.component.html'
 })
 export class PermissionListComponent implements OnInit, AfterViewInit {
   private readonly permissionService = inject(PermissionApiService);

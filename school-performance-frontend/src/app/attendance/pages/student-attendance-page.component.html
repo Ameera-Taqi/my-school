@@ -1,14 +1,13 @@
 <app-page-header title="حضور الطلاب" subtitle="تسجيل ومتابعة حضور الطلاب حسب المرحلة والفصل"></app-page-header>
 
-
-<mat-card class="filters-card">
-  <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+<mat-card class="my-5 flex flex-row flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+  <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1 max-sm:w-full" subscriptSizing="dynamic">
     <mat-label>التاريخ</mat-label>
     <input matInput [matDatepicker]="studentDate" [formControl]="studentFilters.controls.date">
     <mat-datepicker-toggle matIconSuffix [for]="studentDate"></mat-datepicker-toggle>
     <mat-datepicker #studentDate></mat-datepicker>
   </mat-form-field>
-  <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+  <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1 max-sm:w-full" subscriptSizing="dynamic">
     <mat-label>المرحلة</mat-label>
     <mat-select [formControl]="studentFilters.controls.stageId">
       @for (s of stages; track s.id) {
@@ -16,7 +15,7 @@
       }
     </mat-select>
   </mat-form-field>
-  <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+  <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1 max-sm:w-full" subscriptSizing="dynamic">
     <mat-label>الفصل</mat-label>
     <mat-select [formControl]="studentFilters.controls.classId">
       @for (c of classes; track c.id) {
@@ -24,7 +23,7 @@
       }
     </mat-select>
   </mat-form-field>
-  <div class="filter-actions">
+  <div class="ms-auto flex flex-wrap items-center gap-2 max-sm:w-full max-sm:justify-end">
     <button mat-stroked-button type="button" (click)="resetStudentFilters()">
       <app-ui-icon name="restart_alt"></app-ui-icon>
       إعادة ضبط
@@ -43,10 +42,10 @@
     <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" description="اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور الطلاب."></app-empty-state>
   } @else {
     <div class="list-toolbar">
-      <div class="summary-chips">
+      <div class="flex flex-wrap gap-1.5">
         <span class="chip neutral">{{ studentRecords.length }} طالب</span>
         @for (s of statusOptions; track s) {
-          <span class="chip" [class]="'chip ' + statusChip(s)"><app-ui-icon [name]="statusIcon(s)" class="chip-icon"></app-ui-icon> {{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
+          <span class="chip" [class]="'chip ' + statusChip(s)"><app-ui-icon [name]="statusIcon(s)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
         }
       </div>
     </div>
@@ -54,7 +53,7 @@
       <table mat-table [dataSource]="studentRecords">
         <ng-container matColumnDef="personName">
           <th mat-header-cell *matHeaderCellDef>اسم الطالب</th>
-          <td mat-cell *matCellDef="let row" class="name">{{ row.personName }}</td>
+          <td mat-cell *matCellDef="let row" class="font-semibold">{{ row.personName }}</td>
         </ng-container>
         <ng-container matColumnDef="className">
           <th mat-header-cell *matHeaderCellDef>الفصل</th>
@@ -63,17 +62,17 @@
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>الحالة</th>
           <td mat-cell *matCellDef="let row">
-            <span class="chip" [class]="'chip ' + statusChip(row.status)"><app-ui-icon [name]="statusIcon(row.status)" class="chip-icon"></app-ui-icon> {{ statusLabels[row.status] }}</span>
+            <span class="chip" [class]="'chip ' + statusChip(row.status)"><app-ui-icon [name]="statusIcon(row.status)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[row.status] }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">تسجيل الحالة</th>
-          <td mat-cell *matCellDef="let row" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">تسجيل الحالة</th>
+          <td mat-cell *matCellDef="let row" class="w-px whitespace-nowrap">
             <mat-button-toggle-group class="status-group" [value]="row.status" (change)="setStatus(row, $event.value)" hideSingleSelectionIndicator aria-label="حالة الحضور">
               @for (s of statusOptions; track s) {
                 <mat-button-toggle [value]="s" [class]="'toggle-' + statusChip(s)" [matTooltip]="statusLabels[s]">
                   <app-ui-icon [name]="statusIcon(s)"></app-ui-icon>
-                  <span class="toggle-label">{{ statusLabels[s] }}</span>
+                  <span class="toggle-label max-[899px]:hidden">{{ statusLabels[s] }}</span>
                 </mat-button-toggle>
               }
             </mat-button-toggle-group>
@@ -83,10 +82,10 @@
         <tr mat-row *matRowDef="let row; columns: studentCols;"></tr>
       </table>
     </div>
-    <div class="save-row">
+    <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
       <button mat-stroked-button color="primary" type="button" matTooltip="تصدير سجل حضور الطلاب كملف PDF" (click)="exportStudentsPdf()" [disabled]="exportingStudentsPdf">
         @if (exportingStudentsPdf) {
-          <mat-spinner diameter="20"></mat-spinner> جاري التصدير...
+          <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
         } @else {
           <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
         }

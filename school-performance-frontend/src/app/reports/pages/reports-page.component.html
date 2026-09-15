@@ -1,11 +1,16 @@
 <app-page-header title="التقارير" subtitle="تقارير إدارية وأكاديمية"></app-page-header>
 
-<div class="cards-grid">
+<div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
   @for (card of reportCards; track card.type) {
-    <button type="button" class="report-card" (click)="selectReport(card.type)" [class.selected]="selectedReport === card.type" [attr.aria-pressed]="selectedReport === card.type">
-      <span class="report-icon" [style.background]="card.bg" [style.color]="card.color"><app-ui-icon [name]="card.icon"></app-ui-icon></span>
-      <span class="report-name">{{ reportLabels[card.type] }}</span>
-      @if (selectedReport === card.type) { <app-ui-icon name="check_circle" class="check"></app-ui-icon> }
+    <button
+      type="button"
+      class="relative flex cursor-pointer flex-col items-center gap-[0.6rem] rounded-sp border border-border bg-surface px-4 py-5 text-center font-inherit text-inherit shadow-sp transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-0.5 hover:border-[#c5cae9] hover:shadow-sp-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-mid"
+      [ngClass]="selectedReport === card.type ? 'border-primary-mid shadow-[0_0_0_2px_var(--color-primary-light),var(--shadow-sp-md)]' : ''"
+      (click)="selectReport(card.type)"
+      [attr.aria-pressed]="selectedReport === card.type">
+      <span class="flex size-14 items-center justify-center rounded-[14px]" [style.background]="card.bg" [style.color]="card.color"><app-ui-icon [name]="card.icon" class="size-[30px] text-[30px]"></app-ui-icon></span>
+      <span class="text-[0.95rem] font-bold text-primary">{{ reportLabels[card.type] }}</span>
+      @if (selectedReport === card.type) { <app-ui-icon name="check_circle" class="absolute top-2 end-2 size-5 text-xl text-primary-mid"></app-ui-icon> }
     </button>
   }
 </div>
@@ -17,22 +22,22 @@
 }
 
 @if (selectedReport) {
-  <div class="data-card filters-panel">
-    <h3 class="section-title"><app-ui-icon name="filter_alt"></app-ui-icon> فلاتر {{ reportLabels[selectedReport] }}</h3>
-    <form [formGroup]="filters" class="filters-form">
-      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+  <div class="data-card mb-5 p-5">
+    <h3 class="mb-4 mt-0 flex items-center gap-[0.4rem] text-base font-bold text-primary"><app-ui-icon name="filter_alt" class="size-5 text-xl text-primary-mid"></app-ui-icon> فلاتر {{ reportLabels[selectedReport] }}</h3>
+    <form [formGroup]="filters" class="flex flex-wrap items-center gap-x-4 gap-y-3">
+      <mat-form-field appearance="outline" class="filter-field min-w-[170px] flex-1" subscriptSizing="dynamic">
         <mat-label>من تاريخ</mat-label>
         <input matInput [matDatepicker]="fromPicker" formControlName="dateFrom">
         <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
         <mat-datepicker #fromPicker></mat-datepicker>
       </mat-form-field>
-      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="filter-field min-w-[170px] flex-1" subscriptSizing="dynamic">
         <mat-label>إلى تاريخ</mat-label>
         <input matInput [matDatepicker]="toPicker" formControlName="dateTo">
         <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
         <mat-datepicker #toPicker></mat-datepicker>
       </mat-form-field>
-      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="filter-field min-w-[170px] flex-1" subscriptSizing="dynamic">
         <mat-label>المرحلة</mat-label>
         <mat-select formControlName="stage">
           <mat-option value="">الكل</mat-option>
@@ -41,11 +46,11 @@
           <mat-option value="الثاني عشر">الثاني عشر</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="filter-field min-w-[170px] flex-1" subscriptSizing="dynamic">
         <mat-label>الفصل</mat-label>
         <input matInput formControlName="className" placeholder="مثال: 10-أ">
       </mat-form-field>
-      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="filter-field min-w-[170px] flex-1" subscriptSizing="dynamic">
         <mat-label>الحالة</mat-label>
         <mat-select formControlName="status">
           <mat-option value="">الكل</mat-option>
@@ -53,14 +58,14 @@
           <mat-option value="COMPLETED">مكتمل</mat-option>
         </mat-select>
       </mat-form-field>
-      <div class="filter-actions">
+      <div class="ms-auto flex flex-wrap items-center gap-2">
         <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
           <app-ui-icon name="restart_alt"></app-ui-icon>
           إعادة ضبط
         </button>
         <button mat-flat-button color="primary" type="button" (click)="generateReport()" [disabled]="loading">
           @if (loading) {
-            <mat-spinner diameter="20"></mat-spinner> جاري الإنشاء...
+            <mat-spinner class="me-1.5 inline-block" diameter="20"></mat-spinner> جاري الإنشاء...
           } @else {
             <ng-container><app-ui-icon name="visibility"></app-ui-icon> عرض التقرير</ng-container>
           }
@@ -71,34 +76,34 @@
 }
 
 @if (loading) {
-  <div class="data-card results-panel">
-    <div class="skeleton-head">
-      <span class="skeleton sk-title"></span>
-      <span class="skeleton sk-btn"></span>
+  <div class="data-card p-5">
+    <div class="mb-4 flex items-center justify-between gap-4">
+      <span class="skeleton h-14 max-w-[420px] flex-1 rounded-sp-sm"></span>
+      <span class="skeleton h-9 w-[130px]"></span>
     </div>
-    <div class="summary-grid">
-      @for (i of [0, 1, 2, 3]; track i) { <span class="skeleton sk-summary"></span> }
+    <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+      @for (i of [0, 1, 2, 3]; track i) { <span class="skeleton h-16 rounded-sp-sm"></span> }
     </div>
     <app-table-skeleton [rows]="6" [columns]="5"></app-table-skeleton>
   </div>
 }
 
 @if (reportResult && !loading) {
-  <div class="data-card results-panel">
-    <div class="results-header">
-      <div class="report-title-bar">
-        <div class="title-icon"><app-ui-icon name="summarize"></app-ui-icon></div>
+  <div class="data-card p-5">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex min-w-60 flex-1 items-center gap-[0.9rem] rounded-sp-sm bg-linear-to-br from-primary to-primary-mid px-[1.1rem] py-[0.9rem] text-white">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-sp-sm bg-[rgba(255,255,255,0.16)]"><app-ui-icon name="summarize" class="size-[26px] text-[26px]"></app-ui-icon></div>
         <div>
-          <h3>{{ reportResult.title }}</h3>
-          <p class="meta">
-            <app-ui-icon name="update"></app-ui-icon> تاريخ الإنشاء: {{ reportResult.generatedAt | appDate:'withTime' }}
-            <span class="chip neutral demo-chip">بيانات تجريبية</span>
+          <h3 class="mb-[0.2rem] mt-0 text-[1.05rem] font-bold text-white">{{ reportResult.title }}</h3>
+          <p class="m-0 flex flex-wrap items-center gap-[0.4rem] text-[0.82rem] text-[rgba(255,255,255,0.8)]">
+            <app-ui-icon name="update" class="size-4 text-base"></app-ui-icon> تاريخ الإنشاء: {{ reportResult.generatedAt | appDate:'withTime' }}
+            <span class="chip neutral bg-[rgba(255,255,255,0.18)] text-[0.7rem] text-white">بيانات تجريبية</span>
           </p>
         </div>
       </div>
       <button mat-stroked-button color="primary" type="button" matTooltip="تصدير التقرير كملف PDF" (click)="exportPdf()" [disabled]="exportingPdf">
         @if (exportingPdf) {
-          <mat-spinner diameter="20"></mat-spinner> جاري التصدير...
+          <mat-spinner class="me-1.5 inline-block" diameter="20"></mat-spinner> جاري التصدير...
         } @else {
           <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
         }
@@ -106,11 +111,11 @@
     </div>
 
     @if (reportResult.summary.length) {
-      <div class="summary-grid">
+      <div class="mb-5 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
         @for (item of reportResult.summary; track item.label) {
-          <div class="summary-card">
-            <span class="summary-value">{{ item.value }}</span>
-            <span class="summary-label">{{ item.label }}</span>
+          <div class="rounded-sp-sm border border-border bg-primary-bg px-4 py-3 text-center">
+            <span class="block text-[1.3rem] font-bold text-primary">{{ item.value }}</span>
+            <span class="text-[0.8rem] text-muted">{{ item.label }}</span>
           </div>
         }
       </div>
@@ -119,7 +124,7 @@
     @if (reportResult.rows.length === 0) {
       <app-empty-state icon="search_off" title="لا توجد بيانات مطابقة" description="لا توجد بيانات مطابقة للفلاتر المحددة. جرّب توسيع نطاق التاريخ أو إزالة بعض الفلاتر." [compact]="true"></app-empty-state>
     } @else {
-      <div class="table-scroll">
+      <div class="table-scroll rounded-sp-sm border border-border">
         <table mat-table [dataSource]="reportResult.rows">
           @for (col of displayedColumns; track col) {
             <ng-container [matColumnDef]="col">
@@ -137,9 +142,9 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </div>
-      <div class="rows-count">{{ reportResult.rows.length }} سجل</div>
+      <div class="mt-[0.6rem] text-end text-[0.8rem] text-muted">{{ reportResult.rows.length }} سجل</div>
     }
   </div>
 }
 
-<div #pdfExportRoot class="pdf-export-root" dir="rtl" lang="ar"></div>
+<div #pdfExportRoot class="pointer-events-none fixed top-0 -left-[10000px] box-border w-[794px] max-w-[794px] overflow-visible bg-white opacity-100" dir="rtl" lang="ar"></div>

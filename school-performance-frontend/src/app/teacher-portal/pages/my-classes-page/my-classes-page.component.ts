@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,9 +18,8 @@ import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-my-classes-page',
   standalone: true,
-  imports: [UiIconComponent, MatButtonModule, MatTooltipModule, MatDialogModule, MatTableModule, MatPaginatorModule, MatSortModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
-  templateUrl: './my-classes-page.component.html',
-  styleUrl: './my-classes-page.component.scss'
+  imports: [NgClass, UiIconComponent, MatButtonModule, MatTooltipModule, MatDialogModule, MatTableModule, MatPaginatorModule, MatSortModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
+  templateUrl: './my-classes-page.component.html'
 })
 export class MyClassesPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(TeacherPortalMockService);

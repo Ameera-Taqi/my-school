@@ -13,61 +13,61 @@
 </app-page-header>
 
 @if (loading) {
-  <div class="settings-skeleton">
-    <div class="sk-tabs">
-      @for (i of [0, 1, 2, 3, 4]; track i) { <span class="skeleton sk-tab"></span> }
+  <div class="flex flex-col">
+    <div class="flex gap-6 border-b border-border px-2 py-3">
+      @for (i of [0, 1, 2, 3, 4]; track i) { <span class="skeleton h-4 w-[110px]"></span> }
     </div>
-    <div class="data-card settings-card">
-      <span class="skeleton sk-title"></span>
-      <div class="fields-grid">
-        @for (i of [0, 1, 2, 3, 4, 5]; track i) { <span class="skeleton sk-field"></span> }
+    <div class="data-card mt-5 p-6">
+      <span class="skeleton mb-5 block h-[18px] w-[200px]"></span>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+        @for (i of [0, 1, 2, 3, 4, 5]; track i) { <span class="skeleton mb-3 block h-[52px] rounded-sp-sm"></span> }
       </div>
     </div>
   </div>
 } @else {
-  <form [formGroup]="form" class="settings-form">
-    <mat-tab-group animationDuration="200ms" class="settings-tabs">
+  <form [formGroup]="form">
+    <mat-tab-group animationDuration="200ms" class="bg-transparent">
       <!-- معلومات المدرسة -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <app-ui-icon name="school" class="tab-icon"></app-ui-icon>
+          <app-ui-icon name="school" class="me-[0.35rem] inline-block size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon>
           معلومات المدرسة
-          @if (tabHasError('school')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
+          @if (tabHasError('school')) { <app-ui-icon name="error" class="ms-[0.35rem] size-4 text-base text-danger" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
-        <div class="data-card settings-card" formGroupName="school">
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="badge"></app-ui-icon></span> البيانات الأساسية</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+        <div class="data-card mt-5 p-6" formGroupName="school">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="badge" class="size-5 text-xl"></app-ui-icon></span> البيانات الأساسية</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>اسم المدرسة</mat-label>
               <input matInput formControlName="name" autocomplete="off">
               <mat-error>اسم المدرسة مطلوب</mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>رمز المدرسة</mat-label>
               <input matInput formControlName="code" autocomplete="off" dir="ltr">
               <mat-error>رمز المدرسة مطلوب</mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="full-row">
+            <mat-form-field appearance="outline" class="col-span-full w-full">
               <mat-label>العنوان</mat-label>
               <input matInput formControlName="address" autocomplete="off">
               <app-ui-icon name="location_on" matSuffix></app-ui-icon>
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="contact_phone"></app-ui-icon></span> بيانات التواصل والإدارة</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="contact_phone" class="size-5 text-xl"></app-ui-icon></span> بيانات التواصل والإدارة</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>رقم الهاتف</mat-label>
               <input matInput formControlName="phone" autocomplete="off" dir="ltr">
               <app-ui-icon name="call" matSuffix></app-ui-icon>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>البريد الإلكتروني</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="off" dir="ltr">
               <app-ui-icon name="mail" matSuffix></app-ui-icon>
               <mat-error>صيغة البريد الإلكتروني غير صحيحة</mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="full-row">
+            <mat-form-field appearance="outline" class="col-span-full w-full">
               <mat-label>اسم مدير المدرسة</mat-label>
               <input matInput formControlName="principalName" autocomplete="off">
               <app-ui-icon name="person" matSuffix></app-ui-icon>
@@ -79,19 +79,19 @@
       <!-- الإعدادات الأكاديمية -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <app-ui-icon name="menu_book" class="tab-icon"></app-ui-icon>
+          <app-ui-icon name="menu_book" class="me-[0.35rem] inline-block size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon>
           أكاديمي
-          @if (tabHasError('academic')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
+          @if (tabHasError('academic')) { <app-ui-icon name="error" class="ms-[0.35rem] size-4 text-base text-danger" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
-        <div class="data-card settings-card" formGroupName="academic">
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="calendar_month"></app-ui-icon></span> العام الدراسي</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+        <div class="data-card mt-5 p-6" formGroupName="academic">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="calendar_month" class="size-5 text-xl"></app-ui-icon></span> العام الدراسي</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>العام الدراسي</mat-label>
               <input matInput formControlName="year" placeholder="2025-2026" autocomplete="off" dir="ltr">
               <mat-error>العام الدراسي مطلوب</mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>الفصل الدراسي الحالي</mat-label>
               <mat-select formControlName="currentTerm">
                 @for (t of termOptions; track t) {
@@ -102,16 +102,16 @@
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="grading"></app-ui-icon></span> التقييم والدرجات</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="grading" class="size-5 text-xl"></app-ui-icon></span> التقييم والدرجات</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>درجة النجاح (%)</mat-label>
               <input matInput type="number" formControlName="passMark" min="0" max="100">
               <mat-hint>بين 0 و 100</mat-hint>
               @if (form.controls.academic.controls.passMark.hasError('required')) { <mat-error>درجة النجاح مطلوبة</mat-error> }
               @if (form.controls.academic.controls.passMark.hasError('min') || form.controls.academic.controls.passMark.hasError('max')) { <mat-error>يجب أن تكون بين 0 و 100</mat-error> }
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>الدرجة الكاملة</mat-label>
               <input matInput type="number" formControlName="maxGrade" min="1">
               @if (form.controls.academic.controls.maxGrade.hasError('required')) { <mat-error>الدرجة الكاملة مطلوبة</mat-error> }
@@ -124,20 +124,20 @@
       <!-- الحضور -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <app-ui-icon name="how_to_reg" class="tab-icon"></app-ui-icon>
+          <app-ui-icon name="how_to_reg" class="me-[0.35rem] inline-block size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon>
           الحضور
-          @if (tabHasError('attendance')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
+          @if (tabHasError('attendance')) { <app-ui-icon name="error" class="ms-[0.35rem] size-4 text-base text-danger" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
-        <div class="data-card settings-card" formGroupName="attendance">
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="schedule"></app-ui-icon></span> قواعد الحضور والانصراف</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+        <div class="data-card mt-5 p-6" formGroupName="attendance">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="schedule" class="size-5 text-xl"></app-ui-icon></span> قواعد الحضور والانصراف</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>اعتبار التأخر بعد (دقيقة)</mat-label>
               <input matInput type="number" formControlName="lateAfterMinutes" min="1">
               @if (form.controls.attendance.controls.lateAfterMinutes.hasError('required')) { <mat-error>هذا الحقل مطلوب</mat-error> }
               @if (form.controls.attendance.controls.lateAfterMinutes.hasError('min')) { <mat-error>يجب أن يكون 1 على الأقل</mat-error> }
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>تنبيه الغياب بعد (أيام)</mat-label>
               <input matInput type="number" formControlName="absentAlertThreshold" min="1">
               @if (form.controls.attendance.controls.absentAlertThreshold.hasError('required')) { <mat-error>هذا الحقل مطلوب</mat-error> }
@@ -145,12 +145,12 @@
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="rule"></app-ui-icon></span> خيارات الاحتساب</h3>
-          <div class="toggle-list">
-            <div class="toggle-row">
-              <div class="toggle-text">
-                <strong>احتساب التأخر جزئياً</strong>
-                <p>اعتبار الطالب المتأخر حاضراً جزئياً في التقارير</p>
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="rule" class="size-5 text-xl"></app-ui-icon></span> خيارات الاحتساب</h3>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-4 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-[0.85rem] transition-[border-color,background] duration-150 hover:border-[#c5cae9]">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem] text-text">احتساب التأخر جزئياً</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">اعتبار الطالب المتأخر حاضراً جزئياً في التقارير</p>
               </div>
               <mat-slide-toggle formControlName="countLateAsPartial"></mat-slide-toggle>
             </div>
@@ -161,48 +161,48 @@
       <!-- الإشعارات -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <app-ui-icon name="notifications" class="tab-icon"></app-ui-icon>
+          <app-ui-icon name="notifications" class="me-[0.35rem] inline-block size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon>
           الإشعارات
         </ng-template>
-        <div class="data-card settings-card" formGroupName="notifications">
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="send"></app-ui-icon></span> قنوات الإرسال</h3>
-          <div class="toggle-list">
-            <div class="toggle-row">
-              <div class="toggle-text">
-                <strong>إشعارات البريد الإلكتروني</strong>
-                <p>إرسال التنبيهات عبر البريد الإلكتروني</p>
+        <div class="data-card mt-5 p-6" formGroupName="notifications">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="send" class="size-5 text-xl"></app-ui-icon></span> قنوات الإرسال</h3>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-4 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-[0.85rem] transition-[border-color,background] duration-150 hover:border-[#c5cae9]">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem] text-text">إشعارات البريد الإلكتروني</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">إرسال التنبيهات عبر البريد الإلكتروني</p>
               </div>
               <mat-slide-toggle formControlName="emailEnabled"></mat-slide-toggle>
             </div>
-            <div class="toggle-row">
-              <div class="toggle-text">
-                <strong>إشعارات الرسائل النصية</strong>
-                <p>إرسال التنبيهات عبر SMS</p>
+            <div class="flex items-center justify-between gap-4 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-[0.85rem] transition-[border-color,background] duration-150 hover:border-[#c5cae9]">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem] text-text">إشعارات الرسائل النصية</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">إرسال التنبيهات عبر SMS</p>
               </div>
               <mat-slide-toggle formControlName="smsEnabled"></mat-slide-toggle>
             </div>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="notifications_active"></app-ui-icon></span> تنبيهات النظام</h3>
-          <div class="toggle-list">
-            <div class="toggle-row">
-              <div class="toggle-text">
-                <strong>تنبيهات الغياب</strong>
-                <p>إشعار ولي الأمر عند تجاوز حد الغياب</p>
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="notifications_active" class="size-5 text-xl"></app-ui-icon></span> تنبيهات النظام</h3>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-4 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-[0.85rem] transition-[border-color,background] duration-150 hover:border-[#c5cae9]">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem] text-text">تنبيهات الغياب</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">إشعار ولي الأمر عند تجاوز حد الغياب</p>
               </div>
               <mat-slide-toggle formControlName="absenceAlerts"></mat-slide-toggle>
             </div>
-            <div class="toggle-row">
-              <div class="toggle-text">
-                <strong>تنبيهات الدرجات</strong>
-                <p>إشعار عند إدخال أو تحديث الدرجات</p>
+            <div class="flex items-center justify-between gap-4 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-[0.85rem] transition-[border-color,background] duration-150 hover:border-[#c5cae9]">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem] text-text">تنبيهات الدرجات</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">إشعار عند إدخال أو تحديث الدرجات</p>
               </div>
               <mat-slide-toggle formControlName="gradeAlerts"></mat-slide-toggle>
             </div>
-            <div class="toggle-row">
-              <div class="toggle-text">
-                <strong>تذكير الاجتماعات</strong>
-                <p>تذكير قبل موعد الاجتماعات المجدولة</p>
+            <div class="flex items-center justify-between gap-4 rounded-sp-sm border border-border bg-[#fafbfe] px-4 py-[0.85rem] transition-[border-color,background] duration-150 hover:border-[#c5cae9]">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem] text-text">تذكير الاجتماعات</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">تذكير قبل موعد الاجتماعات المجدولة</p>
               </div>
               <mat-slide-toggle formControlName="meetingReminders"></mat-slide-toggle>
             </div>
@@ -213,14 +213,14 @@
       <!-- النظام -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <app-ui-icon name="tune" class="tab-icon"></app-ui-icon>
+          <app-ui-icon name="tune" class="me-[0.35rem] inline-block size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon>
           النظام
-          @if (tabHasError('system')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
+          @if (tabHasError('system')) { <app-ui-icon name="error" class="ms-[0.35rem] size-4 text-base text-danger" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
-        <div class="data-card settings-card" formGroupName="system">
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="language"></app-ui-icon></span> العرض واللغة</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+        <div class="data-card mt-5 p-6" formGroupName="system">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="language" class="size-5 text-xl"></app-ui-icon></span> العرض واللغة</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>تنسيق التاريخ</mat-label>
               <mat-select formControlName="dateFormat">
                 @for (f of dateFormatOptions; track f.value) {
@@ -229,7 +229,7 @@
               </mat-select>
               <mat-error>تنسيق التاريخ مطلوب</mat-error>
             </mat-form-field>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>اللغة الافتراضية</mat-label>
               <mat-select formControlName="defaultLanguage">
                 @for (l of languageOptions; track l.value) {
@@ -240,9 +240,9 @@
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="security"></app-ui-icon></span> الجلسة والأمان</h3>
-          <div class="fields-grid">
-            <mat-form-field appearance="outline">
+          <h3 class="mb-[1.1rem] flex items-center gap-[0.6rem] text-base font-bold text-primary [&:not(:first-child)]:mt-6 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-border [&:not(:first-child)]:pt-5"><span class="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-primary-light text-primary-mid"><app-ui-icon name="security" class="size-5 text-xl"></app-ui-icon></span> الجلسة والأمان</h3>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1 max-md:grid-cols-1">
+            <mat-form-field appearance="outline" class="w-full">
               <mat-label>مهلة الجلسة (دقيقة)</mat-label>
               <input matInput type="number" formControlName="sessionTimeoutMinutes" min="5">
               <mat-hint>5 دقائق على الأقل</mat-hint>
@@ -250,11 +250,12 @@
               @if (form.controls.system.controls.sessionTimeoutMinutes.hasError('min')) { <mat-error>يجب أن تكون 5 دقائق على الأقل</mat-error> }
             </mat-form-field>
           </div>
-          <div class="toggle-list">
-            <div class="toggle-row maintenance-row" [class.on]="form.controls.system.controls.maintenanceMode.value">
-              <div class="toggle-text">
-                <strong><app-ui-icon name="engineering" class="inline-icon"></app-ui-icon> وضع الصيانة</strong>
-                <p>تعطيل دخول المستخدمين مؤقتاً باستثناء المدير</p>
+          <div class="flex flex-col gap-2">
+            <div
+              [class]="'flex items-center justify-between gap-4 rounded-sp-sm border px-4 py-[0.85rem] transition-[border-color,background] duration-150 ' + (form.controls.system.controls.maintenanceMode.value ? 'border-[#ffcdd2] bg-danger-bg' : 'border-border bg-[#fafbfe] hover:border-[#c5cae9]')">
+              <div>
+                <strong class="flex items-center gap-[0.35rem] text-[0.95rem]" [class.text-danger]="!!form.controls.system.controls.maintenanceMode.value" [class.text-text]="!form.controls.system.controls.maintenanceMode.value"><app-ui-icon name="engineering" class="size-[18px] text-[18px]" [class.text-danger]="!!form.controls.system.controls.maintenanceMode.value" [class.text-warning]="!form.controls.system.controls.maintenanceMode.value"></app-ui-icon> وضع الصيانة</strong>
+                <p class="mt-[0.2rem] mb-0 text-[0.82rem] text-muted">تعطيل دخول المستخدمين مؤقتاً باستثناء المدير</p>
               </div>
               <mat-slide-toggle formControlName="maintenanceMode" color="warn"></mat-slide-toggle>
             </div>

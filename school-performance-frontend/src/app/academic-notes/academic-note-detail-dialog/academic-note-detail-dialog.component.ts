@@ -21,65 +21,69 @@ export interface AcademicNoteDetailDialogData {
   standalone: true,
   imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatDividerModule, AppDatePipe],
   template: `
-    <div class="dialog-header">
-      <span class="header-icon"><app-ui-icon name="note_alt"></app-ui-icon></span>
+    <div class="flex flex-wrap items-start gap-4 px-6 pt-5">
+      <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-light text-primary">
+        <app-ui-icon name="note_alt" class="size-[26px] text-[26px]"></app-ui-icon>
+      </span>
       <div>
-        <h2 mat-dialog-title>ملاحظة أكاديمية — {{ data.note.studentName }}</h2>
-        <p class="subtitle">{{ data.note.className }} — {{ data.note.stageName }}</p>
+        <h2 mat-dialog-title class="!m-0 !p-0 text-[1.15rem] font-bold">ملاحظة أكاديمية — {{ data.note.studentName }}</h2>
+        <p class="mt-1 mb-0 text-[0.85rem] text-muted">{{ data.note.className }} — {{ data.note.stageName }}</p>
       </div>
-      <span class="chip header-chip" [class]="'chip header-chip ' + statusChip">
+      <span class="chip ms-auto self-center" [class]="'chip ms-auto self-center ' + statusChip">
         {{ statusLabels[data.note.status] }}
       </span>
     </div>
 
-    <mat-dialog-content class="detail-content">
-      <div class="info-grid">
-        <div class="info-item">
-          <app-ui-icon name="menu_book"></app-ui-icon>
+    <mat-dialog-content class="min-w-0">
+      <div class="mb-4 grid grid-cols-2 gap-3 max-[599px]:grid-cols-1">
+        <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
+          <app-ui-icon name="menu_book" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">المادة</span>
-            <span class="value">{{ data.note.subject }}</span>
+            <span class="block text-xs text-muted">المادة</span>
+            <span class="block text-text">{{ data.note.subject }}</span>
           </div>
         </div>
-        <div class="info-item">
-          <app-ui-icon name="person"></app-ui-icon>
+        <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
+          <app-ui-icon name="person" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">المعلم</span>
-            <span class="value">{{ data.note.teacherName }}</span>
+            <span class="block text-xs text-muted">المعلم</span>
+            <span class="block text-text">{{ data.note.teacherName }}</span>
           </div>
         </div>
-        <div class="info-item">
-          <app-ui-icon name="category"></app-ui-icon>
+        <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
+          <app-ui-icon name="category" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">التصنيف</span>
-            <span class="value">{{ categoryLabels[data.note.category] }}</span>
+            <span class="block text-xs text-muted">التصنيف</span>
+            <span class="block text-text">{{ categoryLabels[data.note.category] }}</span>
           </div>
         </div>
-        <div class="info-item">
-          <app-ui-icon name="flag"></app-ui-icon>
+        <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
+          <app-ui-icon name="flag" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">الأولوية</span>
-            <span class="value"><span class="chip" [class]="'chip ' + priorityChip">{{ priorityLabels[data.note.priority] }}</span></span>
+            <span class="block text-xs text-muted">الأولوية</span>
+            <span class="block text-text"><span class="chip" [class]="'chip ' + priorityChip">{{ priorityLabels[data.note.priority] }}</span></span>
           </div>
         </div>
-        <div class="info-item">
-          <app-ui-icon name="event"></app-ui-icon>
+        <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
+          <app-ui-icon name="event" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
-            <span class="label">التاريخ</span>
-            <span class="value">{{ data.note.noteDate | appDate }}</span>
+            <span class="block text-xs text-muted">التاريخ</span>
+            <span class="block text-text">{{ data.note.noteDate | appDate }}</span>
           </div>
         </div>
       </div>
 
       <mat-divider></mat-divider>
 
-      <section class="detail-section">
-        <h3><app-ui-icon name="description"></app-ui-icon> نص الملاحظة</h3>
-        <p class="section-body">{{ data.note.content }}</p>
+      <section>
+        <h3 class="mt-4 mb-2 flex items-center gap-2 text-[0.95rem] text-primary">
+          <app-ui-icon name="description"></app-ui-icon> نص الملاحظة
+        </h3>
+        <p class="m-0 rounded-sp-sm border border-border bg-[#fafafa] px-4 py-3 leading-7 whitespace-pre-wrap">{{ data.note.content }}</p>
       </section>
     </mat-dialog-content>
 
-    <mat-dialog-actions align="end">
+    <mat-dialog-actions align="end" class="gap-2 px-6 pt-3 pb-5">
       @if (data.canReview && data.note.status === 'OPEN') {
         <button mat-stroked-button color="primary" (click)="markReviewed()">
           <app-ui-icon name="task_alt"></app-ui-icon>
@@ -88,79 +92,7 @@ export interface AcademicNoteDetailDialogData {
       }
       <button mat-flat-button color="primary" mat-dialog-close>إغلاق</button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1.25rem 1.5rem 0;
-      flex-wrap: wrap;
-    }
-
-    .header-icon {
-      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--sp-primary-light); color: var(--sp-primary);
-      app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
-    }
-
-    h2[mat-dialog-title] {
-      margin: 0;
-      padding: 0;
-      font-size: 1.15rem;
-      font-weight: 700;
-    }
-
-    .subtitle { margin: 0.25rem 0 0; color: var(--sp-text-muted); font-size: 0.85rem; }
-
-    .header-chip { margin-inline-start: auto; align-self: center; }
-
-    .detail-content { min-width: 0; }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-
-    @media (max-width: 599px) { .info-grid { grid-template-columns: 1fr; } }
-
-    .info-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      background: var(--sp-primary-bg);
-      border-radius: var(--sp-radius-sm);
-    }
-
-    .info-item app-ui-icon { color: var(--sp-primary-mid); margin-top: 2px; }
-    .label { display: block; font-size: 0.75rem; color: var(--sp-text-muted); }
-    .value { display: block; color: var(--sp-text); }
-
-    .detail-section h3 {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 1rem 0 0.5rem;
-      font-size: 0.95rem;
-      color: var(--sp-primary);
-    }
-
-    .section-body {
-      margin: 0;
-      padding: 0.75rem 1rem;
-      background: #fafafa;
-      border-radius: var(--sp-radius-sm);
-      border: 1px solid var(--sp-border);
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    mat-dialog-actions { padding: 0.75rem 1.5rem 1.25rem; gap: 0.5rem; }
-  `]
+  `
 })
 export class AcademicNoteDetailDialogComponent {
   readonly data: AcademicNoteDetailDialogData = inject(MAT_DIALOG_DATA);

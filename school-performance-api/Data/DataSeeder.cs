@@ -141,7 +141,7 @@ public class DataSeeder
         _db.Roles.AddRange(
             admin,
             new Role { RoleKey = "SCHOOL_MANAGER", RoleName = "مدير المدرسة", Description = "مدير المدرسة", Active = true },
-            new Role { RoleKey = "ASSISTANT_MANAGER", RoleName = "مدير مساعد", Description = "مدير مساعد", Active = true },
+            new Role { RoleKey = "ASSISTANT_MANAGER", RoleName = "وكيل", Description = "وكيل المدرسة", Active = true },
             new Role { RoleKey = "DEPARTMENT_HEAD", RoleName = "رئيس شعبة", Description = "رئيس شعبة أكاديمية", Active = true },
             new Role { RoleKey = "TEACHER", RoleName = "معلم", Description = "معلم", Active = true });
         await _db.SaveChangesAsync();
@@ -323,6 +323,9 @@ public class DataSeeder
         await EnsureUserAsync("mariam", "mariam123", "مريم الزهراني", "mariam@school.om", "TEACHER");
         await EnsureUserAsync("manager", "manager123", "محمد السعيدي", "manager@school.om", "SCHOOL_MANAGER");
         await EnsureUserAsync("salem", "salem123", "سالم الحارثي", "salem@school.om", "DEPARTMENT_HEAD");
+        // Vice-principals for org tree: مدير → وكلاء → شعب
+        await EnsureUserAsync("vp1", "vp1123", "أحمد المنصوري", "vp1@school.om", "ASSISTANT_MANAGER");
+        await EnsureUserAsync("vp2", "vp2123", "سعاد البلوشي", "vp2@school.om", "ASSISTANT_MANAGER");
     }
 
     private async Task EnsureUserAsync(string username, string password, string fullName, string email, string roleKey)
@@ -352,6 +355,13 @@ public class DataSeeder
         if (role != null)
         {
             await GrantKeysIfMissingAsync(role, SchoolManagerPerms);
+        }
+
+        var assistant = await FindRoleAsync("ASSISTANT_MANAGER");
+        if (assistant != null)
+        {
+            await GrantKeysIfMissingAsync(assistant, SchoolManagerPerms);
+            await GrantKeysIfMissingAsync(assistant, AllUserCalendarPerms);
         }
     }
 
@@ -765,7 +775,7 @@ public class DataSeeder
         {
             ["ADMIN"] = "مدير النظام",
             ["SCHOOL_MANAGER"] = "مدير المدرسة",
-            ["ASSISTANT_MANAGER"] = "مدير مساعد",
+            ["ASSISTANT_MANAGER"] = "وكيل",
             ["DEPARTMENT_HEAD"] = "رئيس شعبة",
             ["TEACHER"] = "معلم",
             ["WING_SUPERVISOR"] = "مشرف جناح"

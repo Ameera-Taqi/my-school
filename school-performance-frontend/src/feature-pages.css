@@ -1,0 +1,98 @@
+/* Unavoidable leftovers: dynamic CSS vars, pseudo-elements, keyframe animation */
+
+/* Class schedule: subject color via --subj (set inline) */
+.slot-content {
+  background: color-mix(in srgb, var(--subj, #5c6bc0) 12%, #fff);
+  border-inline-start: 4px solid var(--subj, #5c6bc0);
+}
+.slot-content .slot-subject {
+  color: color-mix(in srgb, var(--subj, #5c6bc0) 75%, #000);
+}
+
+.org-live-dot {
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+  animation: org-ping 1.4s ease-out infinite;
+}
+@keyframes org-ping {
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Org tree: data-kind variants + branch pseudo-elements */
+.org-tree-card[data-kind="manager"] {
+  border: 2px solid #4f46e5;
+  box-shadow: 0 12px 28px rgba(79, 70, 229, 0.14);
+  padding: 0.75rem 0.95rem;
+}
+.org-tree-card[data-kind="assistant"] {
+  border-color: #a5f3fc;
+  background: #ecfeff;
+}
+.org-tree-card[data-kind="department"] {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+.org-tree-card[data-kind="subject"] {
+  border-color: #ddd6fe;
+  background: #f5f3ff;
+}
+.org-tree-card[data-kind="group"] {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+}
+.org-tree-card[data-kind="empty"] {
+  border-style: dashed;
+  border-color: #cbd5e1;
+  color: #64748b;
+  cursor: default;
+}
+
+.org-tree-icon[data-kind="department"] { background: #ffedd5; color: #d97706; }
+.org-tree-icon[data-kind="subject"] { background: #ede9fe; color: #7c3aed; }
+.org-tree-icon[data-kind="group"] { background: #eef2ff; color: #4f46e5; }
+.org-tree-icon[data-kind="empty"] { background: #e2e8f0; color: #94a3b8; }
+
+.org-tree-avatar[data-kind="manager"] {
+  width: 44px; height: 44px; border-radius: 14px; font-size: 0.95rem; background: #312e81;
+}
+.org-tree-avatar[data-kind="assistant"] { background: #0891b2; }
+.org-tree-avatar[data-kind="head"] { background: #d97706; }
+.org-tree-avatar[data-kind="teacher"] {
+  width: 28px; height: 28px; border-radius: 8px; font-size: 0.65rem; background: #059669;
+}
+
+.org-tree-leaf-dot::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 11px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c7d2fe;
+}
+
+.org-tree-branch-item::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1.15rem;
+  top: 1.55rem;
+  width: 1rem;
+  height: 2px;
+  background: #c7d2fe;
+}
+
+.org-tree-branch-item--last::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1.2rem;
+  top: 1.65rem;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, transparent, #fafbff 30%);
+}
+

@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -14,12 +15,14 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
 @Component({
   selector: 'app-resource-file-form-dialog',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>رفع ملف تعليمي</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <div class="upload-section" [class.has-error]="fileError">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <div
+          class="mb-3 flex flex-col gap-3 rounded-sp-sm border border-dashed border-[#c5cae9] bg-primary-bg p-4"
+          [ngClass]="fileError ? 'border-danger bg-danger-bg' : ''">
           <input
             #fileInput
             type="file"
@@ -31,30 +34,32 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
             {{ selectedFile ? 'تغيير الملف' : 'اختيار ملف' }}
           </button>
           @if (selectedFile) {
-            <div class="selected-file">
-              <app-ui-icon name="insert_drive_file"></app-ui-icon>
-              <div>
-                <span class="file-name">{{ selectedFile.name }}</span>
-                <small>{{ formatSize(selectedFile.size) }}</small>
+            <div class="flex items-center gap-3 rounded-sp-sm border border-border bg-surface p-3">
+              <app-ui-icon name="insert_drive_file" class="text-primary"></app-ui-icon>
+              <div class="min-w-0 flex-1">
+                <span class="block break-all font-semibold text-text">{{ selectedFile.name }}</span>
+                <small class="text-muted">{{ formatSize(selectedFile.size) }}</small>
               </div>
               <button mat-icon-button type="button" (click)="clearFile(fileInput)" aria-label="إزالة الملف">
                 <app-ui-icon name="close"></app-ui-icon>
               </button>
             </div>
           } @else {
-            <p class="upload-hint-text">الصيغ المدعومة: PDF, PPTX, DOCX, فيديو — بحد أقصى 50 ميجابايت</p>
+            <p class="m-0 text-[0.85rem] text-muted">الصيغ المدعومة: PDF, PPTX, DOCX, فيديو — بحد أقصى 50 ميجابايت</p>
           }
           @if (fileError) {
-            <p class="file-error"><app-ui-icon name="error_outline"></app-ui-icon> {{ fileError }}</p>
+            <p class="m-0 flex items-center gap-[0.3rem] text-[0.85rem] text-danger">
+              <app-ui-icon name="error_outline" class="size-[18px] text-lg"></app-ui-icon> {{ fileError }}
+            </p>
           }
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>عنوان الملف</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
           <mat-error>عنوان الملف مطلوب</mat-error>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>نوع الملف</mat-label>
             <mat-select formControlName="fileType">
@@ -71,7 +76,7 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
             <mat-error>المادة مطلوبة</mat-error>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>المرحلة</mat-label>
             <input matInput formControlName="stageName" autocomplete="off">
@@ -83,7 +88,7 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
             <mat-error>اسم المعلم مطلوب</mat-error>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>وصف مختصر</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
         </mat-form-field>
@@ -99,44 +104,7 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
         }
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    mat-dialog-content { max-height: 70vh; }
-    .upload-section {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 0.75rem;
-      padding: 1rem;
-      background: var(--sp-primary-bg);
-      border-radius: var(--sp-radius-sm);
-      border: 1px dashed #c5cae9;
-    }
-    .upload-section.has-error { border-color: var(--sp-danger); background: var(--sp-danger-bg); }
-    .selected-file {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      background: var(--sp-surface);
-      border-radius: var(--sp-radius-sm);
-      border: 1px solid var(--sp-border);
-    }
-    .selected-file > app-ui-icon { color: var(--sp-primary); }
-    .selected-file > div { flex: 1; min-width: 0; }
-    .file-name { display: block; font-weight: 600; color: var(--sp-text); word-break: break-all; }
-    .selected-file small { color: var(--sp-text-muted); }
-    .upload-hint-text { margin: 0; color: var(--sp-text-muted); font-size: 0.85rem; }
-    .file-error {
-      margin: 0; color: var(--sp-danger); font-size: 0.85rem;
-      display: flex; align-items: center; gap: 0.3rem;
-      app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
-    }
-  `]
+  `
 })
 export class ResourceFileFormDialogComponent {
   readonly data: ResourceFile | null = inject(MAT_DIALOG_DATA);

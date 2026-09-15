@@ -21,18 +21,18 @@ export interface CalendarEventFormDialogData {
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data.event ? 'تعديل حدث' : 'إضافة حدث' }}</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
-        <mat-form-field appearance="outline" class="full-width">
+    <mat-dialog-content class="max-h-[70vh]">
+      <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>عنوان الحدث</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
           <mat-error>عنوان الحدث مطلوب</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>وصف الحدث</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
         </mat-form-field>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>تاريخ البداية</mat-label>
             <input matInput [matDatepicker]="startPicker" formControlName="startDate">
@@ -47,7 +47,7 @@ export interface CalendarEventFormDialogData {
             <mat-datepicker #endPicker></mat-datepicker>
           </mat-form-field>
         </div>
-        <div class="two-col">
+        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           @if (canCreatePublic) {
             <mat-form-field appearance="outline">
               <mat-label>نوع الحدث</mat-label>
@@ -60,11 +60,11 @@ export interface CalendarEventFormDialogData {
           }
           <mat-form-field appearance="outline">
             <mat-label>اللون (اختياري)</mat-label>
-            <input matInput type="color" formControlName="color" class="color-input">
+            <input matInput type="color" formControlName="color" class="h-7 cursor-pointer p-0">
             <app-ui-icon name="palette" matSuffix></app-ui-icon>
           </mat-form-field>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>ملاحظات</mat-label>
           <textarea matInput formControlName="notes" rows="2"></textarea>
         </mat-form-field>
@@ -76,15 +76,7 @@ export interface CalendarEventFormDialogData {
         <app-ui-icon name="check"></app-ui-icon> {{ data.event ? 'حفظ التعديلات' : 'إضافة الحدث' }}
       </button>
     </mat-dialog-actions>
-  `,
-  styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
-    @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
-    .full-width { width: 100%; }
-    .color-input { height: 28px; padding: 0; cursor: pointer; }
-    mat-dialog-content { max-height: 70vh; }
-  `]
+  `
 })
 export class CalendarEventFormDialogComponent {
   readonly data: CalendarEventFormDialogData = inject(MAT_DIALOG_DATA);

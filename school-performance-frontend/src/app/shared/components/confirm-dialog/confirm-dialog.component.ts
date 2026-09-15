@@ -19,44 +19,33 @@ export interface ConfirmDialogData {
   standalone: true,
   imports: [UiIconComponent, MatDialogModule, MatButtonModule],
   template: `
-    <div class="confirm" [class.danger]="data.danger">
-      <div class="confirm-icon">
+    <div class="min-w-[320px] max-w-[440px] px-1 pt-2">
+      <div
+        class="mx-auto mt-2 flex size-14 items-center justify-center rounded-full text-2xl"
+        [class.bg-danger-bg]="data.danger"
+        [class.text-danger]="data.danger"
+        [class.bg-primary-light]="!data.danger"
+        [class.text-primary-mid]="!data.danger"
+      >
         <app-ui-icon [name]="data.icon || (data.danger ? 'delete_forever' : 'help_outline')"></app-ui-icon>
       </div>
-      <h2 mat-dialog-title>{{ data.title }}</h2>
-      <mat-dialog-content>
-        <p class="message">{{ data.message }}</p>
+      <h2 mat-dialog-title class="mt-2 mb-0 text-center">{{ data.title }}</h2>
+      <mat-dialog-content class="flex flex-col items-center">
+        <p class="m-0 text-center leading-relaxed text-muted">{{ data.message }}</p>
         @if (data.itemName) {
-          <p class="item-name">{{ data.itemName }}</p>
+          <p class="mx-auto mt-3 mb-0 inline-block max-w-full truncate rounded-lg bg-app-bg px-3 py-1.5 text-center font-bold text-text">
+            {{ data.itemName }}
+          </p>
         }
       </mat-dialog-content>
-      <mat-dialog-actions align="end">
+      <mat-dialog-actions align="end" class="gap-2 px-4 pb-4 pt-3">
         <button mat-button type="button" (click)="ref.close(false)">{{ data.cancelText || 'إلغاء' }}</button>
         <button mat-flat-button type="button" [color]="data.danger ? 'warn' : 'primary'" cdkFocusInitial (click)="ref.close(true)">
           {{ data.confirmText || (data.danger ? 'حذف' : 'تأكيد') }}
         </button>
       </mat-dialog-actions>
     </div>
-  `,
-  styles: [`
-    .confirm { padding: 0.5rem 0.25rem 0; min-width: 320px; max-width: 440px; }
-    .confirm-icon {
-      display: flex; align-items: center; justify-content: center;
-      width: 56px; height: 56px; border-radius: 50%;
-      margin: 0.5rem auto 0; background: var(--sp-primary-light); color: var(--sp-primary-mid);
-      .app-ui-icon { font-size: 1.5rem; }
-    }
-    .danger .confirm-icon { background: var(--sp-danger-bg); color: var(--sp-danger); }
-    h2 { text-align: center; margin: 0.5rem 0 0; }
-    .message { margin: 0; text-align: center; color: var(--sp-text-muted); line-height: 1.7; }
-    .item-name {
-      margin: 0.75rem auto 0; text-align: center; font-weight: 700; color: var(--sp-text);
-      background: #f3f4f8; border-radius: 8px; padding: 0.4rem 0.75rem; display: inline-block; max-width: 100%;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    mat-dialog-content { display: flex; flex-direction: column; align-items: center; }
-    mat-dialog-actions { padding: 0.75rem 1rem 1rem; gap: 0.5rem; }
-  `]
+  `
 })
 export class ConfirmDialogComponent {
   readonly data: ConfirmDialogData = inject(MAT_DIALOG_DATA);

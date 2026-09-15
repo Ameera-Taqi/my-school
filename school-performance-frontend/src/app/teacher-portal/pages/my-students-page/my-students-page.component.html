@@ -5,7 +5,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث باسم الطالب أو الفصل" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    <app-search-field placeholder="ابحث باسم الطالب أو الفصل" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
         @if (query) { {{ filteredCount }} من {{ total }} طالب } @else { {{ total }} طالب }
@@ -25,9 +25,9 @@
         <ng-container matColumnDef="fullName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
           <td mat-cell *matCellDef="let r">
-            <div class="name-cell">
-              <span class="avatar">{{ r.fullName?.charAt(0) }}</span>
-              <span class="name">{{ r.fullName }}</span>
+            <div class="flex items-center gap-[0.7rem]">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.fullName?.charAt(0) }}</span>
+              <span class="font-semibold">{{ r.fullName }}</span>
             </div>
           </td>
         </ng-container>
@@ -42,7 +42,7 @@
         <ng-container matColumnDef="guardianPhone">
           <th mat-header-cell *matHeaderCellDef>ولي الأمر</th>
           <td mat-cell *matCellDef="let r">
-            @if (r.guardianPhone) { <a class="phone" [href]="'tel:' + r.guardianPhone" dir="ltr">{{ r.guardianPhone }}</a> } @else { — }
+            @if (r.guardianPhone) { <a class="text-text no-underline tabular-nums hover:text-primary-mid" [href]="'tel:' + r.guardianPhone" dir="ltr">{{ r.guardianPhone }}</a> } @else { — }
           </td>
         </ng-container>
         <ng-container matColumnDef="status">
@@ -53,6 +53,6 @@
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

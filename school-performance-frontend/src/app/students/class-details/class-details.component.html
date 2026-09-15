@@ -14,25 +14,25 @@
     }
   </app-page-header>
 
-  <div class="class-summary">
-    <div class="summary-item">
-      <app-ui-icon name="people"></app-ui-icon>
-      <div><span class="value">{{ total }}</span><span class="label">طالب مسجّل</span></div>
+  <div class="mb-5 flex flex-wrap gap-4">
+    <div class="flex min-w-[180px] flex-1 items-center gap-3 rounded-sp border border-border bg-surface px-[1.1rem] py-3">
+      <app-ui-icon name="people" class="size-7 text-[28px] text-primary-mid"></app-ui-icon>
+      <div class="flex flex-col leading-tight"><span class="text-[1.35rem] font-bold text-primary">{{ total }}</span><span class="text-[0.8rem] text-muted">طالب مسجّل</span></div>
     </div>
-    <div class="summary-item">
-      <app-ui-icon name="event_seat"></app-ui-icon>
-      <div><span class="value">{{ schoolClass.capacity }}</span><span class="label">الطاقة الاستيعابية</span></div>
+    <div class="flex min-w-[180px] flex-1 items-center gap-3 rounded-sp border border-border bg-surface px-[1.1rem] py-3">
+      <app-ui-icon name="event_seat" class="size-7 text-[28px] text-primary-mid"></app-ui-icon>
+      <div class="flex flex-col leading-tight"><span class="text-[1.35rem] font-bold text-primary">{{ schoolClass.capacity }}</span><span class="text-[0.8rem] text-muted">الطاقة الاستيعابية</span></div>
     </div>
-    <div class="summary-item capacity">
-      <div class="capacity-bar"><span [style.width.%]="capacityPercent" [class.full]="capacityPercent >= 100"></span></div>
-      <span class="label">{{ capacityPercent }}% من الطاقة</span>
+    <div class="flex min-w-[180px] flex-1 flex-col justify-center gap-[0.4rem] rounded-sp border border-border bg-surface px-[1.1rem] py-3">
+      <div class="h-2 overflow-hidden rounded-full bg-[#e9ebf3]"><span class="block h-full rounded-full transition-[width] duration-400" [class.bg-primary-mid]="capacityPercent < 100" [class.bg-danger]="capacityPercent >= 100" [style.width.%]="capacityPercent"></span></div>
+      <span class="text-[0.8rem] text-muted">{{ capacityPercent }}% من الطاقة</span>
     </div>
   </div>
 }
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالاسم أو الرقم المدني أو رقم ولي الأمر" (search)="onSearch($event)" class="toolbar-search"></app-search-field>
+    <app-search-field placeholder="ابحث بالاسم أو الرقم المدني أو رقم ولي الأمر" (search)="onSearch($event)" class="max-w-[440px] flex-1"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">@if (query) { {{ filteredCount }} من {{ total }} طالب } @else { {{ total }} طالب }</span>
     }
@@ -53,11 +53,13 @@
       <table mat-table [dataSource]="dataSource" matSort matSortActive="fullName" matSortDirection="asc">
         <ng-container matColumnDef="fullName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
-          <td mat-cell *matCellDef="let row" class="name-cell">
-            <span class="avatar" [class.female]="row.gender === 'FEMALE'">{{ row.fullName?.charAt(0) }}</span>
-            <div class="name-text">
-              <span class="name">{{ row.fullName }}</span>
-              <span class="sub">{{ genderLabels[row.gender ?? ''] || '—' }} · {{ row.birthDate | appDate }}</span>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex items-center gap-[0.7rem]">
+              <span [class]="'flex size-9 shrink-0 items-center justify-center rounded-full font-bold ' + (row.gender === 'FEMALE' ? 'bg-[#fce4ec] text-[#ad1457]' : 'bg-info-bg text-info')">{{ row.fullName?.charAt(0) }}</span>
+              <div class="flex flex-col leading-snug">
+                <span class="font-semibold">{{ row.fullName }}</span>
+                <span class="text-[0.78rem] text-muted">{{ genderLabels[row.gender ?? ''] || '—' }} · {{ row.birthDate | appDate }}</span>
+              </div>
             </div>
           </td>
         </ng-container>
@@ -68,7 +70,7 @@
         <ng-container matColumnDef="guardianPhone">
           <th mat-header-cell *matHeaderCellDef>رقم ولي الأمر</th>
           <td mat-cell *matCellDef="let row">
-            @if (row.guardianPhone) { <a class="phone" [href]="'tel:' + row.guardianPhone" dir="ltr">{{ row.guardianPhone }}</a> } @else { — }
+            @if (row.guardianPhone) { <a class="text-text no-underline [font-variant-numeric:tabular-nums] hover:text-primary-mid" [href]="'tel:' + row.guardianPhone" dir="ltr">{{ row.guardianPhone }}</a> } @else { — }
           </td>
         </ng-container>
         <ng-container matColumnDef="status">
@@ -78,15 +80,15 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
-          <td mat-cell *matCellDef="let row" class="actions-cell">
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الإجراءات</th>
+          <td mat-cell *matCellDef="let row" class="w-px whitespace-nowrap">
             <div class="row-actions">
               <button mat-icon-button matTooltip="عرض التفاصيل" (click)="viewStudent(row); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
               @if ('students.update' | hasPermission) {
-                <button mat-icon-button matTooltip="تعديل" (click)="openStudentDialog(row); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
+                <button type="button" class="btn-action btn-action--edit" (click)="openStudentDialog(row); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon> تعديل</button>
               }
               @if ('students.delete' | hasPermission) {
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteStudent(row); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon></button>
+                <button type="button" class="btn-action btn-action--delete" (click)="deleteStudent(row); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon> حذف</button>
               }
             </div>
           </td>
@@ -95,6 +97,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable" (click)="viewStudent(row)"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>

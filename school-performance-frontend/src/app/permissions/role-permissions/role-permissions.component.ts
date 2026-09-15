@@ -33,8 +33,8 @@ const MODULE_ICONS: Record<string, string> = {
   selector: 'app-role-permissions',
   standalone: true,
   imports: [UiIconComponent, CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatCheckboxModule, MatButtonModule, MatCardModule, MatTooltipModule, MatProgressSpinnerModule, MatProgressBarModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent],
-  templateUrl: './role-permissions.component.html',
-  styleUrl: './role-permissions.component.scss'
+  host: { class: 'block pb-[84px]' },
+  templateUrl: './role-permissions.component.html'
 })
 export class RolePermissionsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

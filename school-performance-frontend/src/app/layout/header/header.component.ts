@@ -1,4 +1,4 @@
-import { Component, computed, inject, ViewEncapsulation } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,9 +13,7 @@ import { UserMenuComponent } from './user-menu/user-menu.component';
   selector: 'app-header',
   standalone: true,
   imports: [UiIconComponent, MatButtonModule, MatTooltipModule, RouterLink, TranslatePipe, UserMenuComponent],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
-  encapsulation: ViewEncapsulation.None
+  templateUrl: './header.component.html'
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);

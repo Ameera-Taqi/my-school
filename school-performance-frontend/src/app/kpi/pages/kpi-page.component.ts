@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,9 +27,8 @@ import {
 @Component({
   selector: 'app-kpi-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatSelectModule, MatTableModule, MatProgressSpinnerModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './kpi-page.component.html',
-  styleUrl: './kpi-page.component.scss'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatSelectModule, MatTableModule, MatProgressSpinnerModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
+  templateUrl: './kpi-page.component.html'
 })
 export class KpiPageComponent implements OnInit {
   private readonly kpiService = inject(KpiMockService);

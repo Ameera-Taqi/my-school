@@ -1,36 +1,45 @@
-<header class="app-header">
-  <div class="header-start">
-    <button mat-icon-button type="button" class="menu-btn hide-desktop-960" (click)="layout.toggleDrawer()" [attr.aria-label]="'menu.openNav' | translate">
+<header class="sticky top-0 z-40 flex min-h-[72px] shrink-0 items-center justify-between gap-4 border-b border-border bg-white/90 px-6 py-[0.85rem] shadow-[0_1px_0_rgba(15,23,42,0.03)] backdrop-blur-md max-[959px]:min-h-16 max-[959px]:px-[0.85rem] max-[959px]:py-[0.65rem]">
+  <div class="flex min-w-0 items-center gap-[0.65rem]">
+    <button
+      mat-icon-button
+      type="button"
+      class="text-primary max-[959px]:inline-flex min-[960px]:!hidden"
+      (click)="layout.toggleDrawer()"
+      [attr.aria-label]="'menu.openNav' | translate">
       <app-ui-icon name="menu"></app-ui-icon>
     </button>
-    <div class="header-titles">
-      <h2 class="header-title">
+    <div class="flex min-w-0 flex-col gap-[0.15rem]">
+      <h2 class="m-0 flex flex-wrap items-center gap-[0.55rem] text-[1.05rem] leading-tight font-bold text-text max-md:text-[0.95rem]">
         <span>{{ 'menu.dashboardTitle' | translate }}</span>
-        <span class="term-chip">{{ 'menu.termChip' | translate }}</span>
+        <span class="inline-flex items-center rounded-full bg-primary-light px-[0.65rem] py-[0.15rem] text-[0.72rem] font-semibold whitespace-nowrap text-primary-mid max-[959px]:hidden">
+          {{ 'menu.termChip' | translate }}
+        </span>
       </h2>
-      <p class="header-subtitle">{{ 'menu.dashboardSubtitle' | translate }}</p>
+      <p class="m-0 max-w-[42rem] truncate text-xs whitespace-nowrap text-muted max-[959px]:hidden">
+        {{ 'menu.dashboardSubtitle' | translate }}
+      </p>
     </div>
   </div>
 
-  <div class="header-actions">
+  <div class="relative z-50 flex shrink-0 items-center gap-[0.55rem] overflow-visible">
     <button
       type="button"
-      class="action-btn lang-btn"
+      class="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-sp-sm bg-slate-100 px-[0.8rem] py-[0.55rem] text-[0.78rem] font-semibold text-slate-600 no-underline transition-colors hover:bg-slate-200 hover:text-text max-md:size-10 max-md:p-[0.55rem]"
       (click)="onLanguageToggle(!langService.isEnglish())"
       [attr.aria-label]="'menu.language' | translate">
-      <app-ui-icon name="public"></app-ui-icon>
-      <span>{{ langService.isEnglish() ? ('menu.lang.ar' | translate) : ('menu.lang.en' | translate) }}</span>
+      <app-ui-icon name="public" class="text-[1.05rem] text-primary-mid"></app-ui-icon>
+      <span class="max-md:hidden">{{ langService.isEnglish() ? ('menu.lang.ar' | translate) : ('menu.lang.en' | translate) }}</span>
     </button>
 
     @if (canViewAlerts()) {
       <a
         routerLink="/alerts"
-        class="action-btn icon-only"
+        class="relative inline-flex size-10 cursor-pointer items-center justify-center rounded-sp-sm bg-slate-100 p-[0.55rem] text-[0.78rem] font-semibold text-slate-600 no-underline transition-colors hover:bg-slate-200 hover:text-text"
         [attr.aria-label]="'nav.alerts' | translate"
         [matTooltip]="'nav.alerts' | translate">
-        <app-ui-icon name="notifications"></app-ui-icon>
+        <app-ui-icon name="notifications" class="text-[1.05rem] text-primary-mid"></app-ui-icon>
         @if (alertsBadge()) {
-          <span class="notif-dot" aria-hidden="true"></span>
+          <span class="absolute top-2 end-2 size-2 rounded-full bg-danger shadow-[0_0_0_2px_#fff]" aria-hidden="true"></span>
         }
       </a>
     }
