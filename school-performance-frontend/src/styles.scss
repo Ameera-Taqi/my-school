@@ -87,14 +87,27 @@ body,
 
 a { color: var(--sp-primary-mid); }
 
-// Flaticon Uicons sizing helpers
+// Flaticon Uicons — do not force flex on glyph hosts (breaks ::before glyphs)
 .fi {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   line-height: 1;
+  speak: never;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .app-ui-icon { color: inherit; }
+
+/* Material buttons inherit letter-spacing / font settings that distort icon fonts */
+.mat-mdc-button .app-ui-icon,
+.mat-mdc-unelevated-button .app-ui-icon,
+.mat-mdc-outlined-button .app-ui-icon,
+.mat-mdc-raised-button .app-ui-icon,
+.mat-mdc-icon-button .app-ui-icon,
+.mat-mdc-menu-item .app-ui-icon {
+  letter-spacing: 0 !important;
+  font-feature-settings: normal !important;
+}
 
 /* Custom scrollbar (mock) */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

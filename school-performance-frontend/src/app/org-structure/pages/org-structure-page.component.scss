@@ -671,6 +671,170 @@ h1 {
   color: var(--sp-text-muted);
 }
 
+// ── Dynamic hierarchical tree ──
+.org-tree {
+  background: #fff;
+  border: 1px solid var(--sp-border);
+  border-radius: 24px;
+  box-shadow: var(--sp-shadow);
+  padding: 1rem 0.75rem 1.25rem;
+  overflow: auto;
+}
+
+.tree-node {
+  position: relative;
+  --depth: 0;
+}
+
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.4rem;
+  padding-inline-start: calc(0.4rem + (var(--depth) * 1.35rem));
+  min-height: 48px;
+}
+
+.twist {
+  all: unset;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--sp-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  app-ui-icon { font-size: 0.95rem; }
+  &:hover { background: #f1f5f9; color: var(--sp-primary-mid); }
+  &.spacer { cursor: default; visibility: hidden; }
+}
+
+.tree-card {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  flex: 1;
+  padding: 0.45rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  &:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+  &.inactive { opacity: 0.55; }
+  &.kind-manager {
+    background: #fff;
+    border: 2px solid #4f46e5;
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.12);
+    padding: 0.65rem 0.85rem;
+    border-radius: 14px;
+    &:hover { background: #eef2ff; }
+  }
+  &.kind-assistant {
+    border-color: #a5f3fc;
+    background: #ecfeff;
+  }
+  &.kind-department {
+    border-color: #fde68a;
+    background: #fffbeb;
+  }
+  &.kind-group {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+  &.kind-empty {
+    border-style: dashed;
+    border-color: #cbd5e1;
+    color: var(--sp-text-muted);
+    cursor: default;
+  }
+}
+
+.tree-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+  text-align: start;
+  .name {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--sp-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .meta {
+    font-size: 0.72rem;
+    color: var(--sp-text-muted);
+  }
+}
+
+.kind-manager .tree-text .name { font-size: 1rem; }
+
+.pill {
+  margin-inline-start: auto;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #fff;
+  background: #4f46e5;
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  white-space: nowrap;
+}
+
+.tree-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.tree-children {
+  position: relative;
+  margin-inline-start: calc(0.75rem + (var(--depth) * 1.35rem) + 14px);
+  padding-inline-start: 0.85rem;
+  border-inline-start: 2px solid #c7d2fe;
+
+  .tree-node {
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: -0.85rem;
+      top: 24px;
+      width: 0.75rem;
+      height: 2px;
+      background: #c7d2fe;
+    }
+  }
+}
+
+.avatar.icon-av {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+  &.group { background: var(--sp-primary-bg); color: var(--sp-primary-mid); }
+  &.empty { background: #e2e8f0; color: #94a3b8; }
+  app-ui-icon { font-size: 1rem; }
+}
+
+.avatar.manager { width: 44px; height: 44px; border-radius: 14px; background: var(--org-manager); font-size: 0.95rem; }
+.avatar.assistant { width: 34px; height: 34px; border-radius: 10px; background: var(--org-assistant); font-size: 0.8rem; }
+.avatar.head { width: 30px; height: 30px; border-radius: 8px; background: var(--org-head); font-size: 0.72rem; }
+.avatar.teacher { width: 28px; height: 28px; border-radius: 7px; background: var(--org-teacher); font-size: 0.65rem; }
+
 @media (max-width: 900px) {
   .analytics-grid { grid-template-columns: 1fr; }
 }
@@ -680,4 +844,7 @@ h1 {
   .toolbar-actions { width: 100%; }
   .search-wrap { max-width: none; flex: 1 1 100%; }
   .leader-card { max-width: none; }
+  .tree-row { padding-inline-start: calc(0.2rem + (var(--depth) * 0.9rem)); }
+  .tree-children { margin-inline-start: calc(0.4rem + (var(--depth) * 0.9rem) + 10px); }
+  .tree-actions .link-btn { display: none; }
 }

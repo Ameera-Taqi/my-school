@@ -21,29 +21,51 @@ import { uiconClass } from './uicon-map';
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 1.25em;
-      height: 1.25em;
+      width: 1em;
+      height: 1em;
       font-size: 1.25rem;
       line-height: 1;
       flex-shrink: 0;
       color: inherit;
       vertical-align: middle;
       speak: never;
+      /* Keep icon glyphs intact inside Material buttons / Cairo text */
+      letter-spacing: 0 !important;
+      font-feature-settings: normal;
+      font-variation-settings: normal;
     }
     :host(.sm) { font-size: 1rem; }
     :host(.md) { font-size: 1.15rem; }
     :host(.lg) { font-size: 1.5rem; }
     :host(.xl) { font-size: 1.75rem; }
     i {
+      /* Icon fonts break when treated as flex containers */
+      display: inline-block !important;
       font-size: 1em !important;
       line-height: 1 !important;
       width: 1em;
       height: 1em;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      vertical-align: -0.125em;
+      speak: never;
+      font-style: normal !important;
+      font-weight: normal !important;
+      font-variant: normal !important;
+      text-transform: none !important;
+      letter-spacing: 0 !important;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    i::before { line-height: 1; }
+    i::before {
+      display: block;
+      line-height: 1 !important;
+      width: 1em;
+      height: 1em;
+      speak: never;
+    }
   `]
 })
 export class UiIconComponent implements AfterContentInit {

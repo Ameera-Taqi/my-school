@@ -8,7 +8,7 @@
         <h1>الهيكل التنظيمي</h1>
         <span class="hero-chip">يتحدّث تلقائياً</span>
       </div>
-      <p class="hero-sub">نظرة شاملة ومحدّثة على القيادة والشعب والكادر التعليمي</p>
+      <p class="hero-sub">شجرة ديناميكية: كل فرع يرتبط بأصله من المدير حتى المعلمين</p>
     </div>
   </div>
 </section>
@@ -66,6 +66,17 @@
       </button>
     </div>
 
+    @if (viewMode === 'tree') {
+      <button type="button" class="sync-btn" (click)="expandAll()" matTooltip="توسيع الكل">
+        <app-ui-icon name="unfold_more"></app-ui-icon>
+        <span class="hide-mobile">توسيع</span>
+      </button>
+      <button type="button" class="sync-btn" (click)="collapseBranches()" matTooltip="طي الشعب">
+        <app-ui-icon name="unfold_less"></app-ui-icon>
+        <span class="hide-mobile">طي</span>
+      </button>
+    }
+
     <button type="button" class="sync-btn" (click)="load()" [disabled]="loading" matTooltip="تحديث">
       <app-ui-icon name="refresh" [class.spin]="loading"></app-ui-icon>
       <span class="hide-mobile">تحديث</span>
@@ -102,10 +113,19 @@
   </app-empty-state>
 } @else {
 
-  @if (viewMode === 'tree' || viewMode === 'grid') {
+  <!-- TREE VIEW: parent → children hierarchy -->
+  @if (viewMode === 'tree') {
+    <div class="org-tree" role="tree">
+      @for (root of treeRoots; track root.id) {
+        <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: root, depth: 0 }"></ng-container>
+      }
+    </div>
+  }
+
+  <!-- GRID VIEW -->
+  @if (viewMode === 'grid') {
     <section class="org-root">
       <div class="level-kicker">مدير المدرسة</div>
-
       @for (p of data.managers; track p.id) {
         <button type="button" class="leader-card" (click)="showPerson(p)" [class.inactive]="!p.active">
           <span class="leader-badge">القيادة العليا</span>
@@ -125,22 +145,6 @@
           </span>
         </div>
       }
-
-      @if (data.assistantManagers.length && viewMode === 'tree') {
-        <div class="connector"></div>
-        <div class="assistants">
-          @for (p of data.assistantManagers; track p.id) {
-            <button type="button" class="assistant-card" (click)="showPerson(p)" [class.inactive]="!p.active">
-              <span class="avatar assistant">{{ initials(p.fullName) }}</span>
-              <span class="leader-text">
-                <span class="name">{{ p.fullName }}</span>
-                <span class="meta">{{ p.roleName }}</span>
-              </span>
-            </button>
-          }
-        </div>
-      }
-
       <div class="connector"></div>
       <div class="branch-label">رؤساء الشعب والمعلمون (عدد الشعب: {{ data.departments.length }})</div>
       <div class="connector short"></div>
@@ -180,11 +184,7 @@
               }
 
               @if (canManageTeachers) {
-                <button
-                  type="button"
-                  class="link-btn"
-                  [matMenuTriggerFor]="headMenu"
-                  [matMenuTriggerData]="{ dept: dept }">
+                <button type="button" class="link-btn" [matMenuTriggerFor]="headMenu" [matMenuTriggerData]="{ dept: dept }">
                   {{ dept.head ? 'تغيير' : 'تعيين' }}
                 </button>
               }
@@ -296,6 +296,75 @@
 
   <p class="generated">آخر تحديث: {{ data.generatedAt | appDate:'withTime' }}</p>
 }
+
+<!-- Recursive tree node -->
+<ng-template #treeNode let-node let-depth="depth">
+  <div class="tree-node" [attr.data-kind]="node.kind" [style.--depth]="depth" role="treeitem" [attr.aria-expanded]="node.children.length ? isExpanded(node) : null">
+    <div class="tree-row" [class.has-children]="node.children.length" [class.expanded]="isExpanded(node)">
+      @if (node.children.length) {
+        <button type="button" class="twist" (click)="toggleNode(node, $event)" [attr.aria-label]="isExpanded(node) ? 'طي' : 'توسيع'">
+          <app-ui-icon [name]="isExpanded(node) ? 'expand_more' : 'chevron_left'"></app-ui-icon>
+        </button>
+      } @else {
+        <span class="twist spacer" aria-hidden="true"></span>
+      }
+
+      <button
+        type="button"
+        class="tree-card"
+        [class]="'tree-card kind-' + node.kind"
+        [class.inactive]="node.person && !node.person.active"
+        (click)="node.person ? showPerson(node.person) : (node.children.length ? toggleNode(node) : null)">
+        @if (node.kind === 'department' || node.kind === 'group') {
+          <span class="avatar icon-av" [class]="node.kind">
+            <app-ui-icon [name]="node.kind === 'department' ? 'domain' : 'account_tree'"></app-ui-icon>
+          </span>
+        } @else if (node.kind === 'empty') {
+          <span class="avatar icon-av empty"><app-ui-icon name="person_off"></app-ui-icon></span>
+        } @else {
+          <span class="avatar" [class]="node.kind">{{ initials(node.label) }}</span>
+        }
+        <span class="tree-text">
+          <span class="name">{{ node.label }}</span>
+          @if (node.meta) { <span class="meta">{{ node.meta }}</span> }
+        </span>
+        @if (node.kind === 'manager') {
+          <span class="pill">القيادة العليا</span>
+        }
+      </button>
+
+      @if (node.kind === 'department' && node.dept) {
+        <div class="tree-actions">
+          <a class="icon-btn" [routerLink]="['/teachers/departments', node.dept.id]" matTooltip="فتح صفحة الشعبة" aria-label="فتح صفحة الشعبة" (click)="$event.stopPropagation()">
+            <app-ui-icon name="open_in_new"></app-ui-icon>
+          </a>
+          @if (canManageTeachers) {
+            <button type="button" class="link-btn" [matMenuTriggerFor]="headMenu" [matMenuTriggerData]="{ dept: node.dept }" (click)="$event.stopPropagation()">
+              {{ node.dept.head ? 'تغيير الرئيس' : 'تعيين رئيس' }}
+            </button>
+            <button type="button" class="icon-btn" matTooltip="إضافة معلم" (click)="openAddTeacher(node.dept!); $event.stopPropagation()">
+              <app-ui-icon name="person_add"></app-ui-icon>
+            </button>
+          }
+        </div>
+      }
+
+      @if (node.kind === 'teacher' && node.dept && node.person && canManageTeachers) {
+        <button type="button" class="icon-btn danger" matTooltip="إزالة المعلم" (click)="removeTeacher(node.dept!, node.person!); $event.stopPropagation()">
+          <app-ui-icon name="close"></app-ui-icon>
+        </button>
+      }
+    </div>
+
+    @if (node.children.length && isExpanded(node)) {
+      <div class="tree-children" role="group">
+        @for (child of node.children; track child.id) {
+          <ng-container *ngTemplateOutlet="treeNode; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
 
 <mat-menu #headMenu="matMenu" class="head-pick-menu">
   <ng-template matMenuContent let-dept="dept">

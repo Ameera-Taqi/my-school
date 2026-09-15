@@ -41,8 +41,8 @@
         </div>
         <div class="card-footer">
           <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/teachers/departments', dept.id]" (click)="$event.stopPropagation()">
+            <app-ui-icon name="chevron_left"></app-ui-icon>
             عرض الشعبة
-            <app-ui-icon name="arrow_back"></app-ui-icon>
           </button>
           @if ('departments.manage' | hasPermission) {
             <div class="row-actions">

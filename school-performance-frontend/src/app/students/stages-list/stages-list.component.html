@@ -26,8 +26,8 @@
           <span class="chip info"><app-ui-icon name="people" class="chip-icon"></app-ui-icon> {{ stage.studentCount ?? 0 }} طالب</span>
         </div>
         <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/students/stages', stage.id]" (click)="$event.stopPropagation()">
+          <app-ui-icon name="chevron_left"></app-ui-icon>
           عرض المرحلة
-          <app-ui-icon name="arrow_back"></app-ui-icon>
         </button>
       </mat-card>
     }

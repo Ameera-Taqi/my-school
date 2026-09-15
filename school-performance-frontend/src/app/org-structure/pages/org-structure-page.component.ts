@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -23,12 +24,23 @@ import { OrgDepartment, OrgPerson, OrgStructure, OrgStructureApiService } from '
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export type OrgViewMode = 'tree' | 'grid' | 'analytics';
+export type OrgNodeKind = 'manager' | 'assistant' | 'group' | 'department' | 'head' | 'teacher' | 'empty';
+
+export interface OrgTreeNode {
+  id: string;
+  kind: OrgNodeKind;
+  label: string;
+  meta?: string;
+  person?: OrgPerson;
+  dept?: OrgDepartment;
+  children: OrgTreeNode[];
+}
 
 @Component({
   selector: 'app-org-structure-page',
   standalone: true,
   imports: [
-    UiIconComponent, RouterLink, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule,
+    UiIconComponent, NgTemplateOutlet, RouterLink, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule,
     EmptyStateComponent, HasPermissionPipe, AppDatePipe
   ],
   templateUrl: './org-structure-page.component.html',
@@ -47,8 +59,10 @@ export class OrgStructurePageComponent implements OnInit {
 
   loading = true;
   data: OrgStructure | null = null;
-  viewMode: OrgViewMode = 'grid';
+  viewMode: OrgViewMode = 'tree';
   searchQuery = '';
+  /** Collapsed node ids. Empty = all expanded by default except deep teacher lists when searching. */
+  private readonly collapsed = new Set<string>();
 
   readonly levels = [
     { key: 'manager', label: 'مدير المدرسة', color: 'var(--org-manager)' },
@@ -64,7 +78,11 @@ export class OrgStructurePageComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.api.get().subscribe({
-      next: (data) => { this.data = data; this.loading = false; },
+      next: (data) => {
+        this.data = data;
+        this.loading = false;
+        this.ensureDefaultExpanded();
+      },
       error: (e) => { this.loading = false; this.toast.fromError(e); }
     });
   }
@@ -130,12 +148,99 @@ export class OrgStructurePageComponent implements OnInit {
     return Math.round((this.headsCount / total) * 100);
   }
 
+  /** Hierarchical tree: school manager → assistants → departments → head → teachers. */
+  get treeRoots(): OrgTreeNode[] {
+    if (!this.data) return [];
+    const q = this.searchQuery.trim().toLowerCase();
+    const departments = this.buildDepartmentNodes(q);
+
+    const assistants = this.data.assistantManagers
+      .filter(p => !q || this.personMatches(p, q) || departments.length > 0)
+      .map(p => this.personNode('assistant', p));
+
+    const deptGroup: OrgTreeNode = {
+      id: 'group-departments',
+      kind: 'group',
+      label: `الشعب الدراسية (${this.data.departments.length})`,
+      meta: `${this.headsCount} رئيس · ${this.teachersCount} معلم`,
+      children: departments
+    };
+
+    if (this.showUnassigned) {
+      deptGroup.children.push({
+        id: 'group-unassigned',
+        kind: 'group',
+        label: 'بدون شعبة',
+        meta: `${this.data.unassignedHeads.length + this.data.unassignedTeachers.length} شخص`,
+        children: [
+          ...this.data.unassignedHeads.map(p => this.personNode('head', p)),
+          ...this.data.unassignedTeachers.map(p => this.personNode('teacher', p))
+        ]
+      });
+    }
+
+    const managers = this.data.managers;
+    if (managers.length) {
+      return managers.map(m => ({
+        id: `manager-${m.id}`,
+        kind: 'manager' as const,
+        label: m.fullName,
+        meta: m.roleName,
+        person: m,
+        children: [
+          ...assistants,
+          ...(departments.length || this.showUnassigned ? [deptGroup] : [])
+        ]
+      }));
+    }
+
+    // No manager yet — still show assistants + departments as roots
+    const roots: OrgTreeNode[] = [...assistants];
+    if (departments.length || this.showUnassigned) roots.push(deptGroup);
+    if (!roots.length) {
+      roots.push({
+        id: 'empty-root',
+        kind: 'empty',
+        label: 'لم يُعيَّن مدير مدرسة بعد',
+        meta: 'عيّن مدير المدرسة من صفحة المستخدمين',
+        children: []
+      });
+    }
+    return roots;
+  }
+
   onSearch(event: Event): void {
     this.searchQuery = (event.target as HTMLInputElement).value;
+    if (this.searchQuery.trim()) this.expandAll();
   }
 
   setView(mode: OrgViewMode): void {
     this.viewMode = mode;
+  }
+
+  isExpanded(node: OrgTreeNode): boolean {
+    return !this.collapsed.has(node.id);
+  }
+
+  toggleNode(node: OrgTreeNode, event?: Event): void {
+    event?.stopPropagation();
+    if (!node.children.length) return;
+    if (this.collapsed.has(node.id)) this.collapsed.delete(node.id);
+    else this.collapsed.add(node.id);
+  }
+
+  expandAll(): void {
+    this.collapsed.clear();
+  }
+
+  collapseBranches(): void {
+    if (!this.data) return;
+    this.collapsed.clear();
+    // Keep managers open; collapse department bodies
+    for (const dept of this.data.departments) {
+      this.collapsed.add(`dept-${dept.id}`);
+    }
+    this.collapsed.add('group-departments');
   }
 
   initials(name: string): string {
@@ -236,6 +341,61 @@ export class OrgStructurePageComponent implements OnInit {
         error: (e) => this.toast.fromError(e)
       });
     });
+  }
+
+  private ensureDefaultExpanded(): void {
+    if (!this.data || this.collapsed.size) return;
+    // Start with departments collapsed so the tree reads clearly; managers stay open.
+    for (const dept of this.data.departments) {
+      this.collapsed.add(`dept-${dept.id}`);
+    }
+  }
+
+  private buildDepartmentNodes(q: string): OrgTreeNode[] {
+    if (!this.data) return [];
+    return this.data.departments
+      .filter(dept => !q || this.matchesQuery(dept, q))
+      .map(dept => {
+        const children: OrgTreeNode[] = [];
+        if (dept.head) {
+          children.push(this.personNode('head', dept.head));
+        } else {
+          children.push({
+            id: `dept-${dept.id}-no-head`,
+            kind: 'empty',
+            label: 'بدون رئيس شعبة',
+            meta: 'عيّن رئيساً من قائمة التعيين',
+            dept,
+            children: []
+          });
+        }
+        for (const t of dept.teachers) {
+          if (dept.head?.id === t.id) continue;
+          if (!q || this.personMatches(t, q) || dept.name.toLowerCase().includes(q)) {
+            children.push(this.personNode('teacher', t, dept));
+          }
+        }
+        return {
+          id: `dept-${dept.id}`,
+          kind: 'department' as const,
+          label: dept.name,
+          meta: `${dept.teachers.length} معلم · ${dept.head ? 'برئيس' : 'بدون رئيس'}`,
+          dept,
+          children
+        };
+      });
+  }
+
+  private personNode(kind: OrgNodeKind, person: OrgPerson, dept?: OrgDepartment): OrgTreeNode {
+    return {
+      id: `${kind}-${person.id}`,
+      kind,
+      label: person.fullName,
+      meta: kind === 'teacher' ? (person.specialization || person.roleName) : person.roleName,
+      person,
+      dept,
+      children: []
+    };
   }
 
   private matchesQuery(dept: OrgDepartment, q: string): boolean {
