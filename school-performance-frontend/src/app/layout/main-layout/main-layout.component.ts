@@ -41,8 +41,13 @@ import { LayoutService } from '../../shared/services/layout.service';
     .layout-sidenav {
       width: var(--sp-sidebar-width);
       border: none;
+      border-radius: 0 !important;
       transition: width 0.2s ease;
       background: transparent;
+    }
+    .layout-sidenav .mat-drawer-inner-container {
+      border-radius: 0 !important;
+      overflow: hidden;
     }
     .layout.collapsed .layout-sidenav { width: var(--sp-sidebar-mini); }
     .main-area {

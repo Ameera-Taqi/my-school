@@ -1,6 +1,6 @@
-$blue: #1a237e;
-$blue-mid: #3949ab;
-$blue-bg: #f0f2fa;
+$blue: #312e81;
+$blue-mid: #4f46e5;
+$blue-bg: #eef2ff;
 
 .app-header {
   display: flex;
@@ -116,132 +116,6 @@ $blue-bg: #f0f2fa;
   box-shadow: 0 0 0 2px #fff;
 }
 
-.app-header .user-trigger {
-  all: unset;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.25rem 0.45rem 0.25rem 0.25rem;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.15s;
-  border-inline-start: 1px solid var(--sp-border);
-  padding-inline-start: 0.75rem;
-  margin-inline-start: 0.15rem;
-}
-
-.app-header .user-trigger:hover { background: $blue-bg; }
-
-.app-header .user-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 700;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-}
-
-.app-header .user-trigger-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-}
-
-.app-header .user-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--sp-text);
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.app-header .user-role {
-  font-size: 0.7rem;
-  color: $blue-mid;
-  font-weight: 600;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.app-header .chevron.app-ui-icon {
-  font-size: 1rem;
-  color: #94a3b8;
-}
-
-.mat-mdc-menu-panel.user-menu-panel {
-  --mat-menu-item-icon-size: 22px;
-  --mat-menu-item-spacing: 12px;
-  min-width: 280px !important;
-  max-width: 320px !important;
-  border-radius: 14px !important;
-  border: 1px solid var(--sp-border);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12) !important;
-  overflow: hidden;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-content { padding: 0 !important; }
-
-.mat-mdc-menu-panel.user-menu-panel .menu-profile {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  padding: 1rem 1.15rem;
-  background: linear-gradient(135deg, #312e81 0%, #4f46e5 100%);
-  color: #fff;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .menu-profile-greeting {
-  font-size: 0.8rem;
-  opacity: 0.8;
-  font-weight: 500;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .menu-profile-name {
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #fff;
-}
-
-.mat-mdc-menu-panel.user-menu-panel mat-divider {
-  margin: 0;
-  border-color: #eeeeee;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item {
-  min-height: 48px;
-  font-size: 0.9rem;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item .app-ui-icon { color: $blue-mid; }
-
-.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item:not([disabled]):hover {
-  background: $blue-bg;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .menu-logout .app-ui-icon,
-.mat-mdc-menu-panel.user-menu-panel .menu-logout span { color: #d32f2f; }
-
-.mat-mdc-menu-panel.user-menu-panel .menu-logout:not([disabled]):hover {
-  background: #fce4ec;
-}
-
-.mat-mdc-menu-panel.user-menu-panel .menu-profile-role {
-  font-size: 0.78rem;
-  opacity: 0.85;
-}
-
 @media (max-width: 959px) {
   .app-header { padding: 0.65rem 0.85rem; min-height: 64px; }
   .app-header .hide-desktop-960 { display: inline-flex; }
@@ -252,12 +126,5 @@ $blue-bg: #f0f2fa;
 @media (max-width: 768px) {
   .app-header .lang-btn span { display: none; }
   .app-header .lang-btn { padding: 0.55rem; width: 40px; height: 40px; }
-  .app-header .user-trigger-info,
-  .app-header .chevron { display: none; }
-  .app-header .user-trigger {
-    padding: 0.25rem;
-    border: none;
-    margin: 0;
-  }
   .app-header .header-title { font-size: 0.95rem; }
 }

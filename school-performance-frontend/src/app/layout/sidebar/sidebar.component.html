@@ -35,8 +35,10 @@
   </div>
 
   <button type="button" class="collapse-btn hide-mobile" (click)="layout.toggleCollapsed()"
-          [matTooltip]="mini ? ('sidebar.expand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
-    <app-ui-icon [name]="mini ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'"></app-ui-icon>
-    <span class="item-label">{{ 'sidebar.collapse' | translate }}</span>
+          [attr.aria-expanded]="!mini"
+          [matTooltip]="mini ? ('sidebar.expand' | translate) : ('sidebar.collapse' | translate)"
+          [matTooltipPosition]="tooltipPosition()">
+    <app-ui-icon name="angle-double-left"></app-ui-icon>
+    <span class="item-label">{{ mini ? ('sidebar.expand' | translate) : ('sidebar.collapse' | translate) }}</span>
   </button>
 </nav>

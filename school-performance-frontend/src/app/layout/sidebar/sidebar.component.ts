@@ -31,11 +31,13 @@ export class SidebarComponent {
 
   toggle(section: SidebarSection): void {
     if (this.mini) return;
+    // Keep the active section visible so the current page stays findable.
+    if (this.containsActive(section) && this.layout.isSectionOpen(section.titleKey)) return;
     this.layout.toggleSection(section.titleKey);
   }
 
   containsActive(section: SidebarSection): boolean {
-    const url = this.router.url;
+    const url = this.router.url.split('?')[0];
     return section.items.some(item => url === item.route || url.startsWith(item.route + '/'));
   }
 

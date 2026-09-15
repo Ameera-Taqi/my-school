@@ -1,0 +1,50 @@
+<button
+  type="button"
+  class="user-trigger"
+  [matMenuTriggerFor]="userMenu"
+  [attr.aria-label]="'menu.greeting' | translate"
+  [attr.aria-haspopup]="true">
+  <span class="user-avatar" aria-hidden="true">{{ initials() }}</span>
+  <span class="user-trigger-info">
+    <span class="user-name">{{ greetingLine() }}</span>
+    <span class="user-role">{{ roleLine() }}</span>
+  </span>
+  <app-ui-icon name="expand_more" class="chevron"></app-ui-icon>
+</button>
+
+<mat-menu
+  #userMenu="matMenu"
+  panelClass="user-menu-panel"
+  [xPosition]="menuPosition()"
+  [overlapTrigger]="false">
+  <div class="menu-profile" (click)="$event.stopPropagation()">
+    <span class="menu-avatar" aria-hidden="true">{{ initials() }}</span>
+    <div class="menu-profile-text">
+      <span class="menu-profile-greeting">{{ 'menu.greeting' | translate }}</span>
+      <span class="menu-profile-name">{{ fullName() || username() }}</span>
+      <span class="menu-profile-role">{{ roleLine() }}</span>
+      @if (username()) {
+        <span class="menu-profile-user">{{ '@' + username() }}</span>
+      }
+    </div>
+  </div>
+
+  <button mat-menu-item type="button" class="menu-item" (click)="goToDashboard()">
+    <app-ui-icon name="dashboard"></app-ui-icon>
+    <span>{{ 'menu.dashboard' | translate }}</span>
+  </button>
+
+  @if (canOpenSettings()) {
+    <a mat-menu-item class="menu-item" routerLink="/settings">
+      <app-ui-icon name="settings"></app-ui-icon>
+      <span>{{ 'menu.settings' | translate }}</span>
+    </a>
+  }
+
+  <mat-divider></mat-divider>
+
+  <button mat-menu-item type="button" class="menu-item menu-logout" (click)="logout()">
+    <app-ui-icon name="logout"></app-ui-icon>
+    <span>{{ 'menu.logout' | translate }}</span>
+  </button>
+</mat-menu>

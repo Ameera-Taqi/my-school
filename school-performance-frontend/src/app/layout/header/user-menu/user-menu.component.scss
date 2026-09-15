@@ -1,0 +1,191 @@
+/* Trigger (lives in header) */
+.user-trigger {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.25rem 0.45rem 0.25rem 0.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-inline-start: 1px solid var(--sp-border);
+  padding-inline-start: 0.75rem;
+  margin-inline-start: 0.15rem;
+}
+
+.user-trigger:hover,
+.user-trigger[aria-expanded='true'] {
+  background: var(--sp-primary-bg);
+}
+
+.user-avatar,
+.menu-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+.user-trigger-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: start;
+}
+
+.user-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sp-text);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role {
+  font-size: 0.7rem;
+  color: var(--sp-primary-mid);
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-trigger .chevron {
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+/* Dropdown panel — panelClass lands on the CDK overlay pane */
+.cdk-overlay-pane.user-menu-panel .mat-mdc-menu-panel,
+.user-menu-panel.mat-mdc-menu-panel {
+  min-width: 300px !important;
+  max-width: 340px !important;
+  border-radius: 18px !important;
+  border: 1px solid var(--sp-border) !important;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16) !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+
+.cdk-overlay-pane.user-menu-panel .mat-mdc-menu-content,
+.user-menu-panel .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+.menu-profile {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.1rem 1.15rem;
+  background: linear-gradient(135deg, #312e81 0%, #4f46e5 100%) !important;
+  color: #fff !important;
+}
+
+.menu-profile .menu-avatar {
+  width: 48px;
+  height: 48px;
+  font-size: 0.95rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+}
+
+.menu-profile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+  text-align: start;
+}
+
+.menu-profile-greeting {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.menu-profile-name {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #fff !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-profile-role {
+  font-size: 0.78rem;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+.menu-profile-user {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  font-family: var(--sp-font-en);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.cdk-overlay-pane.user-menu-panel .mat-mdc-menu-item.menu-item,
+.user-menu-panel .mat-mdc-menu-item.menu-item {
+  min-height: 46px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  gap: 0.65rem;
+}
+
+.cdk-overlay-pane.user-menu-panel .mat-mdc-menu-item.menu-item .app-ui-icon,
+.user-menu-panel .mat-mdc-menu-item.menu-item .app-ui-icon {
+  margin-inline-end: 0;
+  color: var(--sp-primary-mid);
+  font-size: 1.05rem;
+}
+
+.cdk-overlay-pane.user-menu-panel .mat-mdc-menu-item.menu-item:not([disabled]):hover,
+.user-menu-panel .mat-mdc-menu-item.menu-item:not([disabled]):hover {
+  background: var(--sp-primary-bg);
+}
+
+.cdk-overlay-pane.user-menu-panel mat-divider,
+.user-menu-panel mat-divider {
+  margin: 0.2rem 0;
+  border-color: #eef2f7;
+}
+
+.cdk-overlay-pane.user-menu-panel .menu-logout .app-ui-icon,
+.cdk-overlay-pane.user-menu-panel .menu-logout span,
+.user-menu-panel .menu-logout .app-ui-icon,
+.user-menu-panel .menu-logout span {
+  color: #e11d48 !important;
+}
+
+.cdk-overlay-pane.user-menu-panel .menu-logout:not([disabled]):hover,
+.user-menu-panel .menu-logout:not([disabled]):hover {
+  background: #fff1f2 !important;
+}
+
+@media (max-width: 768px) {
+  .user-trigger-info,
+  .user-trigger .chevron {
+    display: none;
+  }
+
+  .user-trigger {
+    padding: 0.25rem;
+    border: none;
+    margin: 0;
+  }
+}

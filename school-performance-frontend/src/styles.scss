@@ -352,3 +352,10 @@ code, .mono {
   color: var(--sp-primary-mid);
   font-size: 1.1rem;
 }
+
+// Sidebar drawer: square edges (no Material radius)
+.layout-sidenav.mat-drawer,
+.layout-sidenav.mat-sidenav,
+.layout-sidenav .mat-drawer-inner-container {
+  border-radius: 0 !important;
+}
