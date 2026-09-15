@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -19,14 +18,12 @@ import { MeetingDetailDialogComponent } from '../meeting-detail-dialog/meeting-d
 import { Meeting } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
 import { RoleApiService } from '../../roles/services/role-api.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-meetings-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './meetings-page.component.html',
   styleUrl: './meetings-page.component.scss'
 })
@@ -83,7 +80,7 @@ export class MeetingsPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(m?: Meeting): void {
-    const ref = this.dialog.open(MeetingFormDialogComponent, { width: '560px', maxWidth: '95vw', direction: 'rtl', data: m ?? null });
+    const ref = this.dialog.open(MeetingFormDialogComponent, { width: '560px', maxWidth: '95vw', data: m ?? null });
     ref.afterClosed().subscribe((result: Meeting | undefined) => {
       if (!result) return;
       const req$ = m?.id ? this.service.update(m.id, result) : this.service.create(result);
@@ -104,7 +101,7 @@ export class MeetingsPageComponent implements OnInit, AfterViewInit {
     const ref = this.dialog.open(MeetingDetailDialogComponent, {
       width: '560px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: {
         meeting: m,
         canEdit: this.authService.hasAnyPermission(['meetings.create', 'meetings.view'])

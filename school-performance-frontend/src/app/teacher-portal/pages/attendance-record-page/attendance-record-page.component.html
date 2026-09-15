@@ -17,11 +17,11 @@
   </mat-form-field>
   <div class="filter-actions">
     <button mat-stroked-button type="button" (click)="resetFilters()">
-      <mat-icon>restart_alt</mat-icon>
+      <app-ui-icon name="restart_alt"></app-ui-icon>
       إعادة ضبط
     </button>
     <button mat-flat-button color="primary" type="button" (click)="load()">
-      <mat-icon>search</mat-icon>
+      <app-ui-icon name="search"></app-ui-icon>
       عرض
     </button>
   </div>
@@ -32,7 +32,7 @@
     <app-table-skeleton [rows]="8" [columns]="2"></app-table-skeleton>
   } @else if (rows.length) {
     <div class="list-toolbar">
-      <span class="toolbar-title"><mat-icon>fact_check</mat-icon> {{ form.controls.className.value }}</span>
+      <span class="toolbar-title"><app-ui-icon name="fact_check"></app-ui-icon> {{ form.controls.className.value }}</span>
       <span class="toolbar-count summary">
         <span>{{ rows.length }} طالب</span>
         <span class="chip present">{{ statusLabels['PRESENT'] }} {{ countOf('PRESENT') }}</span>
@@ -73,7 +73,7 @@
     </div>
     <div class="sheet-footer">
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>save</mat-icon>
+        <app-ui-icon name="save"></app-ui-icon>
         حفظ الحضور
       </button>
     </div>

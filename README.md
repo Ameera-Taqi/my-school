@@ -8,12 +8,17 @@
 My School/
 ├── school-performance-api/       # ASP.NET Core 8 (C#) + EF Core + SQL Server
 ├── school-performance-frontend/  # Angular 19 + Material (RTL)
-└── docker-compose.yml            # SQL Server + API
+└── docker-compose.yml            # API + web (SQL Server على localhost:1433)
 ```
 
 ## التشغيل السريع
 
-### 1. النظام كاملاً بـ Docker (الأسهل)
+### 1. المتطلبات
+
+- SQL Server يعمل على `localhost,1433` (المستخدم `sa`، كلمة المرور في `.env.example`)
+- قاعدة البيانات `SchoolPerformance` تُنشأ وتُعبّأ تلقائياً عند أول تشغيل للـ API
+
+### 2. النظام كاملاً بـ Docker
 
 ```bash
 docker compose up --build -d
@@ -21,13 +26,22 @@ docker compose up --build -d
 
 - الواجهة الكاملة على `http://localhost:4300` (nginx يقدّم Angular ويمرر `/api` إلى الـ API)
 - الـ API على `http://localhost:8081`
-- SQL Server على `localhost,1434` (المستخدم `sa`، كلمة المرور في `.env.example`)
+- يتصل بـ SQL Server على جهازك عبر `host.docker.internal:1433`
 
 **تنبيه:** لا تضع المشروع داخل مجلد مزامن مع iCloud (سطح المكتب أو المستندات عند تفعيل المزامنة)، لأن مزامنة `node_modules` تبطئ الجهاز وتعطّل البناء. المكان المناسب مثل `~/Projects`.
 
-قاعدة البيانات تُنشأ وتُعبّأ بالبيانات التجريبية تلقائياً عند أول تشغيل.
+### 3. التشغيل محلياً (API + Frontend)
 
-### 2. Frontend للتطوير مع إعادة التحميل الفوري (يتطلب Node.js)
+**أ) الـ API** (يتطلب .NET 8 SDK و SQL Server على `1433`):
+
+```bash
+cd school-performance-api
+dotnet run
+```
+
+يتصل بـ `localhost,1433` من `appsettings.json` ويعمل على `http://localhost:8081`.
+
+**ب) Frontend للتطوير مع إعادة التحميل الفوري** (يتطلب Node.js):
 
 ```bash
 cd school-performance-frontend
@@ -37,7 +51,7 @@ npm start
 
 يعمل على `http://localhost:4200` ويمرر طلبات `/api` إلى المنفذ `8081`.
 
-### 3. تسجيل الدخول
+### 4. تسجيل الدخول
 
 - **المستخدم:** admin
 - **كلمة المرور:** admin123

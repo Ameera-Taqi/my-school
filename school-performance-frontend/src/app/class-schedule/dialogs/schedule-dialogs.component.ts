@@ -5,24 +5,24 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ClassScheduleEntry, Department, ScheduleDay, Teacher } from '../../core/models';
 import { CONSTRAINT_TYPE_LABELS, GenerateResult, Subject, SubjectAssignment, TeacherConstraint, TeacherConstraintType } from '../services/schedule-api.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export const DAY_OPTIONS: { key: ScheduleDay; label: string }[] = [
   { key: 'SUNDAY', label: 'الأحد' }, { key: 'MONDAY', label: 'الإثنين' }, { key: 'TUESDAY', label: 'الثلاثاء' },
   { key: 'WEDNESDAY', label: 'الأربعاء' }, { key: 'THURSDAY', label: 'الخميس' }
 ];
 const PERIODS = [1, 2, 3, 4, 5, 6, 7];
-const SHARED_IMPORTS = [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatSlideToggleModule];
+const SHARED_IMPORTS = [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, UiIconComponent, MatSlideToggleModule];
 const SHARED_STYLES = `
-  .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; direction: rtl; }
+  .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; }
   .full-width { width: 100%; }
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
   @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
   .ctx { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 0.25rem 0 0.75rem; padding: 0.6rem 0.85rem; background: var(--sp-primary-bg); border: 1px solid var(--sp-border); border-radius: 8px; color: var(--sp-primary); font-size: 0.88rem; font-weight: 600; }
-  .ctx span { display: inline-flex; align-items: center; gap: 0.3rem; } .ctx mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  .ctx span { display: inline-flex; align-items: center; gap: 0.3rem; } .ctx .app-ui-icon { font-size: 1rem; }
   .opt-meta { color: var(--sp-text-muted); font-size: 0.8rem; margin-inline-start: 0.4rem; }
   .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 6px; vertical-align: middle; }
   .hint { color: var(--sp-text-muted); font-size: 0.82rem; margin: 0 0 0.5rem; }
@@ -39,9 +39,9 @@ export interface SlotDialogData { classId: number; className: string; dayOfWeek:
     <h2 mat-dialog-title>{{ data.entry ? 'تعديل الحصة' : 'إضافة حصة' }}</h2>
     <mat-dialog-content>
       <div class="ctx">
-        <span><mat-icon>class</mat-icon> فصل {{ data.className }}</span>
-        <span><mat-icon>today</mat-icon> {{ dayLabel }}</span>
-        <span><mat-icon>schedule</mat-icon> الحصة {{ data.period }}</span>
+        <span><app-ui-icon name="class"></app-ui-icon> فصل {{ data.className }}</span>
+        <span><app-ui-icon name="today"></app-ui-icon> {{ dayLabel }}</span>
+        <span><app-ui-icon name="schedule"></app-ui-icon> الحصة {{ data.period }}</span>
       </div>
       @if (!data.assignments.length) {
         <p class="hint">لا توجد تكليفات (مواد ومعلمون) لهذا الفصل بعد. أضفها من تبويب «المواد والتكليفات».</p>
@@ -62,18 +62,18 @@ export interface SlotDialogData { classId: number; className: string; dayOfWeek:
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>القاعة (اختياري)</mat-label>
           <input matInput formControlName="room" autocomplete="off">
-          <mat-icon matSuffix>meeting_room</mat-icon>
+          <app-ui-icon name="meeting_room" matSuffix></app-ui-icon>
         </mat-form-field>
         <mat-slide-toggle formControlName="locked">تثبيت الحصة (لا يغيّرها التوليد التلقائي)</mat-slide-toggle>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       @if (data.entry) {
-        <button mat-button type="button" color="warn" (click)="ref.close({ clear: true })"><mat-icon>delete</mat-icon> إخلاء الخانة</button>
+        <button mat-button type="button" color="warn" (click)="ref.close({ clear: true })"><app-ui-icon name="delete"></app-ui-icon> إخلاء الخانة</button>
       }
       <span style="flex:1"></span>
       <button mat-button mat-dialog-close type="button">إلغاء</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="!data.assignments.length"><mat-icon>check</mat-icon> حفظ</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="!data.assignments.length"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
   `,
   styles: [SHARED_STYLES]
@@ -141,7 +141,7 @@ export interface SubjectDialogData { subject: Subject | null; departments: Depar
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()"><mat-icon>check</mat-icon> حفظ</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
   `,
   styles: [SHARED_STYLES]
@@ -173,7 +173,7 @@ export interface AssignmentDialogData { classId: number; className: string; subj
   template: `
     <h2 mat-dialog-title>{{ data.assignment ? 'تعديل تكليف' : 'إضافة مادة للفصل' }}</h2>
     <mat-dialog-content>
-      <div class="ctx"><span><mat-icon>class</mat-icon> فصل {{ data.className }}</span><span><mat-icon>event_note</mat-icon> المستخدم {{ data.usedPeriods }} من 35 حصة</span></div>
+      <div class="ctx"><span><app-ui-icon name="class"></app-ui-icon> فصل {{ data.className }}</span><span><app-ui-icon name="event_note"></app-ui-icon> المستخدم {{ data.usedPeriods }} من 35 حصة</span></div>
       <form [formGroup]="form" class="dialog-form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>المادة</mat-label>
@@ -200,7 +200,7 @@ export interface AssignmentDialogData { classId: number; className: string; subj
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()"><mat-icon>check</mat-icon> حفظ</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
   `,
   styles: [SHARED_STYLES]
@@ -283,7 +283,7 @@ export interface ConstraintDialogData { teachers: Teacher[]; teacherId?: number 
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()"><mat-icon>check</mat-icon> إضافة القيد</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> إضافة القيد</button>
     </mat-dialog-actions>
   `,
   styles: [SHARED_STYLES]
@@ -329,10 +329,10 @@ export class ConstraintDialogComponent {
 @Component({
   selector: 'app-generate-result-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule],
   template: `
     <div class="result" [class.ok]="data.success">
-      <div class="result-icon"><mat-icon>{{ data.success ? 'check_circle' : 'warning' }}</mat-icon></div>
+      <div class="result-icon"><app-ui-icon [name]="data.success ? 'check_circle' : 'warning'"></app-ui-icon></div>
       <h2 mat-dialog-title>{{ data.success ? 'تم توليد الجدول بنجاح' : 'تم التوليد مع نواقص' }}</h2>
       <mat-dialog-content>
         <div class="stats">
@@ -351,7 +351,7 @@ export class ConstraintDialogComponent {
             <thead><tr><th>الفصل</th><th>المادة</th><th>المعلم</th><th>الناقص</th><th>السبب</th></tr></thead>
             <tbody>@for (u of data.unplaced; track u.className + u.subjectName) { <tr><td>{{ u.className }}</td><td>{{ u.subjectName }}</td><td>{{ u.teacherName }}</td><td>{{ u.missing }}</td><td>{{ u.reason }}</td></tr> }</tbody>
           </table>
-          <p class="tip"><mat-icon>lightbulb</mat-icon> راجع قيود المعلم أو وزّع المادة على معلم آخر ثم أعد التوليد.</p>
+          <p class="tip"><app-ui-icon name="lightbulb"></app-ui-icon> راجع قيود المعلم أو وزّع المادة على معلم آخر ثم أعد التوليد.</p>
         }
       </mat-dialog-content>
       <mat-dialog-actions align="end"><button mat-flat-button color="primary" type="button" (click)="ref.close()">حسناً</button></mat-dialog-actions>
@@ -359,7 +359,7 @@ export class ConstraintDialogComponent {
   `,
   styles: [`
     .result { min-width: 360px; max-width: 640px; }
-    .result-icon { width: 56px; height: 56px; border-radius: 50%; margin: 1rem auto 0; display: flex; align-items: center; justify-content: center; background: var(--sp-warning-bg); color: var(--sp-warning); mat-icon { font-size: 30px; width: 30px; height: 30px; } }
+    .result-icon { width: 56px; height: 56px; border-radius: 50%; margin: 1rem auto 0; display: flex; align-items: center; justify-content: center; background: var(--sp-warning-bg); color: var(--sp-warning); app-ui-icon { font-size: 30px; width: 30px; height: 30px; } }
     .ok .result-icon { background: var(--sp-success-bg); color: var(--sp-success); }
     h2 { text-align: center; }
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 0.5rem 0 1rem; }
@@ -369,7 +369,7 @@ export class ConstraintDialogComponent {
     h4 { margin: 0.75rem 0 0.35rem; font-size: 0.9rem; }
     .warn { margin: 0; padding-inline-start: 1.2rem; color: var(--sp-warning); font-size: 0.88rem; }
     .unplaced { width: 100%; border-collapse: collapse; font-size: 0.85rem; th, td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--sp-border); text-align: start; } th { color: var(--sp-text-muted); font-weight: 600; } }
-    .tip { display: flex; align-items: center; gap: 0.4rem; color: var(--sp-text-muted); font-size: 0.82rem; margin: 0.75rem 0 0; mat-icon { font-size: 18px; width: 18px; height: 18px; color: #f9a825; } }
+    .tip { display: flex; align-items: center; gap: 0.4rem; color: var(--sp-text-muted); font-size: 0.82rem; margin: 0.75rem 0 0; app-ui-icon { font-size: 18px; width: 18px; height: 18px; color: #f9a825; } }
     @media (max-width: 599px) { .stats { grid-template-columns: repeat(2, 1fr); } .result { min-width: 0; } }
   `]
 })

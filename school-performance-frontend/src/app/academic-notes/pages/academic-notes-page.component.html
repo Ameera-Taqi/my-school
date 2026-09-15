@@ -67,14 +67,14 @@
     </mat-form-field>
     <div class="filter-actions">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
-        <mat-icon>restart_alt</mat-icon>
+        <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
       </button>
       <button mat-flat-button color="primary" type="button" (click)="load()" [disabled]="loading">
         @if (loading) {
           <ng-container><mat-spinner diameter="20"></mat-spinner> بحث</ng-container>
         } @else {
-          <ng-container><mat-icon>search</mat-icon> بحث</ng-container>
+          <ng-container><app-ui-icon name="search"></app-ui-icon> بحث</ng-container>
         }
       </button>
     </div>
@@ -84,28 +84,28 @@
 @if (!loading) {
   <div class="stats-grid">
     <mat-card class="stat-card">
-      <mat-icon>notes</mat-icon>
+      <app-ui-icon name="notes"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.total }}</span>
         <span class="stat-label">إجمالي الملاحظات</span>
       </div>
     </mat-card>
     <mat-card class="stat-card">
-      <mat-icon class="warning">pending_actions</mat-icon>
+      <app-ui-icon name="pending_actions" class="warning"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.open }}</span>
         <span class="stat-label">مفتوحة</span>
       </div>
     </mat-card>
     <mat-card class="stat-card">
-      <mat-icon class="danger">priority_high</mat-icon>
+      <app-ui-icon name="priority_high" class="danger"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.highPriority }}</span>
         <span class="stat-label">أولوية عالية</span>
       </div>
     </mat-card>
     <mat-card class="stat-card">
-      <mat-icon class="success">task_alt</mat-icon>
+      <app-ui-icon name="task_alt" class="success"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.handled }}</span>
         <span class="stat-label">تمت معالجتها</span>
@@ -116,7 +116,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <span class="toolbar-title"><mat-icon>note_alt</mat-icon> سجل الملاحظات</span>
+    <span class="toolbar-title"><app-ui-icon name="note_alt"></app-ui-icon> سجل الملاحظات</span>
     @if (!loading) {
       <span class="toolbar-count">{{ total }} ملاحظة</span>
     }
@@ -127,7 +127,7 @@
   } @else if (total === 0) {
     <app-empty-state [icon]="hasFilters ? 'search_off' : 'note_alt'" title="لا توجد ملاحظات مطابقة للفلاتر المحددة" description="جرّب تعديل الفلاتر أو كلمة البحث." [compact]="true">
       @if (hasFilters) {
-        <button mat-stroked-button (click)="resetFilters()"><mat-icon>restart_alt</mat-icon> إعادة ضبط الفلاتر</button>
+        <button mat-stroked-button (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> إعادة ضبط الفلاتر</button>
       }
     </app-empty-state>
   } @else {
@@ -181,7 +181,7 @@
           <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
           <td mat-cell *matCellDef="let r" class="actions-cell">
             <div class="row-actions">
-              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
             </div>
           </td>
         </ng-container>

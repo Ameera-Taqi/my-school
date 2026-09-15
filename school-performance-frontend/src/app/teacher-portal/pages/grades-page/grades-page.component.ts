@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -18,16 +17,12 @@ import { ConfirmService } from '../../../shared/services/confirm.service';
 import { TeacherPortalMockService } from '../../services/teacher-portal-mock.service';
 import { GradeColumnDialogComponent } from '../../dialogs/grade-column-dialog.component';
 import { GradeSheet, GradeSheetColumn, GradeSheetEntry } from '../../../core/models';
+import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-grades-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule,
-    MatProgressSpinnerModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule,
-    PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatProgressSpinnerModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
   templateUrl: './grades-page.component.html',
   styleUrl: './grades-page.component.scss'
 })
@@ -98,7 +93,7 @@ export class GradesPageComponent implements OnInit {
     const ref = this.dialog.open(GradeColumnDialogComponent, {
       width: '420px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: {}
     });
     ref.afterClosed().subscribe((result: { title: string; maxScore: number } | undefined) => {
@@ -118,7 +113,7 @@ export class GradesPageComponent implements OnInit {
     const ref = this.dialog.open(GradeColumnDialogComponent, {
       width: '420px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { column }
     });
     ref.afterClosed().subscribe((result: { title: string; maxScore: number } | undefined) => {

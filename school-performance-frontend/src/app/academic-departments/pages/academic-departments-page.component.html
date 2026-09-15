@@ -1,6 +1,6 @@
 <app-page-header title="الشعب الدراسية" subtitle="الشعب الفعلية للمدرسة كما تظهر في الهيكل التنظيمي">
   @if ('departments.manage' | hasPermission) {
-    <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة شعبة</button>
+    <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة شعبة</button>
   }
 </app-page-header>
 
@@ -19,7 +19,7 @@
   } @else if (total === 0) {
     <app-empty-state icon="account_tree" title="لا توجد شعب دراسية بعد" description="أضف أول شعبة دراسية لتنظيم المواد والمعلمين.">
       @if ('departments.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة شعبة</button>
+        <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة شعبة</button>
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {
@@ -37,7 +37,7 @@
         </ng-container>
         <ng-container matColumnDef="teacherCount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>عدد المعلمين</th>
-          <td mat-cell *matCellDef="let r"><span class="chip info"><mat-icon class="chip-icon">person</mat-icon> {{ r.teacherCount ?? 0 }}</span></td>
+          <td mat-cell *matCellDef="let r"><span class="chip info"><app-ui-icon name="person" class="chip-icon"></app-ui-icon> {{ r.teacherCount ?? 0 }}</span></td>
         </ng-container>
         <ng-container matColumnDef="subjects">
           <th mat-header-cell *matHeaderCellDef>المواد</th>
@@ -52,11 +52,11 @@
           <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
           <td mat-cell *matCellDef="let r" class="actions-cell">
             <div class="row-actions">
-              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
-              <a mat-icon-button matTooltip="معلمو الشعبة" [routerLink]="['/teachers/departments', r.id]" (click)="$event.stopPropagation()"><mat-icon>groups</mat-icon></a>
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
+              <a mat-icon-button matTooltip="معلمو الشعبة" [routerLink]="['/teachers/departments', r.id]" (click)="$event.stopPropagation()"><app-ui-icon name="groups"></app-ui-icon></a>
               @if ('departments.manage' | hasPermission) {
-                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>
+                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
+                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon></button>
               }
             </div>
           </td>

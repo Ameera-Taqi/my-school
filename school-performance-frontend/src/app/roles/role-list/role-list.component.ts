@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -15,14 +14,12 @@ import { ConfirmService } from '../../shared/services/confirm.service';
 import { RoleApiService } from '../services/role-api.service';
 import { RoleFormDialogComponent } from '../role-form-dialog/role-form-dialog.component';
 import { Role } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-role-list',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss'
 })
@@ -77,7 +74,6 @@ export class RoleListComponent implements OnInit, AfterViewInit {
       width: '480px',
       maxWidth: '95vw',
       data: role ?? null,
-      direction: 'rtl'
     });
 
     dialogRef.afterClosed().subscribe((result: Role | undefined) => {

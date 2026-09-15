@@ -3,13 +3,13 @@
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="art-content">
-      <mat-icon class="art-icon">school</mat-icon>
+      <app-ui-icon name="school" class="art-icon"></app-ui-icon>
       <h2>نظام مؤشر الأداء المدرسي الذكي</h2>
       <p>منصة واحدة لمتابعة الطلاب والمعلمين والأداء المدرسي، بصلاحيات مرنة لكل دور.</p>
       <ul class="art-points">
-        <li><mat-icon>check_circle</mat-icon> متابعة الحضور والسلوك والدرجات</li>
-        <li><mat-icon>check_circle</mat-icon> لوحات تحكم لرؤساء الشعب والإدارة</li>
-        <li><mat-icon>check_circle</mat-icon> تقويم مدرسي وتنبيهات ذكية</li>
+        <li><app-ui-icon name="check_circle"></app-ui-icon> متابعة الحضور والسلوك والدرجات</li>
+        <li><app-ui-icon name="check_circle"></app-ui-icon> لوحات تحكم لرؤساء الشعب والإدارة</li>
+        <li><app-ui-icon name="check_circle"></app-ui-icon> تقويم مدرسي وتنبيهات ذكية</li>
       </ul>
     </div>
   </div>
@@ -17,7 +17,7 @@
   <div class="login-side">
     <mat-card class="login-card">
       <div class="login-header">
-        <span class="logo-badge"><mat-icon>school</mat-icon></span>
+        <span class="logo-badge"><app-ui-icon name="school"></app-ui-icon></span>
         <h1>تسجيل الدخول</h1>
         <p>أدخل بيانات حسابك للمتابعة</p>
       </div>
@@ -26,18 +26,18 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>اسم المستخدم</mat-label>
           <input matInput formControlName="username" autocomplete="username" dir="ltr" cdkFocusInitial>
-          <mat-icon matPrefix>person</mat-icon>
+          <app-ui-icon name="person" matPrefix></app-ui-icon>
           <mat-error>اسم المستخدم مطلوب</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>كلمة المرور</mat-label>
           <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password" dir="ltr">
-          <mat-icon matPrefix>lock</mat-icon>
+          <app-ui-icon name="lock" matPrefix></app-ui-icon>
           <button mat-icon-button matSuffix type="button"
             (click)="hidePassword = !hidePassword"
             [attr.aria-label]="hidePassword ? 'إظهار كلمة المرور' : 'إخفاء كلمة المرور'">
-            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            <app-ui-icon [name]="hidePassword ? 'visibility_off' : 'visibility'"></app-ui-icon>
           </button>
           <mat-error>كلمة المرور مطلوبة</mat-error>
         </mat-form-field>
@@ -48,7 +48,7 @@
 
         @if (errorMessage) {
           <div class="error-banner" role="alert">
-            <mat-icon>error_outline</mat-icon>
+            <app-ui-icon name="error_outline"></app-ui-icon>
             <span>{{ errorMessage }}</span>
           </div>
         }
@@ -57,7 +57,7 @@
           @if (loading) {
             <mat-spinner diameter="22"></mat-spinner>
           } @else {
-            <ng-container><mat-icon>login</mat-icon> تسجيل الدخول</ng-container>
+            <ng-container><app-ui-icon name="login"></app-ui-icon> تسجيل الدخول</ng-container>
           }
         </button>
       </form>

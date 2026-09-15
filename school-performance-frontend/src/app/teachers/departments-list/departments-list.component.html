@@ -1,7 +1,7 @@
 <app-page-header title="المعلمون" subtitle="اختر الشعبة لعرض وإدارة المعلمين">
   @if ('departments.manage' | hasPermission) {
     <button mat-flat-button color="primary" (click)="openDepartmentDialog()">
-      <mat-icon>add</mat-icon>
+      <app-ui-icon name="add"></app-ui-icon>
       إضافة شعبة
     </button>
   }
@@ -23,7 +23,7 @@
   <div class="data-card">
     <app-empty-state icon="domain" title="لا توجد شعب بعد" description="أضف أول شعبة ثم أضف المعلمين داخلها.">
       @if ('departments.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDepartmentDialog()"><mat-icon>add</mat-icon> إضافة أول شعبة</button>
+        <button mat-flat-button color="primary" (click)="openDepartmentDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة أول شعبة</button>
       }
     </app-empty-state>
   </div>
@@ -31,22 +31,22 @@
   <div class="departments-grid">
     @for (dept of departments; track dept.id) {
       <mat-card class="dept-card clickable" [routerLink]="['/teachers/departments', dept.id]" tabindex="0" role="link" [attr.aria-label]="'عرض الشعبة ' + dept.name">
-        <div class="card-icon"><mat-icon>domain</mat-icon></div>
+        <div class="card-icon"><app-ui-icon name="domain"></app-ui-icon></div>
         <h3>{{ dept.name }}</h3>
         @if (dept.description) {
           <p class="description">{{ dept.description }}</p>
         }
         <div class="stats">
-          <span class="chip info"><mat-icon class="chip-icon">person</mat-icon> {{ dept.teacherCount ?? 0 }} معلم</span>
+          <span class="chip info"><app-ui-icon name="person" class="chip-icon"></app-ui-icon> {{ dept.teacherCount ?? 0 }} معلم</span>
         </div>
         <div class="card-footer">
           <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/teachers/departments', dept.id]" (click)="$event.stopPropagation()">
             عرض الشعبة
-            <mat-icon>arrow_back</mat-icon>
+            <app-ui-icon name="arrow_back"></app-ui-icon>
           </button>
           @if ('departments.manage' | hasPermission) {
             <div class="row-actions">
-              <button mat-icon-button matTooltip="تعديل" (click)="openDepartmentDialog(dept); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button matTooltip="تعديل" (click)="openDepartmentDialog(dept); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
             </div>
           }
         </div>

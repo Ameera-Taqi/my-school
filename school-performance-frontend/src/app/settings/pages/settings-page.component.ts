@@ -5,7 +5,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -16,16 +15,12 @@ import { ConfirmService } from '../../shared/services/confirm.service';
 import { SettingsMockService } from '../services/settings-mock.service';
 import { LanguageService } from '../../core/services/language.service';
 import { SystemSettings } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatTooltipModule, MatSlideToggleModule,
-    MatProgressSpinnerModule, MatDividerModule, PageHeaderComponent
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTooltipModule, MatSlideToggleModule, MatProgressSpinnerModule, MatDividerModule, PageHeaderComponent],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.scss'
 })

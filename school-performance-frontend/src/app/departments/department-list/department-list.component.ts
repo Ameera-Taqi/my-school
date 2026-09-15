@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { SearchFieldComponent } from '../../shared/components/search-field/search-field.component';
@@ -13,18 +12,16 @@ import { ToastService } from '../../shared/services/toast.service';
 import { ConfirmService } from '../../shared/services/confirm.service';
 import { DepartmentApiService } from '../services/department-api.service';
 import { Department } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-department-list',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent],
   template: `
     <app-page-header title="الشعب" subtitle="إدارة الشعب الأكاديمية">
       <button mat-flat-button color="primary" (click)="addSample()">
-        <mat-icon>add</mat-icon>
+        <app-ui-icon name="add"></app-ui-icon>
         إضافة شعبة (تجريبية)
       </button>
     </app-page-header>
@@ -43,7 +40,7 @@ import { Department } from '../../core/models';
         <app-table-skeleton [rows]="5" [columns]="4"></app-table-skeleton>
       } @else if (total === 0) {
         <app-empty-state icon="domain" title="لا توجد شعب بعد" description="أضف أول شعبة لبدء تنظيم المعلمين والمواد.">
-          <button mat-flat-button color="primary" (click)="addSample()"><mat-icon>add</mat-icon> إضافة شعبة (تجريبية)</button>
+          <button mat-flat-button color="primary" (click)="addSample()"><app-ui-icon name="add"></app-ui-icon> إضافة شعبة (تجريبية)</button>
         </app-empty-state>
       } @else if (filteredCount === 0) {
         <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد شعبة تطابق «' + query + '». جرّب كلمة أخرى.'" [compact]="true"></app-empty-state>
@@ -66,7 +63,7 @@ import { Department } from '../../core/models';
               <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
               <td mat-cell *matCellDef="let r" class="actions-cell">
                 <div class="row-actions">
-                  <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteDept(r)"><mat-icon>delete</mat-icon></button>
+                  <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteDept(r)"><app-ui-icon name="delete"></app-ui-icon></button>
                 </div>
               </td>
             </ng-container>

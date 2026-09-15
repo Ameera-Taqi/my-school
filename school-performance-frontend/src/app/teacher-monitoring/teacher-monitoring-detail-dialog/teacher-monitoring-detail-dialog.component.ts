@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TeacherMonitoringRecord } from '../../core/models';
 import { TEACHER_MONITORING_STATUS_LABELS } from '../../shared/constants/labels';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface TeacherMonitoringDetailDialogData {
   record: TeacherMonitoringRecord;
@@ -15,10 +15,10 @@ export interface TeacherMonitoringDetailDialogData {
 @Component({
   selector: 'app-teacher-monitoring-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatDividerModule, MatProgressBarModule, AppDatePipe],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatDividerModule, MatProgressBarModule, AppDatePipe],
   template: `
     <div class="dialog-header">
-      <span class="header-icon"><mat-icon>person</mat-icon></span>
+      <span class="header-icon"><app-ui-icon name="person"></app-ui-icon></span>
       <div>
         <h2 mat-dialog-title>{{ data.record.teacherName }}</h2>
         <p class="subtitle">{{ data.record.departmentName }} — {{ data.record.subject }}</p>
@@ -48,28 +48,28 @@ export interface TeacherMonitoringDetailDialogData {
       </div>
 
       <div class="info-row">
-        <mat-icon>class</mat-icon>
+        <app-ui-icon name="class"></app-ui-icon>
         <span>عدد الفصول: {{ data.record.classesCount }}</span>
       </div>
       <div class="info-row">
-        <mat-icon>event</mat-icon>
+        <app-ui-icon name="event"></app-ui-icon>
         <span>آخر زيارة متابعة: {{ data.record.lastVisitDate | appDate }}</span>
       </div>
 
       <mat-divider></mat-divider>
 
       <section class="detail-section">
-        <h3><mat-icon>thumb_up</mat-icon> نقاط القوة</h3>
+        <h3><app-ui-icon name="thumb_up"></app-ui-icon> نقاط القوة</h3>
         <p class="section-body positive">{{ data.record.strengths || '—' }}</p>
       </section>
 
       <section class="detail-section">
-        <h3><mat-icon>trending_up</mat-icon> مجالات التحسين</h3>
+        <h3><app-ui-icon name="trending_up"></app-ui-icon> مجالات التحسين</h3>
         <p class="section-body warning">{{ data.record.improvements || '—' }}</p>
       </section>
 
       <section class="detail-section">
-        <h3><mat-icon>notes</mat-icon> ملاحظات المتابعة</h3>
+        <h3><app-ui-icon name="notes"></app-ui-icon> ملاحظات المتابعة</h3>
         <p class="section-body">{{ data.record.notes || '—' }}</p>
       </section>
     </mat-dialog-content>
@@ -91,7 +91,7 @@ export interface TeacherMonitoringDetailDialogData {
       width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: var(--sp-primary-light); color: var(--sp-primary);
-      mat-icon { font-size: 26px; width: 26px; height: 26px; }
+      app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
     }
 
     h2[mat-dialog-title] {
@@ -147,7 +147,7 @@ export interface TeacherMonitoringDetailDialogData {
       color: var(--sp-text);
       font-size: 0.9rem;
 
-      mat-icon {
+      app-ui-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
@@ -168,7 +168,7 @@ export interface TeacherMonitoringDetailDialogData {
       color: var(--sp-primary);
     }
 
-    .detail-section h3 mat-icon {
+    .detail-section h3 app-ui-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;

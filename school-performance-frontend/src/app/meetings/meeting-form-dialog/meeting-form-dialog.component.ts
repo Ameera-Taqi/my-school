@@ -7,24 +7,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
 import { Meeting, Role } from '../../core/models';
 import { RoleApiService } from '../../roles/services/role-api.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-meeting-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDatepickerModule,
-    MatTimepickerModule,
-    MatCheckboxModule,
-    MatIconModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule, MatDatepickerModule, MatTimepickerModule, MatCheckboxModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل اجتماع' : 'اجتماع جديد' }}</h2>
     <mat-dialog-content>
@@ -32,7 +22,7 @@ import { RoleApiService } from '../../roles/services/role-api.service';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>عنوان الاجتماع</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
-          <mat-icon matSuffix>title</mat-icon>
+          <app-ui-icon name="title" matSuffix></app-ui-icon>
           <mat-error>عنوان الاجتماع مطلوب</mat-error>
         </mat-form-field>
 
@@ -56,7 +46,7 @@ import { RoleApiService } from '../../roles/services/role-api.service';
 
         <div class="roles-group" [class.invalid]="form.controls.targetRoleKeys.invalid && form.controls.targetRoleKeys.touched">
           <div class="roles-group-header">
-            <mat-icon>groups</mat-icon>
+            <app-ui-icon name="groups"></app-ui-icon>
             <div>
               <strong>الأدوار المستهدفة</strong>
               <span>يظهر الاجتماع في تقويم من يملك أحد هذه الأدوار</span>
@@ -72,7 +62,7 @@ import { RoleApiService } from '../../roles/services/role-api.service';
             }
           </div>
           @if (form.controls.targetRoleKeys.invalid && form.controls.targetRoleKeys.touched) {
-            <p class="roles-error"><mat-icon>error_outline</mat-icon> اختر دوراً واحداً على الأقل</p>
+            <p class="roles-error"><app-ui-icon name="error_outline"></app-ui-icon> اختر دوراً واحداً على الأقل</p>
           }
         </div>
 
@@ -97,12 +87,12 @@ import { RoleApiService } from '../../roles/services/role-api.service';
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'حفظ الاجتماع' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'حفظ الاجتماع' }}
       </button>
     </mat-dialog-actions>
   `,
   styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; direction: rtl; }
+    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
     .full-width { width: 100%; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .75rem; }
     @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
@@ -126,7 +116,7 @@ import { RoleApiService } from '../../roles/services/role-api.service';
       margin-bottom: 0.75rem;
       color: var(--sp-primary);
     }
-    .roles-group-header mat-icon { margin-top: 2px; }
+    .roles-group-header app-ui-icon { margin-top: 2px; }
     .roles-group-header strong { display: block; font-size: 0.95rem; margin-bottom: 0.15rem; }
     .roles-group-header span { display: block; font-size: 0.8rem; color: var(--sp-text-muted); line-height: 1.4; }
     .roles-checkboxes {
@@ -139,7 +129,7 @@ import { RoleApiService } from '../../roles/services/role-api.service';
       margin: 0.6rem 0 0;
       color: var(--sp-danger);
       font-size: 0.8rem;
-      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+      app-ui-icon { font-size: 16px; width: 16px; height: 16px; }
     }
   `]
 })

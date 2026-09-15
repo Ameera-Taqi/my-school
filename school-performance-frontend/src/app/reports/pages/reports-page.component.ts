@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,15 +17,12 @@ import { REPORT_TYPE_LABELS } from '../../shared/constants/labels';
 import { ReportType } from '../../core/models';
 import { ReportMockService, ReportResult } from '../services/report-mock.service';
 import { ReportPdfService } from '../services/report-pdf.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatIconModule, MatButtonModule, MatTooltipModule,
-    MatFormFieldModule, MatSelectModule, MatInputModule, MatDatepickerModule,
-    MatTableModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatDatepickerModule, MatTableModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './reports-page.component.html',
   styleUrl: './reports-page.component.scss'
 })

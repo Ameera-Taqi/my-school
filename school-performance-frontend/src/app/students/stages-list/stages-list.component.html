@@ -19,15 +19,15 @@
   <div class="stages-grid">
     @for (stage of stages; track stage.id) {
       <mat-card class="stage-card clickable" [routerLink]="['/students/stages', stage.id]" tabindex="0" role="link" [attr.aria-label]="'عرض المرحلة ' + stage.name">
-        <div class="card-icon"><mat-icon>school</mat-icon></div>
+        <div class="card-icon"><app-ui-icon name="school"></app-ui-icon></div>
         <h3>{{ stage.name }}</h3>
         <div class="stats">
-          <span class="chip neutral"><mat-icon class="chip-icon">class</mat-icon> {{ stage.classCount ?? 0 }} فصل</span>
-          <span class="chip info"><mat-icon class="chip-icon">people</mat-icon> {{ stage.studentCount ?? 0 }} طالب</span>
+          <span class="chip neutral"><app-ui-icon name="class" class="chip-icon"></app-ui-icon> {{ stage.classCount ?? 0 }} فصل</span>
+          <span class="chip info"><app-ui-icon name="people" class="chip-icon"></app-ui-icon> {{ stage.studentCount ?? 0 }} طالب</span>
         </div>
         <button mat-flat-button color="primary" class="view-btn" [routerLink]="['/students/stages', stage.id]" (click)="$event.stopPropagation()">
           عرض المرحلة
-          <mat-icon>arrow_back</mat-icon>
+          <app-ui-icon name="arrow_back"></app-ui-icon>
         </button>
       </mat-card>
     }

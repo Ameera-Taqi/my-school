@@ -5,13 +5,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { LessonPlan } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-lesson-plan-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل خطة' : 'خطة درس جديدة' }}</h2>
     <mat-dialog-content>
@@ -64,13 +64,13 @@ import { LessonPlan } from '../../core/models';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>ملف مرفق (اختياري)</mat-label>
           <input matInput formControlName="attachmentName" placeholder="اسم الملف" autocomplete="off">
-          <mat-icon matSuffix>attach_file</mat-icon>
+          <app-ui-icon name="attach_file" matSuffix></app-ui-icon>
         </mat-form-field>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()"><mat-icon>check</mat-icon> حفظ</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
   `,
   styles: [`

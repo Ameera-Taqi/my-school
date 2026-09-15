@@ -1,5 +1,4 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +7,7 @@ import { HomeStats, HomeStatsService } from '../services/home-stats.service';
 import { HomeStatsComponent } from '../widgets/home-stats.component';
 import { HomeListsComponent } from '../widgets/home-lists.component';
 import { HomeMyDayComponent } from '../widgets/home-my-day.component';
-import { HomeQuickLinksComponent } from '../widgets/home-quick-links.component';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 /**
  * One home page for every role. It is assembled from independent widgets; each widget checks the
@@ -17,7 +16,7 @@ import { HomeQuickLinksComponent } from '../widgets/home-quick-links.component';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [MatIconModule, AppDatePipe, HasPermissionPipe, DashboardCalendarComponent, HomeStatsComponent, HomeListsComponent, HomeMyDayComponent, HomeQuickLinksComponent],
+  imports: [UiIconComponent, AppDatePipe, HasPermissionPipe, DashboardCalendarComponent, HomeStatsComponent, HomeListsComponent, HomeMyDayComponent],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss'
 })

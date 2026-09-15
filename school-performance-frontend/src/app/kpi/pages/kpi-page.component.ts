@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -14,6 +13,7 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
 import { TableSkeletonComponent } from '../../shared/components/table-skeleton/table-skeleton.component';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { ToastService } from '../../shared/services/toast.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 import {
   KpiCategory,
   KpiIndicator,
@@ -26,22 +26,7 @@ import {
 @Component({
   selector: 'app-kpi-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatTableModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatTooltipModule,
-    PageHeaderComponent,
-    EmptyStateComponent,
-    TableSkeletonComponent,
-    AppDatePipe
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatCardModule, MatButtonModule, MatFormFieldModule, MatSelectModule, MatTableModule, MatProgressSpinnerModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './kpi-page.component.html',
   styleUrl: './kpi-page.component.scss'
 })

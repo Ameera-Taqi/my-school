@@ -32,7 +32,7 @@
   gap: 1rem;
   padding: 1rem 1.25rem;
 
-  mat-icon {
+  app-ui-icon {
     font-size: 36px;
     width: 36px;
     height: 36px;
@@ -60,7 +60,7 @@
   gap: 0.4rem;
   font-weight: 700;
   color: var(--sp-primary);
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  app-ui-icon { font-size: 20px; width: 20px; height: 20px; }
 }
 
 .name-cell { display: flex; align-items: center; gap: 0.7rem; }

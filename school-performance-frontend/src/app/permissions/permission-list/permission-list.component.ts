@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -15,14 +14,12 @@ import { ConfirmService } from '../../shared/services/confirm.service';
 import { PermissionApiService } from '../services/permission-api.service';
 import { PermissionFormDialogComponent } from '../permission-form-dialog/permission-form-dialog.component';
 import { Permission } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-permission-list',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent],
   templateUrl: './permission-list.component.html',
   styleUrl: './permission-list.component.scss'
 })
@@ -78,7 +75,6 @@ export class PermissionListComponent implements OnInit, AfterViewInit {
       width: '520px',
       maxWidth: '95vw',
       data: permission ?? null,
-      direction: 'rtl'
     });
 
     dialogRef.afterClosed().subscribe((result: Permission | undefined) => {

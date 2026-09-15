@@ -2,112 +2,150 @@ $blue: #1a237e;
 $blue-mid: #3949ab;
 $blue-bg: #f0f2fa;
 
-/* ── الشريط العلوي ── */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 1.5rem;
-  min-height: 64px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #e8eaf6;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  min-height: 72px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sp-border);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 40;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
 }
 
 .app-header .header-start {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   min-width: 0;
 }
 
 .app-header .menu-btn { color: $blue; }
 .app-header .hide-desktop-960 { display: none; }
 
-.app-header h2 {
+.app-header .header-titles {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.app-header .header-title {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
   font-size: 1.05rem;
   font-weight: 700;
-  color: $blue;
+  color: var(--sp-text);
+  line-height: 1.3;
+}
+
+.app-header .term-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $blue-mid;
+  background: var(--sp-primary-light);
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  white-space: nowrap;
+}
+
+.app-header .header-subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--sp-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 42rem;
 }
 
 .app-header .header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.55rem;
+  flex-shrink: 0;
 }
 
-/* سويتش اللغة — في الشريط العلوي */
-.app-header .header-lang {
-  display: flex;
+.app-header .action-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 8px;
-  border: 1px solid #e8eaf6;
-  background: #fafbff;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+
+  .app-ui-icon {
+    font-size: 1.05rem;
+    color: var(--sp-primary-mid);
+  }
+
+  &:hover { background: #e2e8f0; color: var(--sp-text); }
+  &.icon-only { padding: 0.55rem; width: 40px; height: 40px; }
 }
 
-.app-header .header-lang .lang-icon {
-  width: 18px !important;
-  height: 18px !important;
-  font-size: 18px !important;
-  color: $blue-mid;
+.app-header .notif-dot {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e11d48;
+  box-shadow: 0 0 0 2px #fff;
 }
 
-.app-header .header-lang .lang-option {
-  font-size: 0.75rem;
-  color: #9e9e9e;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: color 0.15s;
-}
-
-.app-header .header-lang .lang-option.active {
-  color: $blue;
-  font-weight: 700;
-}
-
-.app-header .header-lang .lang-toggle {
-  transform: scale(0.85);
-}
-
-/* ── زر المستخدم ── */
 .app-header .user-trigger {
   all: unset;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.3rem 0.5rem 0.3rem 0.3rem;
-  border-radius: 8px;
+  gap: 0.65rem;
+  padding: 0.25rem 0.45rem 0.25rem 0.25rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: background 0.15s;
+  border-inline-start: 1px solid var(--sp-border);
+  padding-inline-start: 0.75rem;
+  margin-inline-start: 0.15rem;
 }
 
-.app-header .user-trigger:hover {
-  background: $blue-bg;
-}
+.app-header .user-trigger:hover { background: $blue-bg; }
 
 .app-header .user-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: $blue;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
 }
 
 .app-header .user-trigger-info {
@@ -117,50 +155,49 @@ $blue-bg: #f0f2fa;
 }
 
 .app-header .user-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #212121;
-  max-width: 140px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sp-text);
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .app-header .user-role {
-  font-size: 0.75rem;
-  color: #757575;
+  font-size: 0.7rem;
+  color: $blue-mid;
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.app-header .chevron.mat-icon {
-  width: 20px !important;
-  height: 20px !important;
-  font-size: 20px !important;
-  color: #9e9e9e;
+.app-header .chevron.app-ui-icon {
+  font-size: 1rem;
+  color: #94a3b8;
 }
 
-/* ── القائمة المنبثقة ── */
 .mat-mdc-menu-panel.user-menu-panel {
   --mat-menu-item-icon-size: 22px;
   --mat-menu-item-spacing: 12px;
   min-width: 280px !important;
   max-width: 320px !important;
-  border-radius: 10px !important;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--sp-border);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12) !important;
   overflow: hidden;
 }
 
-.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-content {
-  padding: 0 !important;
-}
+.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-content { padding: 0 !important; }
 
-/* بطاقة الملف الشخصي */
 .mat-mdc-menu-panel.user-menu-panel .menu-profile {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   padding: 1rem 1.15rem;
-  background: linear-gradient(135deg, #1a237e 0%, #303f9f 100%);
+  background: linear-gradient(135deg, #312e81 0%, #4f46e5 100%);
   color: #fff;
 }
 
@@ -177,31 +214,24 @@ $blue-bg: #f0f2fa;
   color: #fff;
 }
 
-/* الفاصل */
 .mat-mdc-menu-panel.user-menu-panel mat-divider {
   margin: 0;
   border-color: #eeeeee;
 }
 
-/* عناصر القائمة */
 .mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item {
   min-height: 48px;
   font-size: 0.9rem;
 }
 
-.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item .mat-icon {
-  color: $blue-mid;
-}
+.mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item .app-ui-icon { color: $blue-mid; }
 
 .mat-mdc-menu-panel.user-menu-panel .mat-mdc-menu-item:not([disabled]):hover {
   background: $blue-bg;
 }
 
-/* تسجيل الخروج */
-.mat-mdc-menu-panel.user-menu-panel .menu-logout .mat-icon,
-.mat-mdc-menu-panel.user-menu-panel .menu-logout span {
-  color: #d32f2f;
-}
+.mat-mdc-menu-panel.user-menu-panel .menu-logout .app-ui-icon,
+.mat-mdc-menu-panel.user-menu-panel .menu-logout span { color: #d32f2f; }
 
 .mat-mdc-menu-panel.user-menu-panel .menu-logout:not([disabled]):hover {
   background: #fce4ec;
@@ -212,31 +242,22 @@ $blue-bg: #f0f2fa;
   opacity: 0.85;
 }
 
-/* ── جوال ── */
 @media (max-width: 959px) {
-  .app-header { padding: 0.5rem 0.75rem; }
+  .app-header { padding: 0.65rem 0.85rem; min-height: 64px; }
   .app-header .hide-desktop-960 { display: inline-flex; }
-  .app-header .header-title { font-size: 0.95rem; }
+  .app-header .header-subtitle { display: none; }
+  .app-header .term-chip { display: none; }
 }
 
 @media (max-width: 768px) {
-  .app-header .header-title { display: none; }
-
-  .app-header .header-lang .lang-option {
-    display: none;
-  }
-
-  .app-header .header-lang {
-    padding: 0.35rem 0.5rem;
-  }
-
+  .app-header .lang-btn span { display: none; }
+  .app-header .lang-btn { padding: 0.55rem; width: 40px; height: 40px; }
   .app-header .user-trigger-info,
-  .app-header .chevron {
-    display: none;
-  }
-
+  .app-header .chevron { display: none; }
   .app-header .user-trigger {
     padding: 0.25rem;
-    border-radius: 50%;
+    border: none;
+    margin: 0;
   }
+  .app-header .header-title { font-size: 0.95rem; }
 }

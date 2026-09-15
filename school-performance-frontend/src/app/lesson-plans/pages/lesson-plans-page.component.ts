@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -19,15 +18,12 @@ import { LESSON_PLAN_STATUS_LABELS } from '../../shared/constants/labels';
 import { LessonPlan } from '../../core/models';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-lesson-plans-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent,
-    HasPermissionPipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
   templateUrl: './lesson-plans-page.component.html',
   styleUrl: './lesson-plans-page.component.scss'
 })
@@ -78,7 +74,7 @@ export class LessonPlansPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(p?: LessonPlan): void {
-    const ref = this.dialog.open(LessonPlanFormDialogComponent, { width: '640px', maxWidth: '95vw', direction: 'rtl', data: p ?? null });
+    const ref = this.dialog.open(LessonPlanFormDialogComponent, { width: '640px', maxWidth: '95vw', data: p ?? null });
     ref.afterClosed().subscribe((result: LessonPlan | undefined) => {
       if (!result) return;
       const req$ = p?.id ? this.service.update(p.id, result) : this.service.create(result);

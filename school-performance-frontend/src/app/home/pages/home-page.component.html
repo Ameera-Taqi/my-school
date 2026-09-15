@@ -1,7 +1,7 @@
 <div class="home-head">
   <div>
     <h1>{{ greeting }}</h1>
-    <p class="home-date"><mat-icon>today</mat-icon> {{ today | appDate }} @if (roleLine) { <span class="sep">·</span> {{ roleLine }} }</p>
+    <p class="home-date"><app-ui-icon name="today"></app-ui-icon> {{ today | appDate }} @if (roleLine) { <span class="sep">·</span> {{ roleLine }} }</p>
   </div>
 </div>
 
@@ -20,8 +20,3 @@
 @if (showLists) {
   <section class="home-section"><app-home-lists [stats]="stats"></app-home-lists></section>
 }
-
-<section class="home-section">
-  <h2 class="section-title"><mat-icon>apps</mat-icon> الخدمات المتاحة لك</h2>
-  <app-home-quick-links></app-home-quick-links>
-</section>

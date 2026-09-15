@@ -2,7 +2,7 @@
   [title]="'خطط الدروس'"
   [subtitle]="departmentScope.isScoped() ? 'خطط دروس ' + departmentScope.departmentName() : 'إدارة خطط الدروس الأسبوعية'">
   @if ('lesson_plans.manage' | hasPermission) {
-    <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> خطة جديدة</button>
+    <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> خطة جديدة</button>
   }
 </app-page-header>
 
@@ -21,7 +21,7 @@
   } @else if (total === 0) {
     <app-empty-state icon="menu_book" title="لا توجد خطط دروس بعد" description="أضف أول خطة درس لبدء متابعة الخطط الأسبوعية.">
       @if ('lesson_plans.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> خطة جديدة</button>
+        <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> خطة جديدة</button>
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {
@@ -51,7 +51,7 @@
             <div class="title-cell">
               <span class="title">{{ r.title }}</span>
               @if (r.attachmentName) {
-                <span class="sub"><mat-icon>attach_file</mat-icon>{{ r.attachmentName }}</span>
+                <span class="sub"><app-ui-icon name="attach_file"></app-ui-icon>{{ r.attachmentName }}</span>
               }
             </div>
           </td>
@@ -71,8 +71,8 @@
           <td mat-cell *matCellDef="let r" class="actions-cell">
             @if ('lesson_plans.manage' | hasPermission) {
               <div class="row-actions">
-                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r)"><mat-icon>edit</mat-icon></button>
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><mat-icon>delete</mat-icon></button>
+                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r)"><app-ui-icon name="edit"></app-ui-icon></button>
+                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon></button>
               </div>
             }
           </td>

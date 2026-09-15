@@ -1,31 +1,37 @@
 @use '@angular/material' as mat;
 
-// ───────────────────────── Design tokens ─────────────────────────
+// ───────────────────────── Design tokens (mock UI: indigo / glass) ─────────────────────────
 :root {
-  --sp-primary: #1a237e;
-  --sp-primary-mid: #3949ab;
-  --sp-primary-light: #e8eaf6;
-  --sp-primary-bg: #f0f2fa;
-  --sp-bg: #f5f7fa;
-  --sp-surface: #ffffff;
-  --sp-border: #e6e8f0;
-  --sp-text: #1f2937;
-  --sp-text-muted: #6b7280;
-  --sp-text-faint: #9ca3af;
-  --sp-success: #2e7d32;
-  --sp-success-bg: #e8f5e9;
-  --sp-warning: #e65100;
-  --sp-warning-bg: #fff3e0;
-  --sp-danger: #c62828;
-  --sp-danger-bg: #ffebee;
-  --sp-info: #1565c0;
-  --sp-info-bg: #e3f2fd;
-  --sp-radius: 12px;
-  --sp-radius-sm: 8px;
-  --sp-shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
-  --sp-shadow-md: 0 6px 18px rgba(26, 35, 126, 0.08);
-  --sp-sidebar-width: 272px;
-  --sp-sidebar-mini: 76px;
+  --sp-primary: #312e81;
+  --sp-primary-mid: #4f46e5;
+  --sp-primary-dark: #4338ca;
+  --sp-primary-light: #e0e7ff;
+  --sp-primary-bg: #eef2ff;
+  --sp-bg: #f8fafc;
+  --sp-surface: rgba(255, 255, 255, 0.88);
+  --sp-surface-solid: #ffffff;
+  --sp-border: rgba(226, 232, 240, 0.9);
+  --sp-text: #1e293b;
+  --sp-text-muted: #64748b;
+  --sp-text-faint: #94a3b8;
+  --sp-success: #059669;
+  --sp-success-bg: #ecfdf5;
+  --sp-warning: #d97706;
+  --sp-warning-bg: #fffbeb;
+  --sp-danger: #e11d48;
+  --sp-danger-bg: #fff1f2;
+  --sp-info: #4f46e5;
+  --sp-info-bg: #eef2ff;
+  --sp-radius: 16px;
+  --sp-radius-sm: 12px;
+  --sp-radius-lg: 24px;
+  --sp-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --sp-shadow-md: 0 10px 30px rgba(79, 70, 229, 0.12);
+  --sp-sidebar-width: 288px;
+  --sp-sidebar-mini: 80px;
+  --sp-font-ar: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  --sp-font-en: 'Poppins', 'Segoe UI', sans-serif;
+  --sp-font-family: var(--sp-font-ar);
 }
 
 html {
@@ -33,7 +39,7 @@ html {
     color: (
       theme-type: light,
       primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
+      tertiary: mat.$violet-palette,
     ),
     typography: Cairo,
     density: 0,
@@ -42,48 +48,86 @@ html {
 
 * { box-sizing: border-box; }
 
+html[dir='rtl'], html:not([dir]) { --sp-font-family: var(--sp-font-ar); }
+html[dir='ltr'] { --sp-font-family: var(--sp-font-en); }
+
 html, body {
   height: 100%;
   margin: 0;
-  direction: rtl;
-  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  font-family: var(--sp-font-family);
   background: var(--sp-bg);
   color: var(--sp-text);
   -webkit-font-smoothing: antialiased;
+  selection: auto;
+}
+
+::selection { background: #6366f1; color: #fff; }
+
+body,
+.mat-mdc-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-raised-button,
+.mat-mdc-icon-button,
+.mat-mdc-form-field,
+.mat-mdc-dialog-container,
+.mat-mdc-card,
+.mat-mdc-table,
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-mdc-option,
+.mat-mdc-list-item,
+.mat-mdc-tab,
+.mat-mdc-snack-bar-container,
+.mat-mdc-paginator,
+.mat-toolbar,
+.mat-mdc-tooltip {
+  font-family: var(--sp-font-family) !important;
 }
 
 a { color: var(--sp-primary-mid); }
 
-.mat-mdc-form-field { direction: rtl; }
-.mat-mdc-dialog-container { direction: rtl; }
-[dir='ltr'] .mat-mdc-form-field,
-[dir='ltr'] .mat-mdc-dialog-container { direction: ltr; }
+// Flaticon Uicons sizing helpers
+.fi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.app-ui-icon { color: inherit; }
 
-// ───────────────────────── Surfaces ─────────────────────────
-.mat-mdc-card {
-  border-radius: var(--sp-radius) !important;
+/* Custom scrollbar (mock) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+// ───────────────────────── Glass surfaces ─────────────────────────
+.glass-card,
+.mat-mdc-card,
+.table-container,
+.data-card {
+  background: var(--sp-surface) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--sp-radius-lg) !important;
   box-shadow: var(--sp-shadow) !important;
-  border: 1px solid var(--sp-border);
+  border: 1px solid var(--sp-border) !important;
 }
 
 .mat-mdc-dialog-surface {
-  border-radius: var(--sp-radius) !important;
+  border-radius: var(--sp-radius-lg) !important;
+  border: 1px solid var(--sp-border);
+  box-shadow: var(--sp-shadow-md) !important;
 }
 
 .mat-mdc-dialog-title {
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   color: var(--sp-primary) !important;
 }
 
 // ───────────────────────── Tables ─────────────────────────
 .table-container,
-.data-card {
-  background: var(--sp-surface);
-  border-radius: var(--sp-radius);
-  border: 1px solid var(--sp-border);
-  box-shadow: var(--sp-shadow);
-  overflow: hidden;
-}
+.data-card { overflow: hidden; }
 
 .table-scroll {
   overflow-x: auto;
@@ -97,7 +141,7 @@ table.mat-mdc-table {
   background: transparent;
 
   .mat-mdc-header-row {
-    background: #f8f9fc;
+    background: #f8fafc;
     height: 48px;
   }
 
@@ -127,16 +171,15 @@ table.mat-mdc-table {
   background: #fafbfe;
 }
 
-// Toolbar above a table: search on one side, filters/actions on the other
 .list-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1.1rem;
   border-bottom: 1px solid var(--sp-border);
-  background: var(--sp-surface);
+  background: transparent;
 
   .toolbar-count {
     color: var(--sp-text-muted);
@@ -145,7 +188,6 @@ table.mat-mdc-table {
   }
 }
 
-// Row actions: icon buttons, delete tinted red
 .row-actions {
   display: inline-flex;
   align-items: center;
@@ -158,8 +200,9 @@ table.mat-mdc-table {
     height: 36px;
     padding: 6px;
     color: var(--sp-text-muted);
+    border-radius: 12px;
 
-    .mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    .app-ui-icon { font-size: 1rem; }
     &:hover { color: var(--sp-primary-mid); background: var(--sp-primary-bg); }
     &.danger:hover { color: var(--sp-danger); background: var(--sp-danger-bg); }
     &.success:hover { color: var(--sp-success); background: var(--sp-success-bg); }
@@ -168,11 +211,11 @@ table.mat-mdc-table {
 
 code, .mono {
   font-family: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
-  background: #f3f4f8;
+  background: #f1f5f9;
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.82rem;
-  color: #374151;
+  color: #334155;
 }
 
 // ───────────────────────── Chips / status ─────────────────────────
@@ -193,10 +236,9 @@ code, .mono {
   &.success, &.active, &.approved, &.completed, &.present, &.excellent { background: var(--sp-success-bg); color: var(--sp-success); }
   &.warning, &.pending, &.in_review, &.in_progress, &.late, &.transferred, &.needs_follow_up, &.good { background: var(--sp-warning-bg); color: var(--sp-warning); }
   &.danger, &.inactive, &.rejected, &.absent, &.suspended, &.critical, &.overdue, &.cancelled { background: var(--sp-danger-bg); color: var(--sp-danger); }
-  &.neutral { background: #f3f4f6; color: #4b5563; }
+  &.neutral { background: #f1f5f9; color: #475569; }
 }
 
-// ───────────────────────── States ─────────────────────────
 .loading,
 .empty-state {
   display: flex;
@@ -212,8 +254,8 @@ code, .mono {
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: #eceef3;
-  border-radius: 6px;
+  background: #e2e8f0;
+  border-radius: 10px;
 
   &::after {
     content: '';
@@ -229,7 +271,6 @@ code, .mono {
   100% { transform: translateX(100%); }
 }
 
-// Info banner used on some pages
 .flow-hint,
 .info-banner {
   display: flex;
@@ -237,37 +278,50 @@ code, .mono {
   gap: 0.5rem;
   background: var(--sp-primary-light);
   color: var(--sp-primary-mid);
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1.1rem;
   border-radius: var(--sp-radius-sm);
   margin-bottom: 1.25rem;
   font-size: 0.9rem;
+  font-weight: 600;
 
-  mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+  .app-ui-icon { flex-shrink: 0; }
 }
 
-// ───────────────────────── Toasts ─────────────────────────
 .mat-mdc-snack-bar-container {
-  &.toast-success .mdc-snackbar__surface { background: #1b5e20; }
-  &.toast-error .mdc-snackbar__surface { background: #b71c1c; }
-  &.toast-info .mdc-snackbar__surface { background: var(--sp-primary); }
-  .mdc-snackbar__label { font-family: 'Cairo', sans-serif; font-weight: 500; }
+  &.toast-success .mdc-snackbar__surface { background: #047857; }
+  &.toast-error .mdc-snackbar__surface { background: #be123c; }
+  &.toast-info .mdc-snackbar__surface { background: var(--sp-primary-mid); }
+  .mdc-snackbar__label { font-family: var(--sp-font-family); font-weight: 600; }
   .mat-mdc-snack-bar-action { color: #fff; font-weight: 700; }
 }
 
-// ───────────────────────── Buttons ─────────────────────────
 .mat-mdc-unelevated-button,
 .mat-mdc-outlined-button,
-.mat-mdc-button {
-  border-radius: 10px !important;
-  font-weight: 600 !important;
+.mat-mdc-button,
+.mat-mdc-raised-button {
+  border-radius: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0;
 }
 
-.mat-mdc-unelevated-button .mat-icon,
-.mat-mdc-outlined-button .mat-icon {
-  margin-inline-end: 4px;
+.mat-mdc-unelevated-button {
+  background: var(--sp-primary-mid) !important;
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28) !important;
 }
 
-// ───────────────────────── Responsive helpers ─────────────────────────
+.mat-mdc-unelevated-button .app-ui-icon,
+.mat-mdc-outlined-button .app-ui-icon {
+  margin-inline-end: 6px;
+}
+
+.mat-mdc-form-field {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-radius: 12px;
+  }
+}
+
 .hide-mobile { @media (max-width: 767px) { display: none !important; } }
 .hide-desktop { @media (min-width: 768px) { display: none !important; } }
 
@@ -282,10 +336,8 @@ code, .mono {
   .cdk-overlay-pane.mat-mdc-dialog-panel { max-width: calc(100vw - 16px) !important; }
 }
 
-// Focus ring for keyboard users
 :focus-visible { outline: 2px solid var(--sp-primary-mid); outline-offset: 2px; }
 
-// Teacher attendance status menu (rendered in the overlay, so styled globally)
 .status-menu .mat-mdc-menu-item { min-height: 44px; }
 .status-menu .menu-text { display: flex; flex-direction: column; line-height: 1.2; strong { font-size: 0.9rem; } small { font-size: 0.72rem; color: var(--sp-text-muted); } }
 .status-menu .menu-icon.success { color: var(--sp-success); }
@@ -293,3 +345,10 @@ code, .mono {
 .status-menu .menu-icon.warning { color: var(--sp-warning); }
 .status-menu .menu-icon.info { color: var(--sp-info); }
 .status-menu .mat-mdc-menu-item.selected { background: var(--sp-primary-bg); }
+
+// Menu items that previously relied on app-ui-icon spacing
+.mat-mdc-menu-item .app-ui-icon {
+  margin-inline-end: 12px;
+  color: var(--sp-primary-mid);
+  font-size: 1.1rem;
+}

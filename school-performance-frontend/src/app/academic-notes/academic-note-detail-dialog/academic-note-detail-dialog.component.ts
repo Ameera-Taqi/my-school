@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { AcademicNote } from '../../core/models';
 import {
@@ -10,6 +9,7 @@ import {
   PRIORITY_LABELS
 } from '../../shared/constants/labels';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface AcademicNoteDetailDialogData {
   note: AcademicNote;
@@ -19,10 +19,10 @@ export interface AcademicNoteDetailDialogData {
 @Component({
   selector: 'app-academic-note-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatDividerModule, AppDatePipe],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatDividerModule, AppDatePipe],
   template: `
     <div class="dialog-header">
-      <span class="header-icon"><mat-icon>note_alt</mat-icon></span>
+      <span class="header-icon"><app-ui-icon name="note_alt"></app-ui-icon></span>
       <div>
         <h2 mat-dialog-title>ملاحظة أكاديمية — {{ data.note.studentName }}</h2>
         <p class="subtitle">{{ data.note.className }} — {{ data.note.stageName }}</p>
@@ -35,35 +35,35 @@ export interface AcademicNoteDetailDialogData {
     <mat-dialog-content class="detail-content">
       <div class="info-grid">
         <div class="info-item">
-          <mat-icon>menu_book</mat-icon>
+          <app-ui-icon name="menu_book"></app-ui-icon>
           <div>
             <span class="label">المادة</span>
             <span class="value">{{ data.note.subject }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>person</mat-icon>
+          <app-ui-icon name="person"></app-ui-icon>
           <div>
             <span class="label">المعلم</span>
             <span class="value">{{ data.note.teacherName }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>category</mat-icon>
+          <app-ui-icon name="category"></app-ui-icon>
           <div>
             <span class="label">التصنيف</span>
             <span class="value">{{ categoryLabels[data.note.category] }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>flag</mat-icon>
+          <app-ui-icon name="flag"></app-ui-icon>
           <div>
             <span class="label">الأولوية</span>
             <span class="value"><span class="chip" [class]="'chip ' + priorityChip">{{ priorityLabels[data.note.priority] }}</span></span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>event</mat-icon>
+          <app-ui-icon name="event"></app-ui-icon>
           <div>
             <span class="label">التاريخ</span>
             <span class="value">{{ data.note.noteDate | appDate }}</span>
@@ -74,7 +74,7 @@ export interface AcademicNoteDetailDialogData {
       <mat-divider></mat-divider>
 
       <section class="detail-section">
-        <h3><mat-icon>description</mat-icon> نص الملاحظة</h3>
+        <h3><app-ui-icon name="description"></app-ui-icon> نص الملاحظة</h3>
         <p class="section-body">{{ data.note.content }}</p>
       </section>
     </mat-dialog-content>
@@ -82,7 +82,7 @@ export interface AcademicNoteDetailDialogData {
     <mat-dialog-actions align="end">
       @if (data.canReview && data.note.status === 'OPEN') {
         <button mat-stroked-button color="primary" (click)="markReviewed()">
-          <mat-icon>task_alt</mat-icon>
+          <app-ui-icon name="task_alt"></app-ui-icon>
           تمت المراجعة
         </button>
       }
@@ -102,7 +102,7 @@ export interface AcademicNoteDetailDialogData {
       width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: var(--sp-primary-light); color: var(--sp-primary);
-      mat-icon { font-size: 26px; width: 26px; height: 26px; }
+      app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
     }
 
     h2[mat-dialog-title] {
@@ -136,7 +136,7 @@ export interface AcademicNoteDetailDialogData {
       border-radius: var(--sp-radius-sm);
     }
 
-    .info-item mat-icon { color: var(--sp-primary-mid); margin-top: 2px; }
+    .info-item app-ui-icon { color: var(--sp-primary-mid); margin-top: 2px; }
     .label { display: block; font-size: 0.75rem; color: var(--sp-text-muted); }
     .value { display: block; color: var(--sp-text); }
 

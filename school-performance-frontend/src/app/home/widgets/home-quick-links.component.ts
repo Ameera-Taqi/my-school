@@ -1,21 +1,21 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { PermissionService } from '../../core/services/permission.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 /** Every page the user may open, grouped like the sidebar. Built from the permission-filtered sidebar config. */
 @Component({
   selector: 'app-home-quick-links',
   standalone: true,
-  imports: [RouterLink, MatIconModule, TranslatePipe],
+  imports: [UiIconComponent, RouterLink, TranslatePipe],
   template: `
     @for (section of sections(); track section.titleKey) {
       <section class="links-section">
         <h3>{{ section.titleKey | translate }}</h3>
         <div class="links-grid">
           @for (item of section.items; track item.route) {
-            <a [routerLink]="item.route" class="link-card"><mat-icon>{{ item.icon }}</mat-icon><span>{{ item.labelKey | translate }}</span></a>
+            <a [routerLink]="item.route" class="link-card"><app-ui-icon [name]="item.icon"></app-ui-icon><span>{{ item.labelKey | translate }}</span></a>
           }
         </div>
       </section>
@@ -29,7 +29,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       display: flex; align-items: center; gap: 0.6rem; padding: 0.75rem 0.9rem;
       background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: 12px; box-shadow: var(--sp-shadow);
       color: var(--sp-text); text-decoration: none; font-weight: 600; font-size: 0.88rem; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-      mat-icon { color: var(--sp-primary-mid); flex-shrink: 0; }
+      app-ui-icon { color: var(--sp-primary-mid); flex-shrink: 0; }
       &:hover { transform: translateY(-2px); box-shadow: var(--sp-shadow-md); border-color: #c5cae9; }
     }
   `]

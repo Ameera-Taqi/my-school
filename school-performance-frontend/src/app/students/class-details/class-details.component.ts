@@ -4,7 +4,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -23,15 +22,12 @@ import { AcademicLookupService } from '../../core/services/academic-lookup.servi
 import { StudentFormDialogComponent } from '../student-form-dialog/student-form-dialog.component';
 import { GENDER_LABELS, STUDENT_STATUS_LABELS } from '../constants/student.constants';
 import { SchoolClass, Student } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-class-details',
   standalone: true,
-  imports: [
-    RouterModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, SearchFieldComponent,
-    EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe
-  ],
+  imports: [UiIconComponent, RouterModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './class-details.component.html',
   styleUrl: './class-details.component.scss'
 })
@@ -103,7 +99,7 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(StudentFormDialogComponent, {
       width: '560px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { student, stageName: this.schoolClass?.academicStageName ?? '', className: this.schoolClass?.name ?? '' }
     });
 

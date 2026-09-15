@@ -2,7 +2,7 @@
   [title]="'بنك الملفات التعليمية'"
   [subtitle]="departmentScope.isScoped() ? 'ملفات ' + departmentScope.departmentName() : 'رفع ومشاركة المواد التعليمية'">
   @if ('resource_bank.manage' | hasPermission) {
-    <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>upload</mat-icon> رفع ملف</button>
+    <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="upload"></app-ui-icon> رفع ملف</button>
   }
 </app-page-header>
 
@@ -21,7 +21,7 @@
   } @else if (total === 0) {
     <app-empty-state icon="folder_open" title="لا توجد ملفات بعد" description="ارفع أول ملف تعليمي لمشاركته مع المعلمين.">
       @if ('resource_bank.manage' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>upload</mat-icon> رفع ملف</button>
+        <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="upload"></app-ui-icon> رفع ملف</button>
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {
@@ -43,7 +43,7 @@
         <ng-container matColumnDef="fileType">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>النوع</th>
           <td mat-cell *matCellDef="let r">
-            <span class="chip neutral"><mat-icon class="chip-icon">{{ fileIcon(r.fileType) }}</mat-icon>{{ r.fileType }}</span>
+            <span class="chip neutral"><app-ui-icon [name]="fileIcon(r.fileType)" class="chip-icon"></app-ui-icon>{{ r.fileType }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="subject">
@@ -71,7 +71,7 @@
           <td mat-cell *matCellDef="let r" class="actions-cell">
             @if ('resource_bank.manage' | hasPermission) {
               <div class="row-actions">
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><mat-icon>delete</mat-icon></button>
+                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon></button>
               </div>
             }
           </td>

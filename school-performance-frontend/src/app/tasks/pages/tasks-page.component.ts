@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -19,14 +18,12 @@ import { TaskApiService } from '../services/task-api.service';
 import { TaskFormDialogComponent } from '../task-form-dialog/task-form-dialog.component';
 import { PRIORITY_LABELS, TASK_STATUS_LABELS } from '../../shared/constants/labels';
 import { SchoolTask } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-tasks-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule,
-    PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './tasks-page.component.html',
   styleUrl: './tasks-page.component.scss'
 })
@@ -78,7 +75,7 @@ export class TasksPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(t?: SchoolTask): void {
-    const ref = this.dialog.open(TaskFormDialogComponent, { width: '560px', maxWidth: '95vw', direction: 'rtl', data: t ?? null });
+    const ref = this.dialog.open(TaskFormDialogComponent, { width: '560px', maxWidth: '95vw', data: t ?? null });
     ref.afterClosed().subscribe((result: SchoolTask | undefined) => {
       if (!result) return;
       const req$ = t?.id ? this.service.update(t.id, result) : this.service.create(result);

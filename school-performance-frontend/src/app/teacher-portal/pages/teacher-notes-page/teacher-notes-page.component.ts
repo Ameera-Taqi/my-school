@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -16,15 +15,12 @@ import { ConfirmService } from '../../../shared/services/confirm.service';
 import { TeacherPortalMockService } from '../../services/teacher-portal-mock.service';
 import { TeacherNoteFormDialogComponent } from '../../dialogs/teacher-note-form-dialog.component';
 import { TeacherNote } from '../../../core/models';
+import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-teacher-notes-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent,
-    AppDatePipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './teacher-notes-page.component.html',
   styleUrl: './teacher-notes-page.component.scss'
 })
@@ -79,7 +75,7 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(item?: TeacherNote): void {
-    const ref = this.dialog.open(TeacherNoteFormDialogComponent, { width: '560px', maxWidth: '95vw', direction: 'rtl', data: item ?? null });
+    const ref = this.dialog.open(TeacherNoteFormDialogComponent, { width: '560px', maxWidth: '95vw', data: item ?? null });
     ref.afterClosed().subscribe((result: TeacherNote | undefined) => {
       if (!result) return;
       this.service.saveNote(result).subscribe({

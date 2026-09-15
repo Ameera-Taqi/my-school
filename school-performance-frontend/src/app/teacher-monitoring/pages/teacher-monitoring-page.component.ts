@@ -4,7 +4,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,15 +21,12 @@ import { TeacherMonitoringRecord } from '../../core/models';
 import { TeacherMonitoringApiService } from '../services/teacher-monitoring-api.service';
 import { TeacherMonitoringDetailDialogComponent } from '../teacher-monitoring-detail-dialog/teacher-monitoring-detail-dialog.component';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-teacher-monitoring-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule,
-    MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './teacher-monitoring-page.component.html',
   styleUrl: './teacher-monitoring-page.component.scss'
 })
@@ -110,7 +106,7 @@ export class TeacherMonitoringPageComponent implements OnInit, AfterViewInit {
     this.dialog.open(TeacherMonitoringDetailDialogComponent, {
       width: '580px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { record }
     });
   }

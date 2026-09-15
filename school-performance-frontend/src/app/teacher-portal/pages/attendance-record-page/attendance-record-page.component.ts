@@ -4,7 +4,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
@@ -19,17 +18,14 @@ import { AttendanceRecord, SchoolClass } from '../../../core/models';
 import { switchMap, of } from 'rxjs';
 import { ATTENDANCE_STATUS_LABELS } from '../../../shared/constants/labels';
 import { ClassAttendanceRow } from '../../../core/models';
+import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 
 type AttendanceRecordStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 
 @Component({
   selector: 'app-attendance-record-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatButtonToggleModule,
-    MatIconModule, MatTableModule, MatDatepickerModule, MatInputModule,
-    PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatButtonToggleModule, MatTableModule, MatDatepickerModule, MatInputModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
   templateUrl: './attendance-record-page.component.html',
   styleUrl: './attendance-record-page.component.scss'
 })

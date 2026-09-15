@@ -4,8 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { GradeSheetColumn } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface GradeColumnDialogData {
   column?: GradeSheetColumn;
@@ -14,7 +14,7 @@ export interface GradeColumnDialogData {
 @Component({
   selector: 'app-grade-column-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data.column ? 'تعديل العمود' : 'إضافة عمود درجات' }}</h2>
     <mat-dialog-content>
@@ -35,7 +35,7 @@ export interface GradeColumnDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()"><mat-icon>check</mat-icon> حفظ</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="check"></app-ui-icon> حفظ</button>
     </mat-dialog-actions>
   `,
   styles: [`

@@ -1,12 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { Meeting } from '../../core/models';
 import { RoleApiService } from '../../roles/services/role-api.service';
 import { Role } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface MeetingDetailDialogData {
   meeting: Meeting;
@@ -16,10 +16,10 @@ export interface MeetingDetailDialogData {
 @Component({
   selector: 'app-meeting-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatDividerModule, AppDatePipe],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatDividerModule, AppDatePipe],
   template: `
     <div class="dialog-header">
-      <div class="header-icon"><mat-icon>groups</mat-icon></div>
+      <div class="header-icon"><app-ui-icon name="groups"></app-ui-icon></div>
       <div class="header-text">
         <h2 mat-dialog-title>{{ data.meeting.title }}</h2>
         <p class="subtitle">
@@ -32,21 +32,21 @@ export interface MeetingDetailDialogData {
     <mat-dialog-content class="detail-content">
       <div class="info-grid">
         <div class="info-item">
-          <mat-icon>event</mat-icon>
+          <app-ui-icon name="event"></app-ui-icon>
           <div>
             <span class="label">التاريخ والوقت</span>
             <span class="value">{{ data.meeting.meetingDate | appDate:'withTime' }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>badge</mat-icon>
+          <app-ui-icon name="badge"></app-ui-icon>
           <div>
             <span class="label">الأدوار المستهدفة</span>
             <span class="value">{{ formatRoleLabels(data.meeting.targetRoleKeys) }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>people</mat-icon>
+          <app-ui-icon name="people"></app-ui-icon>
           <div>
             <span class="label">الحضور</span>
             <span class="value">{{ data.meeting.attendees || '—' }}</span>
@@ -57,17 +57,17 @@ export interface MeetingDetailDialogData {
       <mat-divider></mat-divider>
 
       <section class="detail-section">
-        <h3><mat-icon>list_alt</mat-icon> جدول الأعمال</h3>
+        <h3><app-ui-icon name="list_alt"></app-ui-icon> جدول الأعمال</h3>
         <p class="section-body">{{ data.meeting.agenda || '—' }}</p>
       </section>
 
       <section class="detail-section highlight">
-        <h3><mat-icon>description</mat-icon> محضر الاجتماع</h3>
+        <h3><app-ui-icon name="description"></app-ui-icon> محضر الاجتماع</h3>
         <p class="section-body">{{ data.meeting.minutes || 'لم يُسجَّل محضر بعد.' }}</p>
       </section>
 
       <section class="detail-section">
-        <h3><mat-icon>task_alt</mat-icon> المهام الناتجة</h3>
+        <h3><app-ui-icon name="task_alt"></app-ui-icon> المهام الناتجة</h3>
         <p class="section-body">{{ data.meeting.followUpTasks || 'لا توجد مهام ناتجة.' }}</p>
       </section>
     </mat-dialog-content>
@@ -75,7 +75,7 @@ export interface MeetingDetailDialogData {
     <mat-dialog-actions align="end">
       @if (data.canEdit) {
         <button mat-stroked-button color="primary" type="button" (click)="edit()">
-          <mat-icon>edit</mat-icon>
+          <app-ui-icon name="edit"></app-ui-icon>
           تعديل
         </button>
       }
@@ -88,13 +88,12 @@ export interface MeetingDetailDialogData {
       align-items: center;
       gap: 0.9rem;
       padding: 1.25rem 1.5rem 0;
-      direction: rtl;
-    }
+          }
     .header-icon {
       width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: var(--sp-primary-light); color: var(--sp-primary);
-      mat-icon { font-size: 28px; width: 28px; height: 28px; }
+      app-ui-icon { font-size: 28px; width: 28px; height: 28px; }
     }
     .header-text { min-width: 0; }
     h2[mat-dialog-title] {
@@ -111,8 +110,7 @@ export interface MeetingDetailDialogData {
       font-size: 0.85rem;
     }
     .detail-content {
-      direction: rtl;
-      min-width: 0;
+            min-width: 0;
       max-width: 560px;
       padding-top: 0.5rem;
     }
@@ -126,7 +124,7 @@ export interface MeetingDetailDialogData {
       border: 1px solid var(--sp-border);
       border-radius: var(--sp-radius-sm);
     }
-    .info-item mat-icon { color: var(--sp-primary-mid); margin-top: 2px; }
+    .info-item app-ui-icon { color: var(--sp-primary-mid); margin-top: 2px; }
     .label { display: block; font-size: 0.75rem; color: var(--sp-text-muted); margin-bottom: 0.15rem; }
     .value { display: block; color: var(--sp-text); line-height: 1.5; }
     .detail-section { margin: 1rem 0; }
@@ -138,7 +136,7 @@ export interface MeetingDetailDialogData {
       font-size: 0.95rem;
       color: var(--sp-primary);
     }
-    .detail-section h3 mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    .detail-section h3 app-ui-icon { font-size: 20px; width: 20px; height: 20px; }
     .section-body {
       margin: 0;
       padding: 0.75rem 1rem;

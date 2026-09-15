@@ -18,7 +18,7 @@ import { LayoutService } from '../../shared/services/layout.service';
         class="layout-sidenav"
         [mode]="layout.sidebarMode()"
         [opened]="layout.sidebarOpened()"
-        [fixedInViewport]="layout.isMobile()"
+        [fixedInViewport]="true"
         (closedStart)="layout.closeDrawer()"
         position="start"
         [disableClose]="!layout.isMobile()">
@@ -34,7 +34,10 @@ import { LayoutService } from '../../shared/services/layout.service';
     </mat-sidenav-container>
   `,
   styles: [`
-    .layout { min-height: 100vh; background: var(--sp-bg); }
+    .layout {
+      height: 100vh;
+      background: var(--sp-bg);
+    }
     .layout-sidenav {
       width: var(--sp-sidebar-width);
       border: none;
@@ -45,11 +48,14 @@ import { LayoutService } from '../../shared/services/layout.service';
     .main-area {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       background: var(--sp-bg);
     }
     .content {
       flex: 1;
+      min-height: 0;
+      overflow: auto;
       padding: 1.5rem;
       max-width: 1600px;
       width: 100%;

@@ -5,16 +5,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { Permission } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-permission-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule,
-    MatSlideToggleModule, MatButtonModule, MatIconModule, MatDialogModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل صلاحية' : 'إضافة صلاحية' }}</h2>
     <mat-dialog-content>
@@ -22,7 +19,7 @@ import { Permission } from '../../core/models';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>مفتاح الصلاحية (permissionKey)</mat-label>
           <input matInput formControlName="permissionKey" placeholder="students.view" [readonly]="!!data" cdkFocusInitial autocomplete="off" dir="ltr">
-          <mat-icon matSuffix>key</mat-icon>
+          <app-ui-icon name="key" matSuffix></app-ui-icon>
           <mat-error>مفتاح الصلاحية مطلوب</mat-error>
         </mat-form-field>
         <div class="two-col">
@@ -47,7 +44,7 @@ import { Permission } from '../../core/models';
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الصلاحية' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الصلاحية' }}
       </button>
     </mat-dialog-actions>
   `,

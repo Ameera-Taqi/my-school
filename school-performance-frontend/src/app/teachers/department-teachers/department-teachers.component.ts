@@ -4,7 +4,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -22,15 +21,12 @@ import { TeacherApiService } from '../services/teacher-api.service';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { TeacherFormDialogComponent } from '../teacher-form-dialog/teacher-form-dialog.component';
 import { Department, Teacher } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-department-teachers',
   standalone: true,
-  imports: [
-    RouterModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, SearchFieldComponent,
-    EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe
-  ],
+  imports: [UiIconComponent, RouterModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
   templateUrl: './department-teachers.component.html',
   styleUrl: './department-teachers.component.scss'
 })
@@ -111,7 +107,7 @@ export class DepartmentTeachersComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(TeacherFormDialogComponent, {
       width: '640px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { teacher, departmentName: this.department?.name ?? '' }
     });
 
@@ -129,7 +125,7 @@ export class DepartmentTeachersComponent implements OnInit, AfterViewInit {
           this.load();
           if (isNew && saved.username) {
             this.dialog.open(CredentialsDialogComponent, {
-              width: '460px', maxWidth: '95vw', direction: 'rtl', disableClose: true,
+              width: '460px', maxWidth: '95vw', disableClose: true,
               data: { personName: saved.fullName, username: saved.username, password: `${saved.username}123` }
             });
           }

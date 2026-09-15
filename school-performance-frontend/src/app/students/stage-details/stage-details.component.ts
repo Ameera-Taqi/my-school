@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -16,14 +15,12 @@ import { SchoolClassApiService } from '../../school-classes/services/school-clas
 import { ClassFormDialogComponent } from '../../school-classes/class-form-dialog/class-form-dialog.component';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { AcademicStage, SchoolClass } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-stage-details',
   standalone: true,
-  imports: [
-    RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule,
-    PageHeaderComponent, BreadcrumbComponent, EmptyStateComponent, HasPermissionPipe
-  ],
+  imports: [UiIconComponent, RouterModule, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, BreadcrumbComponent, EmptyStateComponent, HasPermissionPipe],
   templateUrl: './stage-details.component.html',
   styleUrl: './stage-details.component.scss'
 })
@@ -72,7 +69,7 @@ export class StageDetailsComponent implements OnInit {
     const dialogRef = this.dialog.open(ClassFormDialogComponent, {
       width: '480px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { schoolClass, stageName: this.stage?.name ?? '' }
     });
 

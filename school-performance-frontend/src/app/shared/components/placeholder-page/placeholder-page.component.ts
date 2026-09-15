@@ -2,17 +2,17 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { PageHeaderComponent } from '../page-header/page-header.component';
+import { UiIconComponent } from '../../icons/ui-icon.component';
 
 @Component({
   selector: 'app-placeholder-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, PageHeaderComponent],
+  imports: [UiIconComponent, CommonModule, MatCardModule, PageHeaderComponent],
   template: `
     <app-page-header [title]="title" [subtitle]="subtitle"></app-page-header>
     <mat-card class="placeholder-card">
-      <mat-icon>construction</mat-icon>
+      <app-ui-icon name="construction"></app-ui-icon>
       <h3>قيد التطوير</h3>
       <p>هذه الصفحة جاهزة للتوسع. يمكنك إضافة المحتوى والوظائف لاحقاً.</p>
     </mat-card>
@@ -23,7 +23,7 @@ import { PageHeaderComponent } from '../page-header/page-header.component';
       padding: 3rem;
       color: #666;
     }
-    mat-icon {
+    app-ui-icon {
       font-size: 64px;
       width: 64px;
       height: 64px;

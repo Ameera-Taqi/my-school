@@ -38,8 +38,8 @@
         <div class="summary-tools">
           <app-search-field placeholder="ابحث عن صلاحية..." (search)="onSearch($event)" class="perm-search"></app-search-field>
           <div class="bulk">
-            <button mat-stroked-button type="button" (click)="selectAll()" [disabled]="loading"><mat-icon>done_all</mat-icon> تحديد الكل</button>
-            <button mat-stroked-button type="button" (click)="clearAll()" [disabled]="loading"><mat-icon>remove_done</mat-icon> إلغاء الكل</button>
+            <button mat-stroked-button type="button" (click)="selectAll()" [disabled]="loading"><app-ui-icon name="done_all"></app-ui-icon> تحديد الكل</button>
+            <button mat-stroked-button type="button" (click)="clearAll()" [disabled]="loading"><app-ui-icon name="remove_done"></app-ui-icon> إلغاء الكل</button>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@
                 (change)="toggleModule(permissionsByModule[module], $event.checked)"
                 matTooltip="تحديد / إلغاء كل صلاحيات هذه الوحدة">
               </mat-checkbox>
-              <mat-icon class="module-icon">{{ moduleIcon(module) }}</mat-icon>
+              <app-ui-icon [name]="moduleIcon(module)" class="module-icon"></app-ui-icon>
               <span class="module-name">{{ module }}</span>
               <span class="module-count">{{ moduleGranted(module) }}/{{ permissionsByModule[module].length }}</span>
             </div>
@@ -92,12 +92,12 @@
 @if (isDirty && !loading) {
   <div class="save-bar">
     <div class="save-bar-inner">
-      <mat-icon class="save-icon">edit_note</mat-icon>
+      <app-ui-icon name="edit_note" class="save-icon"></app-ui-icon>
       <span class="save-text">{{ changesCount }} تغيير غير محفوظ في «{{ selectedRole?.roleName }}»</span>
       <span class="spacer"></span>
       <button mat-button type="button" (click)="discard()" [disabled]="saving">تراجع</button>
       <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving">
-        @if (saving) { <mat-spinner diameter="18"></mat-spinner> } @else { <ng-container><mat-icon>save</mat-icon> حفظ الصلاحيات</ng-container> }
+        @if (saving) { <mat-spinner diameter="18"></mat-spinner> } @else { <ng-container><app-ui-icon name="save"></app-ui-icon> حفظ الصلاحيات</ng-container> }
       </button>
     </div>
   </div>

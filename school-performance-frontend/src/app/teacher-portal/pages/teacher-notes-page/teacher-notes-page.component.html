@@ -1,5 +1,5 @@
 <app-page-header title="الملاحظات السلوكية والأكاديمية" subtitle="تسجيل ملاحظات الطلاب">
-  <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> ملاحظة جديدة</button>
+  <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> ملاحظة جديدة</button>
 </app-page-header>
 
 <div class="data-card">
@@ -16,7 +16,7 @@
     <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
   } @else if (total === 0) {
     <app-empty-state icon="sticky_note_2" title="لا توجد ملاحظات بعد" description="سجّل أول ملاحظة سلوكية أو أكاديمية على طلابك.">
-      <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> ملاحظة جديدة</button>
+      <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> ملاحظة جديدة</button>
     </app-empty-state>
   } @else if (filteredCount === 0) {
     <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد ملاحظة تطابق «' + query + '».'" [compact]="true"></app-empty-state>
@@ -54,8 +54,8 @@
           <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
           <td mat-cell *matCellDef="let r" class="actions-cell">
             <div class="row-actions">
-              <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r)"><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><mat-icon>delete</mat-icon></button>
+              <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r)"><app-ui-icon name="edit"></app-ui-icon></button>
+              <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r)"><app-ui-icon name="delete"></app-ui-icon></button>
             </div>
           </td>
         </ng-container>

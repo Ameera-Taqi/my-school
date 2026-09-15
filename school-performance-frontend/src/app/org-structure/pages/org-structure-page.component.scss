@@ -19,7 +19,7 @@
 .legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
 .legend-dot { width: 12px; height: 12px; border-radius: 4px; }
 .legend-spacer { flex: 1; }
-.legend-count { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; color: var(--sp-text); mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--sp-primary-mid); } }
+.legend-count { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; color: var(--sp-text); app-ui-icon { font-size: 18px; width: 18px; height: 18px; color: var(--sp-primary-mid); } }
 
 // ── Skeleton ──
 .org-skeleton { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 1rem 0; }
@@ -75,7 +75,7 @@
 
 .node.placeholder {
   cursor: default; border-style: dashed; color: var(--sp-text-muted); border-inline-start-width: 1px; box-shadow: none;
-  mat-icon { color: var(--sp-text-faint); }
+  app-ui-icon { color: var(--sp-text-faint); }
   &:hover { transform: none; box-shadow: none; }
   &.small { min-width: 0; padding: 0.45rem 0.7rem; font-size: 0.85rem; }
 }

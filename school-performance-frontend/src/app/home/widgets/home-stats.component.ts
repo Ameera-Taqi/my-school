@@ -1,10 +1,9 @@
 import { Component, Input, OnChanges, inject } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { HomeStats } from '../services/home-stats.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 interface StatCard { icon: string; label: string; value: string; suffix?: string; color: string; bg: string; route: string; permission: string; live: boolean; }
 
@@ -12,7 +11,7 @@ interface StatCard { icon: string; label: string; value: string; suffix?: string
 @Component({
   selector: 'app-home-stats',
   standalone: true,
-  imports: [NgTemplateOutlet, RouterLink, MatIconModule, MatTooltipModule],
+  imports: [UiIconComponent, RouterLink, MatTooltipModule],
   template: `
     @if (loading) {
       <div class="stats-grid">
@@ -24,12 +23,14 @@ interface StatCard { icon: string; label: string; value: string; suffix?: string
       <div class="stats-grid">
         @for (stat of cards; track stat.label) {
           <a class="stat-card link" [routerLink]="stat.route" [matTooltip]="'فتح ' + stat.label">
-            <span class="stat-icon" [style.background]="stat.bg" [style.color]="stat.color"><mat-icon>{{ stat.icon }}</mat-icon></span>
+            <div class="stat-top">
+              <span class="stat-label">{{ stat.label }} @if (!stat.live) { <span class="demo-tag" matTooltip="بيانات تجريبية حتى ربط هذه الوحدة بقاعدة البيانات">تجريبي</span> }</span>
+              <span class="stat-icon" [style.background]="stat.bg" [style.color]="stat.color"><app-ui-icon [name]="stat.icon"></app-ui-icon></span>
+            </div>
             <div class="stat-info">
               <span class="stat-value">{{ stat.value }}<small>{{ stat.suffix }}</small></span>
-              <span class="stat-label">{{ stat.label }} @if (!stat.live) { <span class="demo-tag" matTooltip="بيانات تجريبية حتى ربط هذه الوحدة بقاعدة البيانات">تجريبي</span> }</span>
             </div>
-            <mat-icon class="stat-arrow">arrow_back</mat-icon>
+            <app-ui-icon name="arrow_back" class="stat-arrow"></app-ui-icon>
           </a>
         }
       </div>
@@ -37,21 +38,28 @@ interface StatCard { icon: string; label: string; value: string; suffix?: string
   `,
   styles: [`
     :host { display: block; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
     .stat-card {
-      position: relative; display: flex; align-items: center; gap: 0.9rem; padding: 1rem 1.1rem;
-      background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: var(--sp-radius); box-shadow: var(--sp-shadow);
+      position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 0.85rem;
+      padding: 1rem 1.05rem; min-height: 118px;
+      background: var(--sp-surface); backdrop-filter: blur(12px);
+      border: 1px solid var(--sp-border); border-radius: 1rem; box-shadow: var(--sp-shadow);
       color: inherit; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
       &.link { cursor: pointer; }
-      &.link:hover { transform: translateY(-2px); box-shadow: var(--sp-shadow-md); border-color: #c5cae9; .stat-arrow { opacity: 1; transform: translateX(0); } }
+      &.link:hover { transform: translateY(-3px); box-shadow: var(--sp-shadow-md); border-color: #c7d2fe; .stat-arrow { opacity: 1; transform: translateX(0); } }
     }
-    .stat-icon { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; mat-icon { font-size: 26px; width: 26px; height: 26px; } }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .stat-icon {
+      width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      .app-ui-icon { font-size: 1.1rem; }
+    }
     .stat-info { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
-    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--sp-primary); small { font-size: 0.9rem; margin-inline-start: 1px; } }
-    .stat-label { color: var(--sp-text-muted); font-size: 0.82rem; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+    .stat-value { font-size: 1.55rem; font-weight: 900; letter-spacing: -0.02em; color: var(--sp-text); small { font-size: 0.9rem; margin-inline-start: 1px; } }
+    .stat-label { color: var(--sp-text-muted); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
     .demo-tag { font-size: 0.65rem; background: #fff8e1; color: #b26a00; border-radius: 999px; padding: 0 6px; font-weight: 600; }
-    .stat-arrow { position: absolute; inset-inline-end: 10px; top: 50%; margin-top: -10px; font-size: 20px; width: 20px; height: 20px; color: var(--sp-text-faint); opacity: 0; transform: translateX(-4px); transition: all 0.15s; }
-    .skeleton-card { .icon { width: 48px; height: 48px; border-radius: 12px; } > div { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; } .line { height: 12px; display: block; } .w40 { width: 40%; height: 18px; } .w70 { width: 70%; } }
+    .stat-arrow { position: absolute; inset-inline-end: 10px; top: 50%; margin-top: -10px; font-size: 1rem; color: var(--sp-text-faint); opacity: 0; transform: translateX(-4px); transition: all 0.15s; }
+    .skeleton-card { .icon { width: 38px; height: 38px; border-radius: 12px; } > div { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; } .line { height: 12px; display: block; } .w40 { width: 40%; height: 18px; } .w70 { width: 70%; } }
   `]
 })
 export class HomeStatsComponent implements OnChanges {
@@ -64,12 +72,12 @@ export class HomeStatsComponent implements OnChanges {
     const d = this.stats;
     if (!d) { this.cards = []; return; }
     const all: StatCard[] = [
-      { icon: 'school', label: 'الطلاب', value: String(d.studentsCount), color: '#1976d2', bg: '#e3f2fd', route: '/students', permission: 'students.view', live: d.live.students },
-      { icon: 'person', label: 'المعلمون', value: String(d.teachersCount), color: '#388e3c', bg: '#e8f5e9', route: '/teachers', permission: 'teachers.view', live: d.live.teachers },
-      { icon: 'class', label: 'الفصول', value: String(d.classesCount), color: '#0288d1', bg: '#e1f5fe', route: '/students', permission: 'students.view', live: d.live.classes },
-      { icon: 'event_available', label: d.attendanceRate == null ? 'لم يُسجَّل حضور اليوم' : 'نسبة الحضور اليوم', value: d.attendanceRate == null ? '—' : String(d.attendanceRate), suffix: d.attendanceRate == null ? '' : '%', color: '#f57c00', bg: '#fff3e0', route: '/attendance/students', permission: 'attendance.view', live: d.live.attendance },
-      { icon: 'inbox', label: 'طلبات مفتوحة', value: String(d.openRequestsCount), color: '#7b1fa2', bg: '#f3e5f5', route: '/internal-requests', permission: 'internal_requests.view', live: d.live.requests },
-      { icon: 'notifications_active', label: 'تنبيهات جديدة', value: String(d.alertsCount), color: '#c62828', bg: '#ffebee', route: '/alerts', permission: 'alerts.view', live: d.live.alerts }
+      { icon: 'school', label: 'الطلاب', value: String(d.studentsCount), color: '#4f46e5', bg: '#eef2ff', route: '/students', permission: 'students.view', live: d.live.students },
+      { icon: 'how_to_reg', label: 'المعلمون', value: String(d.teachersCount), color: '#059669', bg: '#ecfdf5', route: '/teachers', permission: 'teachers.view', live: d.live.teachers },
+      { icon: 'menu_book', label: 'الفصول', value: String(d.classesCount), color: '#2563eb', bg: '#eff6ff', route: '/students', permission: 'students.view', live: d.live.classes },
+      { icon: 'event_available', label: d.attendanceRate == null ? 'لم يُسجَّل حضور اليوم' : 'نسبة الحضور اليوم', value: d.attendanceRate == null ? '—' : String(d.attendanceRate), suffix: d.attendanceRate == null ? '' : '%', color: '#d97706', bg: '#fffbeb', route: '/attendance/students', permission: 'attendance.view', live: d.live.attendance },
+      { icon: 'view_kanban', label: 'طلبات مفتوحة', value: String(d.openRequestsCount), color: '#7c3aed', bg: '#f5f3ff', route: '/internal-requests', permission: 'internal_requests.view', live: d.live.requests },
+      { icon: 'notifications', label: 'تنبيهات جديدة', value: String(d.alertsCount), color: '#e11d48', bg: '#fff1f2', route: '/alerts', permission: 'alerts.view', live: d.live.alerts }
     ];
     this.cards = all.filter(c => this.auth.hasPermission(c.permission));
   }

@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -19,15 +18,12 @@ import { ResourceFileFormDialogComponent } from '../resource-file-form-dialog/re
 import { ResourceFile } from '../../core/models';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-resource-bank-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent,
-    HasPermissionPipe, AppDatePipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './resource-bank-page.component.html',
   styleUrl: './resource-bank-page.component.scss'
 })
@@ -77,7 +73,7 @@ export class ResourceBankPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(): void {
-    const ref = this.dialog.open(ResourceFileFormDialogComponent, { width: '560px', maxWidth: '95vw', direction: 'rtl' });
+    const ref = this.dialog.open(ResourceFileFormDialogComponent, { width: '560px', maxWidth: '95vw'});
     ref.afterClosed().subscribe((result: ResourceFile | undefined) => {
       if (!result) return;
       this.service.create(result).subscribe({

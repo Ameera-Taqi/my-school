@@ -1,20 +1,20 @@
 import { Component, computed, inject, ViewEncapsulation } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageService } from '../../core/services/language.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LayoutService } from '../../shared/services/layout.service';
+import { ConfirmService } from '../../shared/services/confirm.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [MatIconModule, MatMenuModule, MatDividerModule, MatSlideToggleModule, MatButtonModule, MatTooltipModule, RouterLink, TranslatePipe],
+  imports: [UiIconComponent, MatMenuModule, MatDividerModule, MatButtonModule, MatTooltipModule, RouterLink, TranslatePipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   encapsulation: ViewEncapsulation.None
@@ -22,6 +22,7 @@ import { LayoutService } from '../../shared/services/layout.service';
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly confirm = inject(ConfirmService);
   readonly langService = inject(LanguageService);
   readonly layout = inject(LayoutService);
 
@@ -31,6 +32,8 @@ export class HeaderComponent {
   readonly roles = computed(() => this.user()?.roles ?? []);
   readonly departmentName = computed(() => this.user()?.departmentName ?? '');
   readonly canOpenSettings = computed(() => this.authService.hasPermission('settings.view'));
+  readonly canViewAlerts = computed(() => this.authService.hasPermission('alerts.view'));
+  readonly alertsBadge = computed(() => this.canViewAlerts());
   readonly menuPosition = computed(() => this.langService.direction() === 'rtl' ? 'before' : 'after');
 
   readonly initials = computed(() => {
@@ -66,6 +69,16 @@ export class HeaderComponent {
     return dept ? `${this.primaryRoleLabel()} · ${dept}` : this.primaryRoleLabel();
   });
 
+  readonly greetingLine = computed(() => {
+    const h = new Date().getHours();
+    const salute = this.langService.isEnglish()
+      ? (h < 12 ? 'Good morning' : 'Good evening')
+      : (h < 12 ? 'صباح الخير' : 'مساء الخير');
+    const name = this.fullName().trim().replace(/^أ\.\s*/, '').split(/\s+/)[0]
+      || this.primaryRoleLabel();
+    return `${salute}، ${name}`;
+  });
+
   onLanguageToggle(isEnglish: boolean): void {
     this.langService.setEnglish(isEnglish);
   }
@@ -75,6 +88,13 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    this.authService.logout();
+    this.confirm.confirmed({
+      title: this.langService.translate('menu.logoutConfirm.title'),
+      message: this.langService.translate('menu.logoutConfirm.message'),
+      confirmText: this.langService.translate('menu.logoutConfirm.confirm'),
+      cancelText: this.langService.translate('common.cancel'),
+      icon: 'logout',
+      danger: true
+    }).subscribe(() => this.authService.logout());
   }
 }

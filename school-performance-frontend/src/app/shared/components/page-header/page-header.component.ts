@@ -29,12 +29,12 @@ import { CommonModule } from '@angular/common';
     h1 {
       margin: 0;
       font-size: 1.5rem;
-      font-weight: 600;
-      color: #1a237e;
+      font-weight: 800;
+      color: var(--sp-primary);
     }
     .subtitle {
       margin: 0.25rem 0 0;
-      color: #666;
+      color: var(--sp-text-muted);
       font-size: 0.9rem;
     }
     .actions {

@@ -6,8 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatIconModule } from '@angular/material/icon';
 import { Student } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface StudentFormDialogData {
   student?: Student;
@@ -18,16 +18,12 @@ export interface StudentFormDialogData {
 @Component({
   selector: 'app-student-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatButtonModule, MatDialogModule,
-    MatDatepickerModule, MatIconModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data.student ? 'تعديل طالب' : 'إضافة طالب' }}</h2>
     <mat-dialog-content>
       <p class="context-hint">
-        <mat-icon>school</mat-icon>
+        <app-ui-icon name="school"></app-ui-icon>
         <span>{{ data.stageName }} — فصل <strong>{{ data.className }}</strong></span>
       </p>
       <form [formGroup]="form" class="dialog-form" (ngSubmit)="save()">
@@ -35,7 +31,7 @@ export interface StudentFormDialogData {
           <mat-form-field appearance="outline">
             <mat-label>الرقم المدني</mat-label>
             <input matInput formControlName="civilId" [readonly]="!!data.student" cdkFocusInitial autocomplete="off" dir="ltr">
-            <mat-icon matSuffix>badge</mat-icon>
+            <app-ui-icon name="badge" matSuffix></app-ui-icon>
             <mat-error>الرقم المدني مطلوب</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
@@ -49,7 +45,7 @@ export interface StudentFormDialogData {
             <mat-label>تاريخ الميلاد</mat-label>
             <input matInput [matDatepicker]="birthPicker" formControlName="birthDate" placeholder="اختر التاريخ">
             <mat-datepicker-toggle matIconSuffix [for]="birthPicker">
-              <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+              <app-ui-icon name="calendar_today" matDatepickerToggleIcon></app-ui-icon>
             </mat-datepicker-toggle>
             <mat-datepicker #birthPicker></mat-datepicker>
           </mat-form-field>
@@ -66,7 +62,7 @@ export interface StudentFormDialogData {
           <mat-form-field appearance="outline">
             <mat-label>رقم ولي الأمر</mat-label>
             <input matInput formControlName="guardianPhone" autocomplete="off" dir="ltr">
-            <mat-icon matSuffix>phone</mat-icon>
+            <app-ui-icon name="phone" matSuffix></app-ui-icon>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>الحالة</mat-label>
@@ -87,7 +83,7 @@ export interface StudentFormDialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data.student ? 'حفظ التعديلات' : 'إضافة الطالب' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data.student ? 'حفظ التعديلات' : 'إضافة الطالب' }}
       </button>
     </mat-dialog-actions>
   `,
@@ -100,7 +96,7 @@ export interface StudentFormDialogData {
       display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.5rem;
       padding: 0.6rem 0.85rem; border-radius: 8px;
       background: var(--sp-primary-light); color: var(--sp-primary-mid); font-size: 0.9rem;
-      mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+      app-ui-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
     }
     mat-dialog-content { max-height: 70vh; }
   `]

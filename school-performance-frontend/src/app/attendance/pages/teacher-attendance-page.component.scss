@@ -36,7 +36,7 @@
 
   ::ng-deep .mat-button-toggle-label-content { padding: 0 10px; line-height: 34px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px; }
   ::ng-deep .mat-button-toggle { color: var(--sp-text-muted); }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
 
   .toggle-success.mat-button-toggle-checked { background: var(--sp-success-bg); color: var(--sp-success); }
   .toggle-danger.mat-button-toggle-checked { background: var(--sp-danger-bg); color: var(--sp-danger); }
@@ -72,7 +72,7 @@
   overflow: visible;
 }
 
-.scope-chip { align-self: center; mat-icon { font-size: 16px; width: 16px; height: 16px; } }
+.scope-chip { align-self: center; app-ui-icon { font-size: 16px; width: 16px; height: 16px; } }
 .filter-field.wide { width: 220px; }
 .not-recorded { font-size: 0.72rem; color: var(--sp-text-faint); margin-inline-start: 0.4rem; }
 .muted { color: var(--sp-text-muted); font-size: 0.8rem; }
@@ -95,14 +95,14 @@
 // ── Punch-based recording ──
 .school-start {
   display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--sp-text-muted);
-  mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--sp-primary-mid); }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; color: var(--sp-primary-mid); }
 }
 .time-input.small { width: 96px; padding: 0.2rem 0.4rem; }
 .recording-hint { margin-bottom: 1rem; }
 .time-group { display: inline-flex; align-items: center; gap: 2px; }
 .now-btn {
   --mdc-icon-button-state-layer-size: 30px; width: 30px; height: 30px; padding: 3px; color: var(--sp-primary-mid);
-  .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  .app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
   &:hover { background: var(--sp-primary-bg); }
 }
 .status-btn {
@@ -110,7 +110,7 @@
   display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.25rem 0.5rem 0.25rem 0.35rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
   border: 1px solid transparent; transition: box-shadow 0.15s;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
   .caret { font-size: 16px; width: 16px; height: 16px; opacity: 0.7; }
   &:hover { box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.12); }
   &.success { background: var(--sp-success-bg); color: var(--sp-success); }

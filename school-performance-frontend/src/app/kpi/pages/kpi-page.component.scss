@@ -79,7 +79,7 @@
     font-size: 0.9rem;
     opacity: 0.92;
   }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
   .hint { opacity: 0.8; font-size: 0.8rem; margin-top: 0.5rem; }
 }
 .demo-chip { background: rgba(255, 255, 255, 0.18); color: #fff; font-size: 0.7rem; }
@@ -118,7 +118,7 @@
   width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: var(--sp-primary-bg);
-  mat-icon { font-size: 26px; width: 26px; height: 26px; }
+  app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
 }
 .category-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
 .category-text h3 { margin: 0; font-size: 0.95rem; color: var(--sp-primary); }
@@ -139,7 +139,7 @@
   margin: 0 0 1rem;
   color: var(--sp-primary);
   font-size: 1rem;
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  app-ui-icon { font-size: 20px; width: 20px; height: 20px; }
   .toolbar-count { margin-inline-start: auto; font-weight: 500; }
 }
 
@@ -180,7 +180,7 @@
   white-space: nowrap;
   padding: 2px 8px;
   border-radius: 999px;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
   &.up { color: var(--sp-success); background: var(--sp-success-bg); }
   &.down { color: var(--sp-danger); background: var(--sp-danger-bg); }
   &.stable { color: var(--sp-text-muted); background: #f3f4f6; }

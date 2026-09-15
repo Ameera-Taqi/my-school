@@ -12,14 +12,14 @@
     </mat-form-field>
     <div class="filter-actions">
       <button mat-stroked-button type="button" (click)="resetFilters()">
-        <mat-icon>restart_alt</mat-icon>
+        <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
       </button>
       <button mat-flat-button color="primary" type="button" (click)="loadSheet()" [disabled]="loading">
         @if (loading) {
           <ng-container><mat-spinner diameter="20"></mat-spinner> عرض الكشف</ng-container>
         } @else {
-          <ng-container><mat-icon>table_view</mat-icon> عرض الكشف</ng-container>
+          <ng-container><app-ui-icon name="table_view"></app-ui-icon> عرض الكشف</ng-container>
         }
       </button>
     </div>
@@ -34,7 +34,7 @@
   <div class="data-card">
     <div class="list-toolbar">
       <div class="sheet-info">
-        <mat-icon>grading</mat-icon>
+        <app-ui-icon name="grading"></app-ui-icon>
         <span>{{ sheet.className }}</span>
         <span class="dot">•</span>
         <span>{{ sheet.subject }}</span>
@@ -43,14 +43,14 @@
       </div>
       <div class="sheet-actions">
         <button mat-stroked-button color="primary" type="button" (click)="addColumn()">
-          <mat-icon>view_column</mat-icon>
+          <app-ui-icon name="view_column"></app-ui-icon>
           إضافة عمود
         </button>
         <button mat-flat-button color="primary" type="button" (click)="saveSheet()" [disabled]="saving">
           @if (saving) {
             <ng-container><mat-spinner diameter="20"></mat-spinner> حفظ الكشف</ng-container>
           } @else {
-            <ng-container><mat-icon>save</mat-icon> حفظ الكشف</ng-container>
+            <ng-container><app-ui-icon name="save"></app-ui-icon> حفظ الكشف</ng-container>
           }
         </button>
       </div>
@@ -58,7 +58,7 @@
 
     @if (!sheet.columns.length) {
       <app-empty-state icon="view_column" title="لا توجد أعمدة درجات بعد" description="اضغط «إضافة عمود» لتحديد عنوان التقييم والدرجة الكاملة." [compact]="true">
-        <button mat-stroked-button color="primary" type="button" (click)="addColumn()"><mat-icon>view_column</mat-icon> إضافة عمود</button>
+        <button mat-stroked-button color="primary" type="button" (click)="addColumn()"><app-ui-icon name="view_column"></app-ui-icon> إضافة عمود</button>
       </app-empty-state>
     }
 
@@ -82,10 +82,10 @@
                 <small class="grade-col-max">من {{ col.maxScore }}</small>
                 <div class="grade-col-actions row-actions">
                   <button mat-icon-button type="button" matTooltip="تعديل العمود" (click)="editColumn(col)" aria-label="تعديل العمود">
-                    <mat-icon>edit</mat-icon>
+                    <app-ui-icon name="edit"></app-ui-icon>
                   </button>
                   <button mat-icon-button type="button" class="danger" matTooltip="حذف العمود" (click)="removeColumn(col)" aria-label="حذف العمود">
-                    <mat-icon>delete</mat-icon>
+                    <app-ui-icon name="delete"></app-ui-icon>
                   </button>
                 </div>
               </div>

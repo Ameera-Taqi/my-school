@@ -5,16 +5,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { Role } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-role-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule,
-    MatSlideToggleModule, MatButtonModule, MatIconModule, MatDialogModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل دور' : 'إضافة دور' }}</h2>
     <mat-dialog-content>
@@ -22,7 +19,7 @@ import { Role } from '../../core/models';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>مفتاح الدور (Role Key)</mat-label>
           <input matInput formControlName="roleKey" [readonly]="!!data" cdkFocusInitial autocomplete="off" dir="ltr">
-          <mat-icon matSuffix>key</mat-icon>
+          <app-ui-icon name="key" matSuffix></app-ui-icon>
           <mat-error>مفتاح الدور مطلوب</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
@@ -40,7 +37,7 @@ import { Role } from '../../core/models';
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الدور' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة الدور' }}
       </button>
     </mat-dialog-actions>
   `,

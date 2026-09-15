@@ -1,20 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { AcademicStageApiService } from '../../academic-stages/services/academic-stage-api.service';
 import { AcademicStage } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-stages-list',
   standalone: true,
-  imports: [
-    RouterModule, MatCardModule, MatIconModule, MatButtonModule, PageHeaderComponent, EmptyStateComponent
-  ],
+  imports: [UiIconComponent, RouterModule, MatCardModule, MatButtonModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './stages-list.component.html',
   styleUrl: './stages-list.component.scss'
 })

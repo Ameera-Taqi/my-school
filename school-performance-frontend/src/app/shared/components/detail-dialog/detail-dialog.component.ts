@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { UiIconComponent } from '../../icons/ui-icon.component';
 
 export interface DetailField {
   label: string;
@@ -22,10 +22,10 @@ export interface DetailDialogData {
 @Component({
   selector: 'app-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule],
   template: `
     <div class="detail-head">
-      <div class="detail-icon"><mat-icon>{{ data.icon || 'info' }}</mat-icon></div>
+      <div class="detail-icon"><app-ui-icon [name]="data.icon || 'info'"></app-ui-icon></div>
       <div>
         <h2 mat-dialog-title>{{ data.title }}</h2>
         @if (data.subtitle) { <p class="subtitle">{{ data.subtitle }}</p> }

@@ -4,7 +4,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,15 +26,12 @@ import { AcademicNotesMockService } from '../services/academic-notes-mock.servic
 import { AcademicNoteDetailDialogComponent } from '../academic-note-detail-dialog/academic-note-detail-dialog.component';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-academic-notes-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule,
-    MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule,
-    MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './academic-notes-page.component.html',
   styleUrl: './academic-notes-page.component.scss'
 })
@@ -143,7 +139,7 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
     const ref = this.dialog.open(AcademicNoteDetailDialogComponent, {
       width: '560px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { note, canReview: true }
     });
     ref.afterClosed().subscribe((result?: { action: string; note: AcademicNote }) => {

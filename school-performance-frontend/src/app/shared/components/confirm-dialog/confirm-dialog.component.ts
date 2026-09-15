@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { UiIconComponent } from '../../icons/ui-icon.component';
 
 export interface ConfirmDialogData {
   title: string;
@@ -17,11 +17,11 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule],
   template: `
     <div class="confirm" [class.danger]="data.danger">
       <div class="confirm-icon">
-        <mat-icon>{{ data.icon || (data.danger ? 'delete_forever' : 'help_outline') }}</mat-icon>
+        <app-ui-icon [name]="data.icon || (data.danger ? 'delete_forever' : 'help_outline')"></app-ui-icon>
       </div>
       <h2 mat-dialog-title>{{ data.title }}</h2>
       <mat-dialog-content>
@@ -44,7 +44,7 @@ export interface ConfirmDialogData {
       display: flex; align-items: center; justify-content: center;
       width: 56px; height: 56px; border-radius: 50%;
       margin: 0.5rem auto 0; background: var(--sp-primary-light); color: var(--sp-primary-mid);
-      mat-icon { font-size: 30px; width: 30px; height: 30px; }
+      .app-ui-icon { font-size: 1.5rem; }
     }
     .danger .confirm-icon { background: var(--sp-danger-bg); color: var(--sp-danger); }
     h2 { text-align: center; margin: 0.5rem 0 0; }

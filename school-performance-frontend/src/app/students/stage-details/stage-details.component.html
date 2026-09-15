@@ -7,14 +7,14 @@
   <app-page-header [title]="stage.name" [subtitle]="'عدد الفصول: ' + (stage.classCount ?? 0) + ' | عدد الطلاب: ' + (stage.studentCount ?? 0)">
     @if ('classes.create' | hasPermission) {
       <button mat-flat-button color="primary" (click)="openClassDialog()">
-        <mat-icon>add</mat-icon>
+        <app-ui-icon name="add"></app-ui-icon>
         إضافة فصل
       </button>
     }
   </app-page-header>
 
   <div class="flow-hint">
-    <mat-icon>info</mat-icon>
+    <app-ui-icon name="info"></app-ui-icon>
     <span>الخطوة 1: أضف فصلاً لهذه المرحلة — الخطوة 2: اضغط «عرض الطلاب» لإضافة الطلاب داخل كل فصل</span>
   </div>
 }
@@ -35,7 +35,7 @@
   <div class="data-card">
     <app-empty-state icon="class" title="لا توجد فصول في هذه المرحلة بعد" description="أضف أول فصل لهذه المرحلة ثم سجّل الطلاب داخله.">
       @if ('classes.create' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openClassDialog()"><mat-icon>add</mat-icon> إضافة أول فصل</button>
+        <button mat-flat-button color="primary" (click)="openClassDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة أول فصل</button>
       }
     </app-empty-state>
   </div>
@@ -47,12 +47,12 @@
         [attr.tabindex]="('students.view' | hasPermission) ? 0 : null"
         [attr.role]="('students.view' | hasPermission) ? 'link' : null">
         <div class="card-head">
-          <span class="class-icon"><mat-icon>class</mat-icon></span>
+          <span class="class-icon"><app-ui-icon name="class"></app-ui-icon></span>
           <h3>{{ cls.name }}</h3>
         </div>
         <div class="class-meta">
-          <span class="chip info"><mat-icon class="chip-icon">people</mat-icon> {{ cls.studentCount ?? 0 }} طالب</span>
-          <span class="chip neutral"><mat-icon class="chip-icon">event_seat</mat-icon> الطاقة {{ cls.capacity }}</span>
+          <span class="chip info"><app-ui-icon name="people" class="chip-icon"></app-ui-icon> {{ cls.studentCount ?? 0 }} طالب</span>
+          <span class="chip neutral"><app-ui-icon name="event_seat" class="chip-icon"></app-ui-icon> الطاقة {{ cls.capacity }}</span>
         </div>
         <div class="capacity-bar" [matTooltip]="fillPercent(cls) + '% من الطاقة الاستيعابية'">
           <span [style.width.%]="fillPercent(cls)" [class.full]="fillPercent(cls) >= 100"></span>
@@ -63,17 +63,17 @@
         <div class="card-footer">
           @if ('students.view' | hasPermission) {
             <button mat-flat-button color="primary" [routerLink]="['/students/classes', cls.id]" (click)="$event.stopPropagation()">
-              <mat-icon>people</mat-icon>
+              <app-ui-icon name="people"></app-ui-icon>
               عرض الطلاب
             </button>
           }
           <span class="spacer"></span>
           <div class="row-actions">
             @if ('classes.update' | hasPermission) {
-              <button mat-icon-button matTooltip="تعديل" (click)="openClassDialog(cls); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button matTooltip="تعديل" (click)="openClassDialog(cls); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
             }
             @if ('classes.delete' | hasPermission) {
-              <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteClass(cls); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>
+              <button mat-icon-button class="danger" matTooltip="حذف" (click)="deleteClass(cls); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon></button>
             }
           </div>
         </div>

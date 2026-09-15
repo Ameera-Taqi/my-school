@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
@@ -20,14 +19,12 @@ import { InternalRequestMockService } from '../services/internal-request-mock.se
 import { InternalRequestFormDialogComponent } from '../internal-request-form-dialog/internal-request-form-dialog.component';
 import { REQUEST_TYPE_LABELS, PRIORITY_LABELS, REQUEST_STATUS_LABELS } from '../../shared/constants/labels';
 import { InternalRequest } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-internal-requests-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule, MatMenuModule,
-    PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './internal-requests-page.component.html',
   styleUrl: './internal-requests-page.component.scss'
 })
@@ -82,7 +79,7 @@ export class InternalRequestsPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(req?: InternalRequest): void {
-    const ref = this.dialog.open(InternalRequestFormDialogComponent, { width: '560px', maxWidth: '95vw', direction: 'rtl', data: req ?? null });
+    const ref = this.dialog.open(InternalRequestFormDialogComponent, { width: '560px', maxWidth: '95vw', data: req ?? null });
     ref.afterClosed().subscribe((result: InternalRequest | undefined) => {
       if (!result) return;
       const req$ = req?.id ? this.service.update(req.id, result) : this.service.create(result);

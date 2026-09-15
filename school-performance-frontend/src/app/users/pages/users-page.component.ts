@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
@@ -18,15 +17,12 @@ import { UserApiService } from '../services/user-api.service';
 import { UserFormDialogComponent } from '../user-form-dialog/user-form-dialog.component';
 import { AppUser } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-users-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, MatMenuModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent,
-    TableSkeletonComponent, HasPermissionPipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
   templateUrl: './users-page.component.html',
   styleUrl: './users-page.component.scss'
 })
@@ -83,7 +79,7 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(u?: AppUser): void {
-    const ref = this.dialog.open(UserFormDialogComponent, { width: '520px', maxWidth: '95vw', direction: 'rtl', data: u ?? null });
+    const ref = this.dialog.open(UserFormDialogComponent, { width: '520px', maxWidth: '95vw', data: u ?? null });
     ref.afterClosed().subscribe((result: AppUser | undefined) => {
       if (!result) return;
       const req$ = u?.id ? this.service.update(u.id, result) : this.service.create(result);

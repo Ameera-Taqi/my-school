@@ -6,7 +6,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -19,6 +18,7 @@ import { RoleApiService } from '../../roles/services/role-api.service';
 import { RolePermissionApiService } from '../services/role-permission-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Role, PermissionAssignment } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 const MODULE_ICONS: Record<string, string> = {
   'الإدارة العليا': 'admin_panel_settings',
@@ -32,11 +32,7 @@ const MODULE_ICONS: Record<string, string> = {
 @Component({
   selector: 'app-role-permissions',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatCheckboxModule,
-    MatButtonModule, MatCardModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule,
-    MatProgressBarModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent
-  ],
+  imports: [UiIconComponent, CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatCheckboxModule, MatButtonModule, MatCardModule, MatTooltipModule, MatProgressSpinnerModule, MatProgressBarModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent],
   templateUrl: './role-permissions.component.html',
   styleUrl: './role-permissions.component.scss'
 })

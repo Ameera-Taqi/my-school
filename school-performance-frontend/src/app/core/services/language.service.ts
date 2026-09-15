@@ -38,8 +38,11 @@ export class LanguageService {
 
   private apply(lang: AppLanguage): void {
     const dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-    document.documentElement.dir = dir;
+    const root = document.documentElement;
+    root.lang = lang;
+    root.dir = dir;
+    root.setAttribute('dir', dir);
     document.body.dir = dir;
+    document.body.setAttribute('dir', dir);
   }
 }

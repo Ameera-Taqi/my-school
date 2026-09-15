@@ -30,7 +30,7 @@
 .report-icon {
   width: 56px; height: 56px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  mat-icon { font-size: 30px; width: 30px; height: 30px; }
+  app-ui-icon { font-size: 30px; width: 30px; height: 30px; }
 }
 .report-name { font-size: 0.95rem; font-weight: 700; color: var(--sp-primary); }
 .report-card .check {
@@ -42,7 +42,7 @@
   display: flex; align-items: center; gap: 0.4rem;
   margin: 0 0 1rem;
   font-size: 1rem; font-weight: 700; color: var(--sp-primary);
-  mat-icon { font-size: 20px; width: 20px; height: 20px; color: var(--sp-primary-mid); }
+  app-ui-icon { font-size: 20px; width: 20px; height: 20px; color: var(--sp-primary-mid); }
 }
 
 .filters-panel { padding: 1.25rem; margin-bottom: 1.25rem; }
@@ -97,7 +97,7 @@
   width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: rgba(255, 255, 255, 0.16);
-  mat-icon { font-size: 26px; width: 26px; height: 26px; }
+  app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
 }
 .report-title-bar h3 { margin: 0 0 0.2rem; color: #fff; font-weight: 700; font-size: 1.05rem; }
 .results-header .meta {
@@ -105,7 +105,7 @@
   margin: 0;
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.82rem;
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  app-ui-icon { font-size: 16px; width: 16px; height: 16px; }
 }
 .demo-chip { background: rgba(255, 255, 255, 0.18); color: #fff; font-size: 0.7rem; }
 

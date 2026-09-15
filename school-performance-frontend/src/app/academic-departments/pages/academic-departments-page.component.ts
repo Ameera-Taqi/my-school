@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -18,15 +17,12 @@ import { RouterModule } from '@angular/router';
 import { DepartmentApiService } from '../../departments/services/department-api.service';
 import { DepartmentFormDialogComponent } from '../../departments/department-form-dialog/department-form-dialog.component';
 import { Department } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-academic-departments-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent,
-    HasPermissionPipe, RouterModule
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, RouterModule],
   templateUrl: './academic-departments-page.component.html',
   styleUrl: './academic-departments-page.component.scss'
 })
@@ -82,7 +78,7 @@ export class AcademicDepartmentsPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(d?: Department): void {
-    const ref = this.dialog.open(DepartmentFormDialogComponent, { width: '480px', maxWidth: '95vw', direction: 'rtl', data: d ?? null });
+    const ref = this.dialog.open(DepartmentFormDialogComponent, { width: '480px', maxWidth: '95vw', data: d ?? null });
     ref.afterClosed().subscribe((result: Department | undefined) => {
       if (!result) return;
       const req$ = d?.id ? this.service.update(d.id, result) : this.service.create(result);

@@ -2,6 +2,19 @@
 
 Backend مبني بـ **ASP.NET Core 8 (C#)** مع **Entity Framework Core** وقاعدة بيانات **SQL Server**.
 
+## التشغيل محلياً (`dotnet run`) — الموصى به للتطوير
+
+1. تأكد أن SQL Server يعمل على `localhost,1433`.
+2. من مجلد الـ API:
+
+```bash
+dotnet run
+```
+
+يتصل بـ `Server=localhost,1433` من `appsettings.json` ويستمع على `http://localhost:8081`.
+
+عند أول تشغيل يتم إنشاء قاعدة البيانات `SchoolPerformance` تلقائياً (EF Core Migrations) ثم تعبئة البيانات التجريبية.
+
 ## التشغيل (Docker)
 
 من مجلد المشروع الرئيسي:
@@ -10,23 +23,21 @@ Backend مبني بـ **ASP.NET Core 8 (C#)** مع **Entity Framework Core** و�
 docker compose up --build -d
 ```
 
-يشغّل حاويتين:
-
 | الحاوية | المنفذ على جهازك | الوصف |
 |---------|------------------|-------|
-| `school-sqlserver` | `1434` | SQL Server 2022 Developer |
-| `school-api` | `8081` | الـ API |
+| `school-api` | `8081` | الـ API (يتصل بـ SQL على `host.docker.internal:1433`) |
+| `school-web` | `4300` | الواجهة |
 
-عند أول تشغيل يتم إنشاء قاعدة البيانات `SchoolPerformance` تلقائياً (EF Core Migrations) ثم تعبئة البيانات التجريبية.
+SQL Server المضمّن اختياري: `docker compose --profile bundled-db up -d sqlserver`
 
 ## الاتصال من SQL Server Management Studio
 
 | الحقل | القيمة |
 |-------|--------|
-| Server name | `localhost,1434` |
+| Server name | `localhost,1433` |
 | Authentication | SQL Server Authentication |
 | Login | `sa` |
-| Password | `SchoolPerf2026Strong` (أو القيمة في `.env`) |
+| Password | `SqlServer!2026` (أو القيمة في `.env`) |
 | Database | `SchoolPerformance` |
 
 فعّل خيار **Trust server certificate** في نافذة الاتصال.
@@ -34,6 +45,7 @@ docker compose up --build -d
 ## الإعدادات
 
 انسخ `.env.example` إلى `.env` في المجلد الرئيسي لتغيير كلمة مرور `sa` أو المنفذ أو مفتاح JWT.
+اتصال `dotnet run` محلياً يُضبط في `appsettings.json` / `appsettings.Development.json` على المنفذ `1433`.
 
 ## بيانات الدخول الافتراضية
 

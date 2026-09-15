@@ -1,6 +1,6 @@
 <app-page-header title="فصولي" subtitle="الفصول الدراسية المسندة إليك">
   <button mat-flat-button color="primary" (click)="openDialog()">
-    <mat-icon>add</mat-icon>
+    <app-ui-icon name="add"></app-ui-icon>
     إضافة فصل
   </button>
 </app-page-header>
@@ -20,7 +20,7 @@
 } @else if (classes.length === 0) {
   <div class="data-card">
     <app-empty-state icon="class" title="لا توجد فصول مسندة إليك بعد" description="أضف فصلك الأول لعرض كشف الطلاب وتسجيل الحضور والدرجات.">
-      <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة فصل</button>
+      <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة فصل</button>
     </app-empty-state>
   </div>
 } @else {
@@ -34,15 +34,15 @@
         (click)="selectClass(c)"
         (keydown.enter)="selectClass(c)">
         <div class="card-body">
-          <span class="card-icon"><mat-icon>class</mat-icon></span>
+          <span class="card-icon"><app-ui-icon name="class"></app-ui-icon></span>
           <div class="card-info">
             <h3>{{ c.name }}</h3>
             <p class="meta">{{ c.stageName }} · {{ c.studentCount }} طالب</p>
           </div>
         </div>
         <div class="card-footer row-actions">
-          <button mat-icon-button matTooltip="كشف الطلاب" (click)="selectClass(c); $event.stopPropagation()"><mat-icon>groups</mat-icon></button>
-          <button mat-icon-button matTooltip="تعديل" (click)="openDialog(c); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button matTooltip="كشف الطلاب" (click)="selectClass(c); $event.stopPropagation()"><app-ui-icon name="groups"></app-ui-icon></button>
+          <button mat-icon-button matTooltip="تعديل" (click)="openDialog(c); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
         </div>
       </div>
     }
@@ -51,7 +51,7 @@
   @if (selectedClass) {
     <div class="data-card roster-card">
       <div class="list-toolbar">
-        <span class="toolbar-title"><mat-icon>groups</mat-icon> كشف طلاب فصل {{ selectedClass.name }}</span>
+        <span class="toolbar-title"><app-ui-icon name="groups"></app-ui-icon> كشف طلاب فصل {{ selectedClass.name }}</span>
         @if (!studentsLoading) {
           <span class="toolbar-count">{{ rosterTotal }} طالب</span>
         }

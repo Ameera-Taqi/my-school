@@ -1,9 +1,9 @@
 <app-page-header title="الهيكل التنظيمي" subtitle="يتحدّث تلقائياً مع بيانات المستخدمين والأدوار والشعب">
   <mat-button-toggle-group class="view-toggle" [value]="view" (change)="view = $event.value" hideSingleSelectionIndicator>
-    <mat-button-toggle value="chart" matTooltip="مخطط شجري"><mat-icon>account_tree</mat-icon></mat-button-toggle>
-    <mat-button-toggle value="list" matTooltip="قائمة بالمستويات"><mat-icon>view_agenda</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="chart" matTooltip="مخطط شجري"><app-ui-icon name="account_tree"></app-ui-icon></mat-button-toggle>
+    <mat-button-toggle value="list" matTooltip="قائمة بالمستويات"><app-ui-icon name="view_agenda"></app-ui-icon></mat-button-toggle>
   </mat-button-toggle-group>
-  <button mat-stroked-button type="button" (click)="load()" [disabled]="loading"><mat-icon>refresh</mat-icon> تحديث</button>
+  <button mat-stroked-button type="button" (click)="load()" [disabled]="loading"><app-ui-icon name="refresh"></app-ui-icon> تحديث</button>
 </app-page-header>
 
 <!-- Legend + counts -->
@@ -13,7 +13,7 @@
   }
   @if (data) {
     <span class="legend-spacer"></span>
-    <span class="legend-count"><mat-icon>groups</mat-icon> {{ data.totalPeople }} شخص · {{ data.departments.length }} شعبة</span>
+    <span class="legend-count"><app-ui-icon name="groups"></app-ui-icon> {{ data.totalPeople }} شخص · {{ data.departments.length }} شعبة</span>
   }
 </div>
 
@@ -25,7 +25,7 @@
   </div>
 } @else if (!data || isEmpty) {
   <app-empty-state icon="account_tree" title="لا يوجد هيكل بعد" description="أضف مدير المدرسة والشعب والمعلمين من صفحات المستخدمين والمعلمين ليظهر الهيكل هنا.">
-    @if ('users.manage' | hasPermission) { <a mat-flat-button color="primary" routerLink="/users"><mat-icon>manage_accounts</mat-icon> المستخدمون</a> }
+    @if ('users.manage' | hasPermission) { <a mat-flat-button color="primary" routerLink="/users"><app-ui-icon name="manage_accounts"></app-ui-icon> المستخدمون</a> }
   </app-empty-state>
 } @else {
   <div class="org" [class.list-view]="view === 'list'">
@@ -37,7 +37,7 @@
         @for (p of data.managers; track p.id) {
           <ng-container *ngTemplateOutlet="personCard; context: { $implicit: p, level: 'manager' }"></ng-container>
         } @empty {
-          <div class="node placeholder"><mat-icon>person_off</mat-icon><span>لم يُعيَّن مدير مدرسة بعد</span></div>
+          <div class="node placeholder"><app-ui-icon name="person_off"></app-ui-icon><span>لم يُعيَّن مدير مدرسة بعد</span></div>
         }
       </div>
     </section>
@@ -67,18 +67,18 @@
                 @if (dept) {
                   <article class="department" [class.inactive]="!dept.active">
                     <header class="dept-head">
-                      <mat-icon class="dept-icon">domain</mat-icon>
+                      <app-ui-icon name="domain" class="dept-icon"></app-ui-icon>
                       <div class="dept-title">
                         <strong>{{ dept.name }}</strong>
                         <span>{{ dept.teachers.length }} معلم{{ dept.head ? ' · رئيس شعبة' : ' · بدون رئيس' }}</span>
                       </div>
-                      <a mat-icon-button [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة الشعبة"><mat-icon>open_in_new</mat-icon></a>
+                      <a mat-icon-button [routerLink]="['/teachers/departments', dept.id]" matTooltip="فتح صفحة الشعبة"><app-ui-icon name="open_in_new"></app-ui-icon></a>
                     </header>
                     <div class="dept-body">
                       @if (dept.head) {
                         <ng-container *ngTemplateOutlet="personCard; context: { $implicit: dept.head, level: 'head' }"></ng-container>
                       } @else {
-                        <div class="node placeholder small"><mat-icon>person_add</mat-icon><span>لا يوجد رئيس شعبة</span></div>
+                        <div class="node placeholder small"><app-ui-icon name="person_add"></app-ui-icon><span>لا يوجد رئيس شعبة</span></div>
                       }
                       @if (dept.teachers.length) {
                         <div class="teachers">
@@ -94,7 +94,7 @@
                 } @else {
                   <article class="department unassigned">
                     <header class="dept-head">
-                      <mat-icon class="dept-icon">help_outline</mat-icon>
+                      <app-ui-icon name="help_outline" class="dept-icon"></app-ui-icon>
                       <div class="dept-title"><strong>بدون شعبة</strong><span>{{ data.unassignedHeads.length + data.unassignedTeachers.length }} شخص</span></div>
                     </header>
                     <div class="dept-body">
@@ -112,7 +112,7 @@
               }
             </div>
             <button mat-icon-button type="button" class="row-toggle" (click)="toggleRow(i)" [attr.aria-expanded]="!isRowCollapsed(i)" [matTooltip]="isRowCollapsed(i) ? 'عرض معلمي هذا السطر' : 'إخفاء معلمي هذا السطر'">
-              <mat-icon class="level-chevron">expand_more</mat-icon>
+              <app-ui-icon name="expand_more" class="level-chevron"></app-ui-icon>
             </button>
           </div>
         }

@@ -5,8 +5,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { ResourceFile } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
 const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 'avi', 'mkv'];
@@ -14,7 +14,7 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
 @Component({
   selector: 'app-resource-file-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatIconModule],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>رفع ملف تعليمي</h2>
     <mat-dialog-content>
@@ -27,25 +27,25 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
             accept=".pdf,.ppt,.pptx,.doc,.docx,.mp4,.mov,.avi,.mkv"
             (change)="onFileSelected($event)">
           <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
-            <mat-icon>upload_file</mat-icon>
+            <app-ui-icon name="upload_file"></app-ui-icon>
             {{ selectedFile ? 'تغيير الملف' : 'اختيار ملف' }}
           </button>
           @if (selectedFile) {
             <div class="selected-file">
-              <mat-icon>insert_drive_file</mat-icon>
+              <app-ui-icon name="insert_drive_file"></app-ui-icon>
               <div>
                 <span class="file-name">{{ selectedFile.name }}</span>
                 <small>{{ formatSize(selectedFile.size) }}</small>
               </div>
               <button mat-icon-button type="button" (click)="clearFile(fileInput)" aria-label="إزالة الملف">
-                <mat-icon>close</mat-icon>
+                <app-ui-icon name="close"></app-ui-icon>
               </button>
             </div>
           } @else {
             <p class="upload-hint-text">الصيغ المدعومة: PDF, PPTX, DOCX, فيديو — بحد أقصى 50 ميجابايت</p>
           }
           @if (fileError) {
-            <p class="file-error"><mat-icon>error_outline</mat-icon> {{ fileError }}</p>
+            <p class="file-error"><app-ui-icon name="error_outline"></app-ui-icon> {{ fileError }}</p>
           }
         </div>
 
@@ -93,9 +93,9 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="uploading">
         @if (uploading) {
-          <ng-container><mat-icon>hourglass_top</mat-icon> جاري الرفع...</ng-container>
+          <ng-container><app-ui-icon name="hourglass_top"></app-ui-icon> جاري الرفع...</ng-container>
         } @else {
-          <ng-container><mat-icon>check</mat-icon> حفظ</ng-container>
+          <ng-container><app-ui-icon name="check"></app-ui-icon> حفظ</ng-container>
         }
       </button>
     </mat-dialog-actions>
@@ -126,7 +126,7 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
       border-radius: var(--sp-radius-sm);
       border: 1px solid var(--sp-border);
     }
-    .selected-file > mat-icon { color: var(--sp-primary); }
+    .selected-file > app-ui-icon { color: var(--sp-primary); }
     .selected-file > div { flex: 1; min-width: 0; }
     .file-name { display: block; font-weight: 600; color: var(--sp-text); word-break: break-all; }
     .selected-file small { color: var(--sp-text-muted); }
@@ -134,7 +134,7 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
     .file-error {
       margin: 0; color: var(--sp-danger); font-size: 0.85rem;
       display: flex; align-items: center; gap: 0.3rem;
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
     }
   `]
 })

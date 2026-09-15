@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +20,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { DepartmentApiService } from '../../departments/services/department-api.service';
 import { ClassScheduleEntry, SchoolClass, ScheduleDay, Teacher, Department } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 import {
   CONSTRAINT_TYPE_LABELS, ScheduleApiService, ScheduleOverview, Subject, SubjectAssignment, TeacherConstraint
 } from '../services/schedule-api.service';
@@ -32,11 +32,7 @@ import {
 @Component({
   selector: 'app-class-schedule-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule, MatFormFieldModule,
-    MatSelectModule, MatCardModule, MatTabsModule, MatMenuModule, MatButtonToggleModule, MatProgressBarModule, MatTableModule,
-    PageHeaderComponent, EmptyStateComponent
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatCardModule, MatTabsModule, MatMenuModule, MatButtonToggleModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './class-schedule-page.component.html',
   styleUrl: './class-schedule-page.component.scss'
 })
@@ -141,7 +137,7 @@ export class ClassSchedulePageComponent implements OnInit {
     const cls = this.selectedClass;
     if (!cls?.id) return;
     const ref = this.dialog.open(ScheduleSlotDialogComponent, {
-      width: '460px', maxWidth: '95vw', direction: 'rtl',
+      width: '460px', maxWidth: '95vw',
       data: { classId: cls.id, className: cls.name, dayOfWeek: day, period, entry: entry ?? null, assignments: this.classAssignments }
     });
     ref.afterClosed().subscribe((result?: { clear?: boolean; assignmentId?: number; room?: string; locked?: boolean }) => {
@@ -164,7 +160,7 @@ export class ClassSchedulePageComponent implements OnInit {
       this.api.generate({ keepLocked: true }).subscribe({
         next: (result) => {
           this.generating = false;
-          this.dialog.open(GenerateResultDialogComponent, { data: result, width: '640px', maxWidth: '95vw', direction: 'rtl' });
+          this.dialog.open(GenerateResultDialogComponent, { data: result, width: '640px', maxWidth: '95vw'});
           this.refreshAfterChange();
         },
         error: (e) => { this.generating = false; this.toast.fromError(e); }
@@ -187,7 +183,7 @@ export class ClassSchedulePageComponent implements OnInit {
 
   // ───────── subjects ─────────
   openSubject(subject?: Subject): void {
-    const ref = this.dialog.open(SubjectDialogComponent, { data: { subject: subject ?? null, departments: this.departments }, width: '460px', maxWidth: '95vw', direction: 'rtl' });
+    const ref = this.dialog.open(SubjectDialogComponent, { data: { subject: subject ?? null, departments: this.departments }, width: '460px', maxWidth: '95vw'});
     ref.afterClosed().subscribe((result?: Subject) => {
       if (!result) return;
       const req$ = subject?.id ? this.api.updateSubject(subject.id, result) : this.api.createSubject(result);
@@ -207,7 +203,7 @@ export class ClassSchedulePageComponent implements OnInit {
     if (!cls?.id) return;
     if (!this.subjects.length) { this.toast.info('أضف المواد أولاً'); return; }
     const ref = this.dialog.open(AssignmentDialogComponent, {
-      width: '480px', maxWidth: '95vw', direction: 'rtl',
+      width: '480px', maxWidth: '95vw',
       data: { classId: cls.id, className: cls.name, subjects: this.subjects, teachers: this.teachers, assignment: assignment ?? null, usedPeriods: this.classRequired }
     });
     ref.afterClosed().subscribe((result?: SubjectAssignment) => {
@@ -225,7 +221,7 @@ export class ClassSchedulePageComponent implements OnInit {
 
   // ───────── constraints ─────────
   openConstraint(): void {
-    const ref = this.dialog.open(ConstraintDialogComponent, { width: '480px', maxWidth: '95vw', direction: 'rtl', data: { teachers: this.teachers, teacherId: this.constraintTeacherId } });
+    const ref = this.dialog.open(ConstraintDialogComponent, { width: '480px', maxWidth: '95vw', data: { teachers: this.teachers, teacherId: this.constraintTeacherId } });
     ref.afterClosed().subscribe((result?: TeacherConstraint) => {
       if (!result) return;
       this.api.createConstraint(result).subscribe({ next: () => { this.toast.success('تمت إضافة القيد'); this.loadAll(); }, error: (e) => this.toast.fromError(e) });

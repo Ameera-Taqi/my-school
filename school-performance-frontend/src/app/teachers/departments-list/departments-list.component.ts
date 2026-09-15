@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -12,14 +11,12 @@ import { ToastService } from '../../shared/services/toast.service';
 import { DepartmentApiService } from '../../departments/services/department-api.service';
 import { DepartmentFormDialogComponent } from '../../departments/department-form-dialog/department-form-dialog.component';
 import { Department } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-departments-list',
   standalone: true,
-  imports: [
-    RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule,
-    PageHeaderComponent, EmptyStateComponent, HasPermissionPipe
-  ],
+  imports: [UiIconComponent, RouterModule, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, EmptyStateComponent, HasPermissionPipe],
   templateUrl: './departments-list.component.html',
   styleUrl: './departments-list.component.scss'
 })
@@ -48,7 +45,7 @@ export class DepartmentsListComponent implements OnInit {
     const dialogRef = this.dialog.open(DepartmentFormDialogComponent, {
       width: '480px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: department ?? null
     });
 

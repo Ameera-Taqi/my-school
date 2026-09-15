@@ -21,29 +21,29 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     titleKey: 'section.home',
     items: [
-      { labelKey: 'nav.home', icon: 'home', route: '/home', permission: '*' }
+      { labelKey: 'nav.home', icon: 'dashboard', route: '/home', permission: '*' }
     ]
   },
   {
     titleKey: 'section.executive',
     items: [
-      { labelKey: 'nav.kpi', icon: 'analytics', route: '/kpi', permission: 'kpi.view' },
-      { labelKey: 'nav.reports', icon: 'assessment', route: '/reports', permission: 'reports.view' },
+      { labelKey: 'nav.kpi', icon: 'bar_chart', route: '/kpi', permission: 'kpi.view' },
+      { labelKey: 'nav.reports', icon: 'description', route: '/reports', permission: 'reports.view' },
       { labelKey: 'nav.meetings', icon: 'groups', route: '/meetings', permission: 'meetings.view' },
-      { labelKey: 'nav.tasks', icon: 'task', route: '/tasks', permission: 'tasks.view' },
-      { labelKey: 'nav.orgStructure', icon: 'account_tree', route: '/org-structure', permission: 'org_structure.view' }
+      { labelKey: 'nav.tasks', icon: 'check_box', route: '/tasks', permission: 'tasks.view' },
+      { labelKey: 'nav.orgStructure', icon: 'hub', route: '/org-structure', permission: 'org_structure.view' }
     ]
   },
   {
     titleKey: 'section.school',
     items: [
       { labelKey: 'nav.students', icon: 'school', route: '/students', permission: 'students.view' },
-      { labelKey: 'nav.teachers', icon: 'person', route: '/teachers', permission: 'teachers.view' },
-      { labelKey: 'nav.classSchedule', icon: 'calendar_view_week', route: '/class-schedule', permission: 'class_schedule.view' },
+      { labelKey: 'nav.teachers', icon: 'how_to_reg', route: '/teachers', permission: 'teachers.view' },
+      { labelKey: 'nav.classSchedule', icon: 'menu_book', route: '/class-schedule', permission: 'class_schedule.view' },
       { labelKey: 'nav.attendanceStudents', icon: 'event_available', route: '/attendance/students', permission: 'attendance.view' },
-      { labelKey: 'nav.attendanceTeachers', icon: 'badge', route: '/attendance/teachers', permission: 'teacher_attendance.view' },
-      { labelKey: 'nav.behavior', icon: 'gavel', route: '/behavior', permission: 'behavior.view' },
-      { labelKey: 'nav.internalRequests', icon: 'inbox', route: '/internal-requests', permission: 'internal_requests.view' },
+      { labelKey: 'nav.attendanceTeachers', icon: 'schedule', route: '/attendance/teachers', permission: 'teacher_attendance.view' },
+      { labelKey: 'nav.behavior', icon: 'shield', route: '/behavior', permission: 'behavior.view' },
+      { labelKey: 'nav.internalRequests', icon: 'view_kanban', route: '/internal-requests', permission: 'internal_requests.view' },
       { labelKey: 'nav.alerts', icon: 'notifications', route: '/alerts', permission: 'alerts.view' }
     ]
   },
@@ -59,15 +59,15 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { labelKey: 'nav.teacherMonitoring', icon: 'supervisor_account', route: '/teacher-monitoring', permission: 'teacher_monitoring.view' },
       { labelKey: 'nav.lessonPlans', icon: 'menu_book', route: '/lesson-plans', permission: 'lesson_plans.view' },
       { labelKey: 'nav.subjectResults', icon: 'bar_chart', route: '/subject-results', permission: 'subject_results.view' },
-      { labelKey: 'nav.academicNotes', icon: 'note_alt', route: '/academic-notes', permission: 'academic_notes.view' },
-      { labelKey: 'nav.resourceBank', icon: 'folder', route: '/resource-bank', permission: 'resource_bank.view' }
+      { labelKey: 'nav.academicNotes', icon: 'sticky_note_2', route: '/academic-notes', permission: 'academic_notes.view' },
+      { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.view' }
     ]
   },
   {
     titleKey: 'section.teachers',
     items: [
       { labelKey: 'nav.myClasses', icon: 'class', route: '/my-classes', permission: 'my_classes.view' },
-      { labelKey: 'nav.myStudents', icon: 'people', route: '/my-students', permission: 'my_students.view' },
+      { labelKey: 'nav.myStudents', icon: 'groups', route: '/my-students', permission: 'my_students.view' },
       { labelKey: 'nav.attendanceRecord', icon: 'how_to_reg', route: '/attendance-record', permission: 'attendance_record.view' },
       { labelKey: 'nav.assignments', icon: 'assignment', route: '/assignments', permission: 'assignments.view' },
       { labelKey: 'nav.grades', icon: 'grade', route: '/grades', permission: 'grades.view' },

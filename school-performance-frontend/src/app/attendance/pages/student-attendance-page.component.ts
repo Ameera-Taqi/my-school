@@ -5,7 +5,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,15 +21,12 @@ import { AcademicStageApiService } from '../../academic-stages/services/academic
 import { SchoolClassApiService } from '../../school-classes/services/school-class-api.service';
 import { ATTENDANCE_STATUS_LABELS } from '../../shared/constants/labels';
 import { AcademicStage, AttendanceRecord, SchoolClass } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-student-attendance-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule,
-    MatButtonModule, MatButtonToggleModule, MatIconModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule,
-    MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
   templateUrl: './student-attendance-page.component.html',
   styleUrl: './student-attendance-page.component.scss'
 })

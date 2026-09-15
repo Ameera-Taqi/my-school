@@ -1,13 +1,13 @@
 <app-page-header title="إعدادات النظام" subtitle="إدارة إعدادات المدرسة والنظام العام">
   <button mat-stroked-button type="button" matTooltip="إرجاع جميع الإعدادات إلى القيم الافتراضية" (click)="resetDefaults()" [disabled]="loading || saving">
-    <mat-icon>restart_alt</mat-icon>
+    <app-ui-icon name="restart_alt"></app-ui-icon>
     استعادة الافتراضي
   </button>
   <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="loading || saving">
     @if (saving) {
       <mat-spinner diameter="20"></mat-spinner> جاري الحفظ...
     } @else {
-      <ng-container><mat-icon>save</mat-icon> حفظ الإعدادات</ng-container>
+      <ng-container><app-ui-icon name="save"></app-ui-icon> حفظ الإعدادات</ng-container>
     }
   </button>
 </app-page-header>
@@ -30,12 +30,12 @@
       <!-- معلومات المدرسة -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">school</mat-icon>
+          <app-ui-icon name="school" class="tab-icon"></app-ui-icon>
           معلومات المدرسة
-          @if (tabHasError('school')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+          @if (tabHasError('school')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
         <div class="data-card settings-card" formGroupName="school">
-          <h3 class="section-title"><span class="section-icon"><mat-icon>badge</mat-icon></span> البيانات الأساسية</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="badge"></app-ui-icon></span> البيانات الأساسية</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>اسم المدرسة</mat-label>
@@ -50,27 +50,27 @@
             <mat-form-field appearance="outline" class="full-row">
               <mat-label>العنوان</mat-label>
               <input matInput formControlName="address" autocomplete="off">
-              <mat-icon matSuffix>location_on</mat-icon>
+              <app-ui-icon name="location_on" matSuffix></app-ui-icon>
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><mat-icon>contact_phone</mat-icon></span> بيانات التواصل والإدارة</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="contact_phone"></app-ui-icon></span> بيانات التواصل والإدارة</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>رقم الهاتف</mat-label>
               <input matInput formControlName="phone" autocomplete="off" dir="ltr">
-              <mat-icon matSuffix>call</mat-icon>
+              <app-ui-icon name="call" matSuffix></app-ui-icon>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>البريد الإلكتروني</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="off" dir="ltr">
-              <mat-icon matSuffix>mail</mat-icon>
+              <app-ui-icon name="mail" matSuffix></app-ui-icon>
               <mat-error>صيغة البريد الإلكتروني غير صحيحة</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline" class="full-row">
               <mat-label>اسم مدير المدرسة</mat-label>
               <input matInput formControlName="principalName" autocomplete="off">
-              <mat-icon matSuffix>person</mat-icon>
+              <app-ui-icon name="person" matSuffix></app-ui-icon>
             </mat-form-field>
           </div>
         </div>
@@ -79,12 +79,12 @@
       <!-- الإعدادات الأكاديمية -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">menu_book</mat-icon>
+          <app-ui-icon name="menu_book" class="tab-icon"></app-ui-icon>
           أكاديمي
-          @if (tabHasError('academic')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+          @if (tabHasError('academic')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
         <div class="data-card settings-card" formGroupName="academic">
-          <h3 class="section-title"><span class="section-icon"><mat-icon>calendar_month</mat-icon></span> العام الدراسي</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="calendar_month"></app-ui-icon></span> العام الدراسي</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>العام الدراسي</mat-label>
@@ -102,7 +102,7 @@
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><mat-icon>grading</mat-icon></span> التقييم والدرجات</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="grading"></app-ui-icon></span> التقييم والدرجات</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>درجة النجاح (%)</mat-label>
@@ -124,12 +124,12 @@
       <!-- الحضور -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">how_to_reg</mat-icon>
+          <app-ui-icon name="how_to_reg" class="tab-icon"></app-ui-icon>
           الحضور
-          @if (tabHasError('attendance')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+          @if (tabHasError('attendance')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
         <div class="data-card settings-card" formGroupName="attendance">
-          <h3 class="section-title"><span class="section-icon"><mat-icon>schedule</mat-icon></span> قواعد الحضور والانصراف</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="schedule"></app-ui-icon></span> قواعد الحضور والانصراف</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>اعتبار التأخر بعد (دقيقة)</mat-label>
@@ -145,7 +145,7 @@
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><mat-icon>rule</mat-icon></span> خيارات الاحتساب</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="rule"></app-ui-icon></span> خيارات الاحتساب</h3>
           <div class="toggle-list">
             <div class="toggle-row">
               <div class="toggle-text">
@@ -161,11 +161,11 @@
       <!-- الإشعارات -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">notifications</mat-icon>
+          <app-ui-icon name="notifications" class="tab-icon"></app-ui-icon>
           الإشعارات
         </ng-template>
         <div class="data-card settings-card" formGroupName="notifications">
-          <h3 class="section-title"><span class="section-icon"><mat-icon>send</mat-icon></span> قنوات الإرسال</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="send"></app-ui-icon></span> قنوات الإرسال</h3>
           <div class="toggle-list">
             <div class="toggle-row">
               <div class="toggle-text">
@@ -183,7 +183,7 @@
             </div>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><mat-icon>notifications_active</mat-icon></span> تنبيهات النظام</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="notifications_active"></app-ui-icon></span> تنبيهات النظام</h3>
           <div class="toggle-list">
             <div class="toggle-row">
               <div class="toggle-text">
@@ -213,12 +213,12 @@
       <!-- النظام -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">tune</mat-icon>
+          <app-ui-icon name="tune" class="tab-icon"></app-ui-icon>
           النظام
-          @if (tabHasError('system')) { <mat-icon class="tab-error" matTooltip="يوجد حقول غير صحيحة">error</mat-icon> }
+          @if (tabHasError('system')) { <app-ui-icon name="error" class="tab-error" matTooltip="يوجد حقول غير صحيحة"></app-ui-icon> }
         </ng-template>
         <div class="data-card settings-card" formGroupName="system">
-          <h3 class="section-title"><span class="section-icon"><mat-icon>language</mat-icon></span> العرض واللغة</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="language"></app-ui-icon></span> العرض واللغة</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>تنسيق التاريخ</mat-label>
@@ -240,7 +240,7 @@
             </mat-form-field>
           </div>
 
-          <h3 class="section-title"><span class="section-icon"><mat-icon>security</mat-icon></span> الجلسة والأمان</h3>
+          <h3 class="section-title"><span class="section-icon"><app-ui-icon name="security"></app-ui-icon></span> الجلسة والأمان</h3>
           <div class="fields-grid">
             <mat-form-field appearance="outline">
               <mat-label>مهلة الجلسة (دقيقة)</mat-label>
@@ -253,7 +253,7 @@
           <div class="toggle-list">
             <div class="toggle-row maintenance-row" [class.on]="form.controls.system.controls.maintenanceMode.value">
               <div class="toggle-text">
-                <strong><mat-icon class="inline-icon">engineering</mat-icon> وضع الصيانة</strong>
+                <strong><app-ui-icon name="engineering" class="inline-icon"></app-ui-icon> وضع الصيانة</strong>
                 <p>تعطيل دخول المستخدمين مؤقتاً باستثناء المدير</p>
               </div>
               <mat-slide-toggle formControlName="maintenanceMode" color="warn"></mat-slide-toggle>

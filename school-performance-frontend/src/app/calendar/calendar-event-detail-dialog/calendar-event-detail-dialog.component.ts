@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { CalendarEvent } from '../../core/models';
 import { CALENDAR_EVENT_TYPE_LABELS } from '../../shared/constants/labels';
 import { AuthService } from '../../core/services/auth.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface CalendarEventDetailDialogData {
   event: CalendarEvent;
@@ -15,10 +15,10 @@ export interface CalendarEventDetailDialogData {
 @Component({
   selector: 'app-calendar-event-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, AppDatePipe],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatTooltipModule, AppDatePipe],
   template: `
     <div class="detail-head">
-      <span class="head-icon" [style.background]="chipColor"><mat-icon>event</mat-icon></span>
+      <span class="head-icon" [style.background]="chipColor"><app-ui-icon name="event"></app-ui-icon></span>
       <div class="head-text">
         <h2 mat-dialog-title>{{ data.event.title }}</h2>
         <span class="chip type-chip" [style.background]="chipColor">{{ typeLabel }}</span>
@@ -61,8 +61,8 @@ export interface CalendarEventDetailDialogData {
     <mat-dialog-actions align="end">
       @if (canManage) {
         <div class="row-actions manage-actions">
-          <button mat-icon-button matTooltip="تعديل" type="button" (click)="edit()"><mat-icon>edit</mat-icon></button>
-          <button mat-icon-button class="danger" matTooltip="حذف" type="button" (click)="remove()"><mat-icon>delete</mat-icon></button>
+          <button mat-icon-button matTooltip="تعديل" type="button" (click)="edit()"><app-ui-icon name="edit"></app-ui-icon></button>
+          <button mat-icon-button class="danger" matTooltip="حذف" type="button" (click)="remove()"><app-ui-icon name="delete"></app-ui-icon></button>
         </div>
       }
       <button mat-flat-button color="primary" mat-dialog-close type="button">إغلاق</button>
@@ -73,7 +73,7 @@ export interface CalendarEventDetailDialogData {
     .head-icon {
       width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; color: #fff;
       display: flex; align-items: center; justify-content: center;
-      mat-icon { font-size: 26px; width: 26px; height: 26px; }
+      app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
     }
     .head-text { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; min-width: 0; }
     .head-text h2 { margin: 0; padding: 0; font-size: 1.15rem; line-height: 1.4; }

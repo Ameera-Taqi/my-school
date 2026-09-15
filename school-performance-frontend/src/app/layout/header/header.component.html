@@ -1,23 +1,39 @@
 <header class="app-header">
   <div class="header-start">
     <button mat-icon-button type="button" class="menu-btn hide-desktop-960" (click)="layout.toggleDrawer()" [attr.aria-label]="'menu.openNav' | translate">
-      <mat-icon>menu</mat-icon>
+      <app-ui-icon name="menu"></app-ui-icon>
     </button>
-    <h2 class="header-title">{{ 'app.title' | translate }}</h2>
+    <div class="header-titles">
+      <h2 class="header-title">
+        <span>{{ 'menu.dashboardTitle' | translate }}</span>
+        <span class="term-chip">{{ 'menu.termChip' | translate }}</span>
+      </h2>
+      <p class="header-subtitle">{{ 'menu.dashboardSubtitle' | translate }}</p>
+    </div>
   </div>
 
   <div class="header-actions">
-    <div class="header-lang" [attr.aria-label]="'menu.language' | translate">
-      <mat-icon class="lang-icon">language</mat-icon>
-      <span class="lang-option" [class.active]="!langService.isEnglish()">{{ 'menu.lang.ar' | translate }}</span>
-      <mat-slide-toggle
-        class="lang-toggle"
-        [checked]="langService.isEnglish()"
-        (change)="onLanguageToggle($event.checked)"
-        color="primary">
-      </mat-slide-toggle>
-      <span class="lang-option" [class.active]="langService.isEnglish()">{{ 'menu.lang.en' | translate }}</span>
-    </div>
+    <button
+      type="button"
+      class="action-btn lang-btn"
+      (click)="onLanguageToggle(!langService.isEnglish())"
+      [attr.aria-label]="'menu.language' | translate">
+      <app-ui-icon name="public"></app-ui-icon>
+      <span>{{ langService.isEnglish() ? ('menu.lang.ar' | translate) : ('menu.lang.en' | translate) }}</span>
+    </button>
+
+    @if (canViewAlerts()) {
+      <a
+        routerLink="/alerts"
+        class="action-btn icon-only"
+        [attr.aria-label]="'nav.alerts' | translate"
+        [matTooltip]="'nav.alerts' | translate">
+        <app-ui-icon name="notifications"></app-ui-icon>
+        @if (alertsBadge()) {
+          <span class="notif-dot" aria-hidden="true"></span>
+        }
+      </a>
+    }
 
     <button
       type="button"
@@ -26,10 +42,10 @@
       [attr.aria-label]="'menu.greeting' | translate">
       <span class="user-avatar">{{ initials() }}</span>
       <span class="user-trigger-info">
-        <span class="user-name">{{ fullName() || username() }}</span>
+        <span class="user-name">{{ greetingLine() }}</span>
         <span class="user-role">{{ roleLine() }}</span>
       </span>
-      <mat-icon class="chevron">keyboard_arrow_down</mat-icon>
+      <app-ui-icon name="expand_more" class="chevron"></app-ui-icon>
     </button>
 
     <mat-menu #userMenu="matMenu" panelClass="user-menu-panel" [xPosition]="menuPosition()">
@@ -42,13 +58,13 @@
       <mat-divider></mat-divider>
 
       <button mat-menu-item type="button" (click)="goToDashboard()">
-        <mat-icon>dashboard</mat-icon>
+        <app-ui-icon name="dashboard"></app-ui-icon>
         <span>{{ 'menu.dashboard' | translate }}</span>
       </button>
 
       @if (canOpenSettings()) {
         <a mat-menu-item routerLink="/settings">
-          <mat-icon>settings</mat-icon>
+          <app-ui-icon name="settings"></app-ui-icon>
           <span>{{ 'menu.settings' | translate }}</span>
         </a>
       }
@@ -56,7 +72,7 @@
       <mat-divider></mat-divider>
 
       <button mat-menu-item type="button" class="menu-logout" (click)="logout()">
-        <mat-icon>logout</mat-icon>
+        <app-ui-icon name="logout"></app-ui-icon>
         <span>{{ 'menu.logout' | translate }}</span>
       </button>
     </mat-menu>

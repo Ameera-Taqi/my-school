@@ -1,16 +1,16 @@
 import { Component, Input, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SidebarSection } from '../../core/models';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LayoutService } from '../../shared/services/layout.service';
 import { LanguageService } from '../../core/services/language.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterModule, MatIconModule, MatTooltipModule, TranslatePipe],
+  imports: [UiIconComponent, RouterModule, MatTooltipModule, TranslatePipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })

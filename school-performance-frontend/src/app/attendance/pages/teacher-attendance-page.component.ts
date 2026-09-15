@@ -5,7 +5,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,6 +21,7 @@ import { AttendanceApiService, TeacherAttendanceScope } from '../services/attend
 import { AttendancePdfData, AttendancePdfService } from '../services/attendance-pdf.service';
 import { ATTENDANCE_STATUS_LABELS } from '../../shared/constants/labels';
 import { AttendanceRecord } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 interface TeacherMonthRow {
   teacherId: number;
@@ -40,11 +40,7 @@ interface TeacherMonthRow {
 @Component({
   selector: 'app-teacher-attendance-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatMenuModule,
-    MatIconModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, MatTabsModule,
-    PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatMenuModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, MatTabsModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './teacher-attendance-page.component.html',
   styleUrl: './teacher-attendance-page.component.scss'
 })

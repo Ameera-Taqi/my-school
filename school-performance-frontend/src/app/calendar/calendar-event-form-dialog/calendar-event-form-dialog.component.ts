@@ -5,10 +5,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CalendarEvent } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface CalendarEventFormDialogData {
   event?: CalendarEvent;
@@ -18,10 +18,7 @@ export interface CalendarEventFormDialogData {
 @Component({
   selector: 'app-calendar-event-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatDialogModule, MatDatepickerModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data.event ? 'تعديل حدث' : 'إضافة حدث' }}</h2>
     <mat-dialog-content>
@@ -64,7 +61,7 @@ export interface CalendarEventFormDialogData {
           <mat-form-field appearance="outline">
             <mat-label>اللون (اختياري)</mat-label>
             <input matInput type="color" formControlName="color" class="color-input">
-            <mat-icon matSuffix>palette</mat-icon>
+            <app-ui-icon name="palette" matSuffix></app-ui-icon>
           </mat-form-field>
         </div>
         <mat-form-field appearance="outline" class="full-width">
@@ -76,7 +73,7 @@ export interface CalendarEventFormDialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data.event ? 'حفظ التعديلات' : 'إضافة الحدث' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data.event ? 'حفظ التعديلات' : 'إضافة الحدث' }}
       </button>
     </mat-dialog-actions>
   `,

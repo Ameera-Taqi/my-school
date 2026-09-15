@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -13,14 +12,12 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { TeacherPortalMockService } from '../../services/teacher-portal-mock.service';
 import { MyClassFormDialogComponent } from '../../dialogs/my-class-form-dialog.component';
 import { TeacherMyClass, TeacherMyStudent } from '../../../core/models';
+import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-my-classes-page',
   standalone: true,
-  imports: [
-    MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule, MatTableModule, MatPaginatorModule,
-    MatSortModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent
-  ],
+  imports: [UiIconComponent, MatButtonModule, MatTooltipModule, MatDialogModule, MatTableModule, MatPaginatorModule, MatSortModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
   templateUrl: './my-classes-page.component.html',
   styleUrl: './my-classes-page.component.scss'
 })
@@ -90,7 +87,7 @@ export class MyClassesPageComponent implements OnInit, AfterViewInit {
     const ref = this.dialog.open(MyClassFormDialogComponent, {
       width: '480px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: item ?? null
     });
     ref.afterClosed().subscribe((result: TeacherMyClass | undefined) => {

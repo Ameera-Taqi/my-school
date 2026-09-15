@@ -2,7 +2,6 @@ import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild, 
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -12,11 +11,12 @@ import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { ToastService } from '../../shared/services/toast.service';
 import { DetailDialogService } from '../../shared/services/detail-dialog.service';
 import { OrgDepartment, OrgPerson, OrgStructure, OrgStructureApiService } from '../services/org-structure-api.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-org-structure-page',
   standalone: true,
-  imports: [NgTemplateOutlet, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, MatButtonToggleModule, PageHeaderComponent, EmptyStateComponent, HasPermissionPipe, AppDatePipe],
+  imports: [UiIconComponent, NgTemplateOutlet, RouterLink, MatButtonModule, MatTooltipModule, MatButtonToggleModule, PageHeaderComponent, EmptyStateComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './org-structure-page.component.html',
   styleUrl: './org-structure-page.component.scss'
 })

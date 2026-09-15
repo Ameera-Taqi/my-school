@@ -1,7 +1,10 @@
 <nav class="sidebar" [class.mini]="mini" aria-label="القائمة الرئيسية">
   <a class="sidebar-brand" routerLink="/home" [matTooltip]="mini ? ('sidebar.brand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
-    <span class="brand-icon"><mat-icon>school</mat-icon></span>
-    <span class="brand-text">{{ 'sidebar.brand' | translate }}</span>
+    <span class="brand-icon"><app-ui-icon name="school"></app-ui-icon></span>
+    <span class="brand-text">
+      <span class="brand-title">{{ 'sidebar.brand' | translate }}</span>
+      <span class="brand-sub">{{ 'sidebar.brandSub' | translate }}</span>
+    </span>
   </a>
 
   <div class="sidebar-scroll">
@@ -11,7 +14,7 @@
         <button type="button" class="section-title" (click)="toggle(section)" [attr.aria-expanded]="isOpen(section)" [disabled]="mini">
           <span class="section-label">{{ section.titleKey | translate }}</span>
           <span class="section-divider"></span>
-          <mat-icon class="section-chevron">expand_more</mat-icon>
+          <app-ui-icon name="expand_more" class="section-chevron"></app-ui-icon>
         </button>
         }
         <ul [attr.aria-hidden]="!isOpen(section) && !mini">
@@ -21,7 +24,7 @@
                  [matTooltip]="mini ? (item.labelKey | translate) : ''"
                  [matTooltipPosition]="tooltipPosition()"
                  matTooltipShowDelay="200">
-                <mat-icon>{{ item.icon }}</mat-icon>
+                <app-ui-icon [name]="item.icon"></app-ui-icon>
                 <span class="item-label">{{ item.labelKey | translate }}</span>
               </a>
             </li>
@@ -33,7 +36,7 @@
 
   <button type="button" class="collapse-btn hide-mobile" (click)="layout.toggleCollapsed()"
           [matTooltip]="mini ? ('sidebar.expand' | translate) : ''" [matTooltipPosition]="tooltipPosition()">
-    <mat-icon>{{ mini ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right' }}</mat-icon>
+    <app-ui-icon [name]="mini ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'"></app-ui-icon>
     <span class="item-label">{{ 'sidebar.collapse' | translate }}</span>
   </button>
 </nav>

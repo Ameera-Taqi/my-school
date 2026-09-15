@@ -4,8 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { SchoolClass } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface ClassFormDialogData {
   schoolClass?: SchoolClass;
@@ -15,13 +15,13 @@ export interface ClassFormDialogData {
 @Component({
   selector: 'app-class-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDialogModule],
   template: `
     <h2 mat-dialog-title>{{ data.schoolClass ? 'تعديل فصل' : 'إضافة فصل' }}</h2>
     <mat-dialog-content>
       @if (data.stageName) {
         <p class="stage-hint">
-          <mat-icon>school</mat-icon>
+          <app-ui-icon name="school"></app-ui-icon>
           <span>المرحلة: <strong>{{ data.stageName }}</strong></span>
         </p>
       }
@@ -35,7 +35,7 @@ export interface ClassFormDialogData {
           <mat-form-field appearance="outline">
             <mat-label>الطاقة الاستيعابية</mat-label>
             <input matInput type="number" formControlName="capacity" min="1">
-            <mat-icon matSuffix>event_seat</mat-icon>
+            <app-ui-icon name="event_seat" matSuffix></app-ui-icon>
             @if (form.controls.capacity.hasError('required')) { <mat-error>الطاقة الاستيعابية مطلوبة</mat-error> }
             @if (form.controls.capacity.hasError('min')) { <mat-error>يجب أن تكون 1 على الأقل</mat-error> }
           </mat-form-field>
@@ -49,7 +49,7 @@ export interface ClassFormDialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data.schoolClass ? 'حفظ التعديلات' : 'إضافة الفصل' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data.schoolClass ? 'حفظ التعديلات' : 'إضافة الفصل' }}
       </button>
     </mat-dialog-actions>
   `,
@@ -62,7 +62,7 @@ export interface ClassFormDialogData {
       display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.5rem;
       padding: 0.6rem 0.85rem; border-radius: 8px;
       background: var(--sp-primary-light); color: var(--sp-primary-mid); font-size: 0.9rem;
-      mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+      app-ui-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
     }
     mat-dialog-content { max-height: 70vh; }
   `]

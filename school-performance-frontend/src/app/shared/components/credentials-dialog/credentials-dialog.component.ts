@@ -2,9 +2,9 @@ import { Component, inject } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '../../services/toast.service';
+import { UiIconComponent } from '../../icons/ui-icon.component';
 
 export interface CredentialsDialogData {
   title?: string;
@@ -17,26 +17,26 @@ export interface CredentialsDialogData {
 @Component({
   selector: 'app-credentials-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatTooltipModule],
   template: `
     <div class="cred">
-      <div class="cred-icon"><mat-icon>key</mat-icon></div>
+      <div class="cred-icon"><app-ui-icon name="key"></app-ui-icon></div>
       <h2 mat-dialog-title>{{ data.title || 'تم إنشاء حساب الدخول' }}</h2>
       <mat-dialog-content>
         <p class="lead">بيانات الدخول الخاصة بـ <strong>{{ data.personName }}</strong>. سلّمها للمستخدم واطلب منه تغيير كلمة المرور بعد أول دخول.</p>
         <div class="field">
           <span class="label">اسم المستخدم</span>
           <code>{{ data.username }}</code>
-          <button mat-icon-button type="button" matTooltip="نسخ" (click)="copy(data.username)"><mat-icon>content_copy</mat-icon></button>
+          <button mat-icon-button type="button" matTooltip="نسخ" (click)="copy(data.username)"><app-ui-icon name="content_copy"></app-ui-icon></button>
         </div>
         <div class="field">
           <span class="label">كلمة المرور</span>
           <code>{{ data.password }}</code>
-          <button mat-icon-button type="button" matTooltip="نسخ" (click)="copy(data.password)"><mat-icon>content_copy</mat-icon></button>
+          <button mat-icon-button type="button" matTooltip="نسخ" (click)="copy(data.password)"><app-ui-icon name="content_copy"></app-ui-icon></button>
         </div>
       </mat-dialog-content>
       <mat-dialog-actions align="end">
-        <button mat-stroked-button type="button" (click)="copy(data.username + ' / ' + data.password)"><mat-icon>content_copy</mat-icon> نسخ الكل</button>
+        <button mat-stroked-button type="button" (click)="copy(data.username + ' / ' + data.password)"><app-ui-icon name="content_copy"></app-ui-icon> نسخ الكل</button>
         <button mat-flat-button color="primary" type="button" (click)="ref.close()">تم</button>
       </mat-dialog-actions>
     </div>
@@ -47,7 +47,7 @@ export interface CredentialsDialogData {
       width: 56px; height: 56px; border-radius: 50%; margin: 1rem auto 0;
       display: flex; align-items: center; justify-content: center;
       background: var(--sp-success-bg); color: var(--sp-success);
-      mat-icon { font-size: 30px; width: 30px; height: 30px; }
+      app-ui-icon { font-size: 30px; width: 30px; height: 30px; }
     }
     h2 { text-align: center; }
     .lead { margin: 0 0 1rem; color: var(--sp-text-muted); line-height: 1.7; text-align: center; }

@@ -3,9 +3,9 @@
 <div class="cards-grid">
   @for (card of reportCards; track card.type) {
     <button type="button" class="report-card" (click)="selectReport(card.type)" [class.selected]="selectedReport === card.type" [attr.aria-pressed]="selectedReport === card.type">
-      <span class="report-icon" [style.background]="card.bg" [style.color]="card.color"><mat-icon>{{ card.icon }}</mat-icon></span>
+      <span class="report-icon" [style.background]="card.bg" [style.color]="card.color"><app-ui-icon [name]="card.icon"></app-ui-icon></span>
       <span class="report-name">{{ reportLabels[card.type] }}</span>
-      @if (selectedReport === card.type) { <mat-icon class="check">check_circle</mat-icon> }
+      @if (selectedReport === card.type) { <app-ui-icon name="check_circle" class="check"></app-ui-icon> }
     </button>
   }
 </div>
@@ -18,7 +18,7 @@
 
 @if (selectedReport) {
   <div class="data-card filters-panel">
-    <h3 class="section-title"><mat-icon>filter_alt</mat-icon> فلاتر {{ reportLabels[selectedReport] }}</h3>
+    <h3 class="section-title"><app-ui-icon name="filter_alt"></app-ui-icon> فلاتر {{ reportLabels[selectedReport] }}</h3>
     <form [formGroup]="filters" class="filters-form">
       <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
         <mat-label>من تاريخ</mat-label>
@@ -55,14 +55,14 @@
       </mat-form-field>
       <div class="filter-actions">
         <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
-          <mat-icon>restart_alt</mat-icon>
+          <app-ui-icon name="restart_alt"></app-ui-icon>
           إعادة ضبط
         </button>
         <button mat-flat-button color="primary" type="button" (click)="generateReport()" [disabled]="loading">
           @if (loading) {
             <mat-spinner diameter="20"></mat-spinner> جاري الإنشاء...
           } @else {
-            <ng-container><mat-icon>visibility</mat-icon> عرض التقرير</ng-container>
+            <ng-container><app-ui-icon name="visibility"></app-ui-icon> عرض التقرير</ng-container>
           }
         </button>
       </div>
@@ -87,11 +87,11 @@
   <div class="data-card results-panel">
     <div class="results-header">
       <div class="report-title-bar">
-        <div class="title-icon"><mat-icon>summarize</mat-icon></div>
+        <div class="title-icon"><app-ui-icon name="summarize"></app-ui-icon></div>
         <div>
           <h3>{{ reportResult.title }}</h3>
           <p class="meta">
-            <mat-icon>update</mat-icon> تاريخ الإنشاء: {{ reportResult.generatedAt | appDate:'withTime' }}
+            <app-ui-icon name="update"></app-ui-icon> تاريخ الإنشاء: {{ reportResult.generatedAt | appDate:'withTime' }}
             <span class="chip neutral demo-chip">بيانات تجريبية</span>
           </p>
         </div>
@@ -100,7 +100,7 @@
         @if (exportingPdf) {
           <mat-spinner diameter="20"></mat-spinner> جاري التصدير...
         } @else {
-          <ng-container><mat-icon>picture_as_pdf</mat-icon> تصدير PDF</ng-container>
+          <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
         }
       </button>
     </div>

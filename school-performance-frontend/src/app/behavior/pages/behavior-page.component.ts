@@ -3,7 +3,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -19,14 +18,12 @@ import { BehaviorMockService } from '../services/behavior-mock.service';
 import { BehaviorFormDialogComponent } from '../behavior-form-dialog/behavior-form-dialog.component';
 import { BEHAVIOR_TYPE_LABELS } from '../../shared/constants/labels';
 import { BehaviorNote } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-behavior-page',
   standalone: true,
-  imports: [
-    MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule,
-    PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe
-  ],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './behavior-page.component.html',
   styleUrl: './behavior-page.component.scss'
 })
@@ -76,7 +73,7 @@ export class BehaviorPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(note?: BehaviorNote): void {
-    const ref = this.dialog.open(BehaviorFormDialogComponent, { width: '520px', maxWidth: '95vw', direction: 'rtl', data: note ?? null });
+    const ref = this.dialog.open(BehaviorFormDialogComponent, { width: '520px', maxWidth: '95vw', data: note ?? null });
     ref.afterClosed().subscribe((result: BehaviorNote | undefined) => {
       if (!result) return;
       const req$ = note?.id ? this.service.update(note.id, result) : this.service.create(result);

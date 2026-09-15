@@ -5,7 +5,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin, of } from 'rxjs';
@@ -13,14 +12,12 @@ import { catchError } from 'rxjs/operators';
 import { AppUser, Department, Role } from '../../core/models';
 import { RoleApiService } from '../../roles/services/role-api.service';
 import { DepartmentApiService } from '../../departments/services/department-api.service';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-user-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule,
-    MatButtonModule, MatDialogModule, MatSlideToggleModule, MatProgressSpinnerModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatSlideToggleModule, MatProgressSpinnerModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل مستخدم' : 'إضافة مستخدم' }}</h2>
     <mat-dialog-content>
@@ -38,14 +35,14 @@ import { DepartmentApiService } from '../../departments/services/department-api.
             <mat-form-field appearance="outline">
               <mat-label>اسم المستخدم</mat-label>
               <input matInput formControlName="username" [readonly]="!!data" autocomplete="off" dir="ltr">
-              <mat-icon matSuffix>badge</mat-icon>
+              <app-ui-icon name="badge" matSuffix></app-ui-icon>
               @if (form.controls.username.hasError('required')) { <mat-error>اسم المستخدم مطلوب</mat-error> }
               @if (form.controls.username.hasError('pattern')) { <mat-error>حروف إنجليزية وأرقام و . _ - فقط</mat-error> }
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>البريد الإلكتروني</mat-label>
               <input matInput type="email" formControlName="email" autocomplete="off" dir="ltr">
-              <mat-icon matSuffix>mail</mat-icon>
+              <app-ui-icon name="mail" matSuffix></app-ui-icon>
               @if (form.controls.email.hasError('required')) { <mat-error>البريد مطلوب</mat-error> }
               @if (form.controls.email.hasError('email')) { <mat-error>صيغة البريد غير صحيحة</mat-error> }
             </mat-form-field>
@@ -55,7 +52,7 @@ import { DepartmentApiService } from '../../departments/services/department-api.
             <mat-label>{{ data ? 'كلمة مرور جديدة (اختياري)' : 'كلمة المرور' }}</mat-label>
             <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="new-password" dir="ltr">
             <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" [attr.aria-label]="hidePassword ? 'إظهار' : 'إخفاء'">
-              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              <app-ui-icon [name]="hidePassword ? 'visibility_off' : 'visibility'"></app-ui-icon>
             </button>
             <mat-hint>{{ data ? 'اتركه فارغاً للإبقاء على كلمة المرور الحالية' : '6 أحرف على الأقل' }}</mat-hint>
             @if (form.controls.password.hasError('required')) { <mat-error>كلمة المرور مطلوبة</mat-error> }
@@ -93,7 +90,7 @@ import { DepartmentApiService } from '../../departments/services/department-api.
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="rolesLoading">
-        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'إضافة المستخدم' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'إضافة المستخدم' }}
       </button>
     </mat-dialog-actions>
   `,

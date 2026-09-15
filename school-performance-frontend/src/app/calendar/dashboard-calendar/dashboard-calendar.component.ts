@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
@@ -13,6 +12,7 @@ import { CalendarEventFormDialogComponent } from '../calendar-event-form-dialog/
 import { CalendarEventDetailDialogComponent } from '../calendar-event-detail-dialog/calendar-event-detail-dialog.component';
 import { CALENDAR_EVENT_TYPE_LABELS } from '../../shared/constants/labels';
 import { CalendarEvent } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 interface CalendarDay {
   date: string;
@@ -25,10 +25,7 @@ interface CalendarDay {
 @Component({
   selector: 'app-dashboard-calendar',
   standalone: true,
-  imports: [
-    MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule,
-    HasPermissionPipe, AppDatePipe
-  ],
+  imports: [UiIconComponent, MatCardModule, MatButtonModule, MatTooltipModule, MatDialogModule, HasPermissionPipe, AppDatePipe],
   templateUrl: './dashboard-calendar.component.html',
   styleUrl: './dashboard-calendar.component.scss'
 })
@@ -201,7 +198,7 @@ export class DashboardCalendarComponent implements OnInit {
     const ref = this.dialog.open(CalendarEventFormDialogComponent, {
       width: '520px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { defaultDate: this.selectedDate ?? undefined }
     });
     ref.afterClosed().subscribe((result: CalendarEvent | undefined) => {
@@ -220,7 +217,7 @@ export class DashboardCalendarComponent implements OnInit {
     const ref = this.dialog.open(CalendarEventDetailDialogComponent, {
       width: '460px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { event }
     });
     ref.afterClosed().subscribe((result: { action: string; event: CalendarEvent } | undefined) => {
@@ -237,7 +234,7 @@ export class DashboardCalendarComponent implements OnInit {
     const ref = this.dialog.open(CalendarEventFormDialogComponent, {
       width: '520px',
       maxWidth: '95vw',
-      direction: 'rtl',
+
       data: { event }
     });
     ref.afterClosed().subscribe((result: CalendarEvent | undefined) => {

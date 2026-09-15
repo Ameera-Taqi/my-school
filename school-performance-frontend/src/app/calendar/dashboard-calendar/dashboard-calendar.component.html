@@ -2,7 +2,7 @@
   <!-- Header: title, month navigation, actions -->
   <div class="cal-header">
     <div class="cal-title">
-      <span class="cal-title-icon"><mat-icon>calendar_month</mat-icon></span>
+      <span class="cal-title-icon"><app-ui-icon name="calendar_month"></app-ui-icon></span>
       <div>
         <h3>التقويم المدرسي</h3>
         <span class="cal-subtitle">{{ monthEventCount }} حدث في {{ monthLabel }}</span>
@@ -10,16 +10,16 @@
     </div>
 
     <div class="cal-nav">
-      <button mat-icon-button type="button" (click)="nextMonth()" matTooltip="الشهر التالي" aria-label="الشهر التالي"><mat-icon>chevron_right</mat-icon></button>
+      <button mat-icon-button type="button" (click)="nextMonth()" matTooltip="الشهر التالي" aria-label="الشهر التالي"><app-ui-icon name="chevron_right"></app-ui-icon></button>
       <span class="month-label">{{ monthLabel }}</span>
-      <button mat-icon-button type="button" (click)="prevMonth()" matTooltip="الشهر السابق" aria-label="الشهر السابق"><mat-icon>chevron_left</mat-icon></button>
+      <button mat-icon-button type="button" (click)="prevMonth()" matTooltip="الشهر السابق" aria-label="الشهر السابق"><app-ui-icon name="chevron_left"></app-ui-icon></button>
       <button mat-stroked-button type="button" class="today-btn" (click)="goToToday()" [disabled]="isCurrentMonthShown && isSelectedToday">اليوم</button>
     </div>
 
     <div class="cal-actions">
       @if ('calendar.personal.create' | hasPermission) {
         <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">
-          <mat-icon>add</mat-icon>
+          <app-ui-icon name="add"></app-ui-icon>
           إضافة حدث
         </button>
       }
@@ -103,13 +103,13 @@
             </div>
           </div>
           @if ('calendar.personal.create' | hasPermission) {
-            <button mat-icon-button type="button" matTooltip="إضافة حدث في هذا اليوم" (click)="openAddDialog()"><mat-icon>add_circle</mat-icon></button>
+            <button mat-icon-button type="button" matTooltip="إضافة حدث في هذا اليوم" (click)="openAddDialog()"><app-ui-icon name="add_circle"></app-ui-icon></button>
           }
         </div>
 
         @if (selectedDayEvents.length === 0) {
           <div class="agenda-empty">
-            <mat-icon>event_available</mat-icon>
+            <app-ui-icon name="event_available"></app-ui-icon>
             <p>لا توجد أحداث في هذا اليوم</p>
           </div>
         } @else {
@@ -126,7 +126,7 @@
                       @if (ev.createdByName && ev.eventType !== 'PERSONAL') { <span class="by">· {{ ev.createdByName }}</span> }
                     </span>
                   </div>
-                  <mat-icon class="agenda-arrow">chevron_left</mat-icon>
+                  <app-ui-icon name="chevron_left" class="agenda-arrow"></app-ui-icon>
                 </button>
               </li>
             }

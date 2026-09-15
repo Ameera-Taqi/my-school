@@ -25,7 +25,7 @@
   width: 64px; height: 64px; border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
   background: var(--sp-primary-bg); color: var(--sp-primary-mid);
-  mat-icon { font-size: 34px; width: 34px; height: 34px; }
+  app-ui-icon { font-size: 34px; width: 34px; height: 34px; }
 }
 
 h3 {

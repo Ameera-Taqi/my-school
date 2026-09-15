@@ -16,7 +16,7 @@
   min-width: 180px;
   flex: 1;
 
-  mat-icon { color: var(--sp-primary-mid); font-size: 28px; width: 28px; height: 28px; }
+  app-ui-icon { color: var(--sp-primary-mid); font-size: 28px; width: 28px; height: 28px; }
   > div { display: flex; flex-direction: column; line-height: 1.2; }
   .value { font-size: 1.35rem; font-weight: 700; color: var(--sp-primary); }
   .label { font-size: 0.8rem; color: var(--sp-text-muted); }

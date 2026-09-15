@@ -5,14 +5,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { BehaviorNote } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-behavior-form-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatDialogModule, MatDatepickerModule],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
     <h2 mat-dialog-title>{{ data ? 'تعديل ملاحظة' : 'تسجيل ملاحظة سلوكية' }}</h2>
     <mat-dialog-content>
@@ -20,7 +20,7 @@ import { BehaviorNote } from '../../core/models';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>اسم الطالب</mat-label>
           <input matInput formControlName="studentName" cdkFocusInitial autocomplete="off">
-          <mat-icon matSuffix>school</mat-icon>
+          <app-ui-icon name="school" matSuffix></app-ui-icon>
           <mat-error>اسم الطالب مطلوب</mat-error>
         </mat-form-field>
         <div class="two-col">
@@ -49,7 +49,7 @@ import { BehaviorNote } from '../../core/models';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>المعلم / المسؤول</mat-label>
           <input matInput formControlName="recordedBy" autocomplete="off">
-          <mat-icon matSuffix>person</mat-icon>
+          <app-ui-icon name="person" matSuffix></app-ui-icon>
           <mat-error>اسم المسجل مطلوب</mat-error>
         </mat-form-field>
       </form>
@@ -57,12 +57,12 @@ import { BehaviorNote } from '../../core/models';
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data ? 'حفظ التعديلات' : 'تسجيل الملاحظة' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data ? 'حفظ التعديلات' : 'تسجيل الملاحظة' }}
       </button>
     </mat-dialog-actions>
   `,
   styles: [`
-    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; direction: rtl; }
+    .dialog-form { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.5rem; min-width: 0; }
     .full-width { width: 100%; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .75rem; }
     @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }

@@ -2,22 +2,22 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { UiIconComponent } from '../../icons/ui-icon.component';
 
 /** Debounced search box with a clear button. Emits the trimmed query. */
 @Component({
   selector: 'app-search-field',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   template: `
     <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
-      <mat-icon matPrefix>search</mat-icon>
+      <app-ui-icon name="search" matPrefix></app-ui-icon>
       <input matInput [formControl]="control" [placeholder]="placeholder" type="search" autocomplete="off" [attr.aria-label]="placeholder">
       @if (control.value) {
         <button mat-icon-button matSuffix type="button" (click)="clear()" aria-label="مسح البحث">
-          <mat-icon>close</mat-icon>
+          <app-ui-icon name="close"></app-ui-icon>
         </button>
       }
     </mat-form-field>
@@ -28,7 +28,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
     .search-field ::ng-deep .mat-mdc-text-field-wrapper { height: 42px; }
     .search-field ::ng-deep .mat-mdc-form-field-flex { height: 42px; align-items: center; }
     .search-field ::ng-deep .mat-mdc-form-field-infix { padding-top: 8px !important; padding-bottom: 8px !important; min-height: 0; }
-    .search-field ::ng-deep .mat-mdc-form-field-icon-prefix .mat-icon { color: var(--sp-text-faint); padding: 0 6px; }
+    .search-field ::ng-deep .mat-mdc-form-field-icon-prefix .app-ui-icon { color: var(--sp-text-faint); padding: 0 6px; }
     @media (max-width: 599px) { .search-field { min-width: 0; } }
   `]
 })

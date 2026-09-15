@@ -36,7 +36,7 @@
 
   ::ng-deep .mat-button-toggle-label-content { padding: 0 10px; line-height: 34px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 4px; }
   ::ng-deep .mat-button-toggle { color: var(--sp-text-muted); }
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
 
   .toggle-success.mat-button-toggle-checked { background: var(--sp-success-bg); color: var(--sp-success); }
   .toggle-danger.mat-button-toggle-checked { background: var(--sp-danger-bg); color: var(--sp-danger); }

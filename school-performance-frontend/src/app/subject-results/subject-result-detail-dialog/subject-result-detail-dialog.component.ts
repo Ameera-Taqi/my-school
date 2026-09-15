@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SubjectStudentResult } from '../../core/models';
 import { GRADE_LEVEL_LABELS } from '../../shared/constants/labels';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface SubjectResultDetailDialogData {
   result: SubjectStudentResult;
@@ -15,10 +15,10 @@ export interface SubjectResultDetailDialogData {
 @Component({
   selector: 'app-subject-result-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatDividerModule, MatProgressBarModule, AppDatePipe],
+  imports: [UiIconComponent, MatDialogModule, MatButtonModule, MatDividerModule, MatProgressBarModule, AppDatePipe],
   template: `
     <div class="dialog-header">
-      <span class="header-icon"><mat-icon>school</mat-icon></span>
+      <span class="header-icon"><app-ui-icon name="school"></app-ui-icon></span>
       <div>
         <h2 mat-dialog-title>{{ data.result.studentName }}</h2>
         <p class="subtitle">{{ data.result.className }} — {{ data.result.stageName }}</p>
@@ -37,28 +37,28 @@ export interface SubjectResultDetailDialogData {
 
       <div class="info-grid">
         <div class="info-item">
-          <mat-icon>menu_book</mat-icon>
+          <app-ui-icon name="menu_book"></app-ui-icon>
           <div>
             <span class="label">المادة</span>
             <span class="value">{{ data.result.subject }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>person</mat-icon>
+          <app-ui-icon name="person"></app-ui-icon>
           <div>
             <span class="label">المعلم</span>
             <span class="value">{{ data.result.teacherName }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>calendar_today</mat-icon>
+          <app-ui-icon name="calendar_today"></app-ui-icon>
           <div>
             <span class="label">تاريخ الاختبار</span>
             <span class="value">{{ data.result.examDate | appDate }}</span>
           </div>
         </div>
         <div class="info-item">
-          <mat-icon>date_range</mat-icon>
+          <app-ui-icon name="date_range"></app-ui-icon>
           <div>
             <span class="label">الفصل الدراسي</span>
             <span class="value">{{ data.result.term }}</span>
@@ -69,7 +69,7 @@ export interface SubjectResultDetailDialogData {
       @if (data.result.notes) {
         <mat-divider></mat-divider>
         <section class="detail-section">
-          <h3><mat-icon>notes</mat-icon> ملاحظات</h3>
+          <h3><app-ui-icon name="notes"></app-ui-icon> ملاحظات</h3>
           <p class="section-body">{{ data.result.notes }}</p>
         </section>
       }
@@ -92,7 +92,7 @@ export interface SubjectResultDetailDialogData {
       width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: var(--sp-primary-light); color: var(--sp-primary);
-      mat-icon { font-size: 26px; width: 26px; height: 26px; }
+      app-ui-icon { font-size: 26px; width: 26px; height: 26px; }
     }
 
     h2[mat-dialog-title] {
@@ -137,7 +137,7 @@ export interface SubjectResultDetailDialogData {
       border-radius: var(--sp-radius-sm);
     }
 
-    .info-item mat-icon { color: var(--sp-primary-mid); margin-top: 2px; }
+    .info-item app-ui-icon { color: var(--sp-primary-mid); margin-top: 2px; }
     .label { display: block; font-size: 0.75rem; color: var(--sp-text-muted); }
     .value { display: block; color: var(--sp-text); }
 

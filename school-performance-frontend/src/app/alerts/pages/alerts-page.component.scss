@@ -6,7 +6,7 @@
   width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: var(--sp-info-bg); color: var(--sp-info);
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  app-ui-icon { font-size: 18px; width: 18px; height: 18px; }
   &.danger { background: var(--sp-danger-bg); color: var(--sp-danger); }
   &.warning { background: var(--sp-warning-bg); color: var(--sp-warning); }
   &.success { background: var(--sp-success-bg); color: var(--sp-success); }

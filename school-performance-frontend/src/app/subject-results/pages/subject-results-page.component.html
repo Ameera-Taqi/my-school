@@ -48,14 +48,14 @@
     </mat-form-field>
     <div class="filter-actions">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
-        <mat-icon>restart_alt</mat-icon>
+        <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
       </button>
       <button mat-flat-button color="primary" type="button" (click)="search()" [disabled]="loading">
         @if (loading) {
           <ng-container><mat-spinner diameter="20"></mat-spinner> عرض النتائج</ng-container>
         } @else {
-          <ng-container><mat-icon>search</mat-icon> عرض النتائج</ng-container>
+          <ng-container><app-ui-icon name="search"></app-ui-icon> عرض النتائج</ng-container>
         }
       </button>
     </div>
@@ -65,28 +65,28 @@
 @if (searched && !loading) {
   <div class="stats-grid">
     <mat-card class="stat-card">
-      <mat-icon>groups</mat-icon>
+      <app-ui-icon name="groups"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.total }}</span>
         <span class="stat-label">عدد الطلاب</span>
       </div>
     </mat-card>
     <mat-card class="stat-card">
-      <mat-icon>percent</mat-icon>
+      <app-ui-icon name="percent"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.average }}%</span>
         <span class="stat-label">متوسط الدرجات</span>
       </div>
     </mat-card>
     <mat-card class="stat-card">
-      <mat-icon class="success">check_circle</mat-icon>
+      <app-ui-icon name="check_circle" class="success"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.passRate }}%</span>
         <span class="stat-label">نسبة النجاح</span>
       </div>
     </mat-card>
     <mat-card class="stat-card">
-      <mat-icon class="danger">cancel</mat-icon>
+      <app-ui-icon name="cancel" class="danger"></app-ui-icon>
       <div>
         <span class="stat-value">{{ stats.failCount }}</span>
         <span class="stat-label">راسبون</span>
@@ -97,7 +97,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <span class="toolbar-title"><mat-icon>grading</mat-icon> نتائج الطلاب</span>
+    <span class="toolbar-title"><app-ui-icon name="grading"></app-ui-icon> نتائج الطلاب</span>
     @if (searched && !loading) {
       <span class="toolbar-count">{{ total }} نتيجة</span>
     }
@@ -109,7 +109,7 @@
     <app-empty-state icon="filter_alt" title="اختر المادة لعرض النتائج" description="حدّد المادة والمرحلة والفصل ثم اضغط «عرض النتائج»." [compact]="true"></app-empty-state>
   } @else if (total === 0) {
     <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة للفلاتر المحددة" description="جرّب تعديل الفلاتر أو كلمة البحث." [compact]="true">
-      <button mat-stroked-button (click)="resetFilters()"><mat-icon>restart_alt</mat-icon> إعادة ضبط الفلاتر</button>
+      <button mat-stroked-button (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> إعادة ضبط الفلاتر</button>
     </app-empty-state>
   } @else {
     <div class="table-scroll">
@@ -162,7 +162,7 @@
           <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
           <td mat-cell *matCellDef="let r" class="actions-cell">
             <div class="row-actions">
-              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
             </div>
           </td>
         </ng-container>

@@ -1,6 +1,6 @@
 <app-page-header title="متابعة المهام" subtitle="إدارة المهام الإدارية والتعليمية">
   @if ('tasks.create' | hasPermission) {
-    <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> مهمة جديدة</button>
+    <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> مهمة جديدة</button>
   }
 </app-page-header>
 
@@ -19,7 +19,7 @@
   } @else if (total === 0) {
     <app-empty-state icon="task_alt" title="لا توجد مهام بعد" description="أضف أول مهمة لبدء متابعة الأعمال الإدارية والتعليمية.">
       @if ('tasks.create' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openDialog()"><mat-icon>add</mat-icon> إضافة مهمة</button>
+        <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة مهمة</button>
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {
@@ -60,10 +60,10 @@
           <th mat-header-cell *matHeaderCellDef class="actions-cell">الإجراءات</th>
           <td mat-cell *matCellDef="let r" class="actions-cell">
             <div class="row-actions">
-              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><mat-icon>visibility</mat-icon></button>
+              <button mat-icon-button matTooltip="عرض التفاصيل" (click)="view(r); $event.stopPropagation()"><app-ui-icon name="visibility"></app-ui-icon></button>
               @if ('tasks.create' | hasPermission) {
-                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r); $event.stopPropagation()"><mat-icon>edit</mat-icon></button>
-                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r); $event.stopPropagation()"><mat-icon>delete</mat-icon></button>
+                <button mat-icon-button matTooltip="تعديل" (click)="openDialog(r); $event.stopPropagation()"><app-ui-icon name="edit"></app-ui-icon></button>
+                <button mat-icon-button class="danger" matTooltip="حذف" (click)="delete(r); $event.stopPropagation()"><app-ui-icon name="delete"></app-ui-icon></button>
               }
             </div>
           </td>

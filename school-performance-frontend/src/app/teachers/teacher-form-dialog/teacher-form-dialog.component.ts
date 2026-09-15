@@ -6,11 +6,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Teacher } from '../../core/models';
+import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 export interface TeacherFormDialogData {
   teacher?: Teacher;
@@ -20,11 +20,7 @@ export interface TeacherFormDialogData {
 @Component({
   selector: 'app-teacher-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatDialogModule, MatDatepickerModule, MatIconModule, MatSlideToggleModule,
-    MatCheckboxModule, MatTooltipModule
-  ],
+  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule, MatSlideToggleModule, MatCheckboxModule, MatTooltipModule],
   template: `
     <h2 mat-dialog-title>{{ data.teacher ? 'تعديل معلم' : 'إضافة معلم' }}</h2>
     <mat-dialog-content>
@@ -58,7 +54,7 @@ export interface TeacherFormDialogData {
             <mat-label>تاريخ التعيين</mat-label>
             <input matInput [matDatepicker]="hirePicker" formControlName="hireDate" placeholder="اختر التاريخ">
             <mat-datepicker-toggle matIconSuffix [for]="hirePicker">
-              <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+              <app-ui-icon name="calendar_today" matDatepickerToggleIcon></app-ui-icon>
             </mat-datepicker-toggle>
             <mat-datepicker #hirePicker></mat-datepicker>
           </mat-form-field>
@@ -70,7 +66,7 @@ export interface TeacherFormDialogData {
         </div>
         @if (!data.teacher) {
           <div class="info-banner compact">
-            <mat-icon>info</mat-icon>
+            <app-ui-icon name="info"></app-ui-icon>
             <span>سيُنشأ حساب دخول تلقائياً بدور <strong>{{ form.controls.departmentHead.value ? 'رئيس شعبة' : 'معلم' }}</strong>، وستظهر بيانات الدخول بعد الحفظ.</span>
           </div>
         }
@@ -79,12 +75,12 @@ export interface TeacherFormDialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <mat-icon>check</mat-icon> {{ data.teacher ? 'حفظ التعديلات' : 'إضافة المعلم' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data.teacher ? 'حفظ التعديلات' : 'إضافة المعلم' }}
       </button>
     </mat-dialog-actions>
   `,
   styles: [`
-    .dialog-form { display: flex; flex-direction: column; direction: rtl; gap: 0.25rem; padding-top: 0.5rem; }
+    .dialog-form { display: flex; flex-direction: column; gap: 0.25rem; padding-top: 0.5rem; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.75rem; }
     @media (max-width: 599px) { .two-col { grid-template-columns: 1fr; } }
     .full-width { width: 100%; }
