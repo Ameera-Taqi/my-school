@@ -314,12 +314,105 @@ code, .mono {
   margin-inline-end: 6px;
 }
 
+// ───────────────────────── Form fields (outline) ─────────────────────────
+// Never radius the notch itself — that breaks the outline into capsules.
 .mat-mdc-form-field {
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    border-radius: 12px;
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-outline-color: #cbd5e1;
+  --mdc-outlined-text-field-hover-outline-color: #94a3b8;
+  --mdc-outlined-text-field-focus-outline-color: var(--sp-primary-mid);
+  --mdc-outlined-text-field-label-text-color: var(--sp-text-muted);
+  --mdc-outlined-text-field-hover-label-text-color: var(--sp-text);
+  --mdc-outlined-text-field-focus-label-text-color: var(--sp-primary-mid);
+  --mdc-outlined-text-field-input-text-color: var(--sp-text);
+  --mdc-outlined-text-field-caret-color: var(--sp-primary-mid);
+  --mat-form-field-container-vertical-padding: 14px;
+  --mat-form-field-container-height: 56px;
+
+  .mdc-notched-outline__leading {
+    border-start-start-radius: 12px !important;
+    border-end-start-radius: 12px !important;
+    border-start-end-radius: 0 !important;
+    border-end-end-radius: 0 !important;
   }
+
+  .mdc-notched-outline__trailing {
+    border-start-end-radius: 12px !important;
+    border-end-end-radius: 12px !important;
+    border-start-start-radius: 0 !important;
+    border-end-start-radius: 0 !important;
+  }
+
+  .mdc-notched-outline__notch {
+    border-radius: 0 !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    align-items: center;
+  }
+
+  .mat-mdc-form-field-icon-prefix,
+  .mat-mdc-form-field-icon-suffix {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    color: var(--sp-text-faint);
+    line-height: 1;
+
+    .app-ui-icon {
+      font-size: 1.15rem;
+      width: 1.15rem;
+      height: 1.15rem;
+      color: inherit;
+    }
+  }
+
+  .mat-mdc-form-field-icon-prefix {
+    padding-inline: 4px 2px;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    padding-inline: 2px 4px;
+  }
+
+  .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
+    --mdc-icon-button-state-layer-size: 40px;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    color: var(--sp-text-muted);
+
+    .app-ui-icon { font-size: 1.1rem; }
+  }
+
+  &.mat-focused .mat-mdc-form-field-icon-prefix,
+  &.mat-focused .mat-mdc-form-field-icon-suffix {
+    color: var(--sp-primary-mid);
+  }
+
+  &.mat-form-field-invalid .mat-mdc-form-field-icon-prefix,
+  &.mat-form-field-invalid .mat-mdc-form-field-icon-suffix {
+    color: var(--sp-danger);
+  }
+
+  .mat-mdc-form-field-hint-wrapper,
+  .mat-mdc-form-field-error-wrapper {
+    padding: 0 4px;
+  }
+
+  textarea.mat-mdc-input-element {
+    resize: vertical;
+    min-height: 72px;
+  }
+}
+
+// Compact filters / toolbars
+.filter-field.mat-mdc-form-field,
+.search-field.mat-mdc-form-field {
+  --mat-form-field-container-height: 42px;
+  --mat-form-field-container-vertical-padding: 8px;
+  width: auto;
 }
 
 .hide-mobile { @media (max-width: 767px) { display: none !important; } }

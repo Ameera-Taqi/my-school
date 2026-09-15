@@ -15,6 +15,8 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 export interface TeacherFormDialogData {
   teacher?: Teacher;
   departmentName: string;
+  /** Pre-check «رئيس شعبة» when creating a new teacher. */
+  asHead?: boolean;
 }
 
 @Component({
@@ -116,6 +118,8 @@ export class TeacherFormDialogComponent {
         departmentHead: this.data.teacher.departmentHead ?? this.data.teacher.roleKey?.startsWith('DEPARTMENT_HEAD') === true,
         wingSupervisor: this.data.teacher.wingSupervisor === true
       });
+    } else if (this.data.asHead) {
+      this.form.patchValue({ departmentHead: true });
     }
   }
 
