@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -20,8 +20,10 @@ import { SchoolClassApiService } from '../../school-classes/services/school-clas
 import { StudentApiService } from '../services/student-api.service';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { StudentFormDialogComponent } from '../student-form-dialog/student-form-dialog.component';
+import { StudentImportResultDialogComponent } from '../student-import-result-dialog.component';
+import { downloadStudentImportTemplate, parseStudentImportFile } from '../student-excel';
 import { GENDER_LABELS, STUDENT_STATUS_LABELS } from '../constants/student.constants';
-import { SchoolClass, Student } from '../../core/models';
+import { SchoolClass, Student, StudentImportError } from '../../core/models';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
@@ -45,6 +47,7 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
   paginator?: MatPaginator;
   @ViewChild(MatSort) set sortRef(s: MatSort | undefined) { this.sort = s; this.attachTableControls(); }
   sort?: MatSort;
+  @ViewChild('excelFileInput') excelFileInput?: ElementRef<HTMLInputElement>;
 
   readonly statusLabels = STUDENT_STATUS_LABELS;
   readonly genderLabels = GENDER_LABELS;
@@ -53,6 +56,7 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
   classId = 0;
   schoolClass: SchoolClass | null = null;
   loading = true;
+  importing = false;
   query = '';
   displayedColumns = ['fullName', 'civilId', 'guardianPhone', 'status', 'actions'];
 
@@ -92,6 +96,56 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
     this.query = query;
     this.dataSource.filter = query.toLowerCase();
     this.paginator?.firstPage();
+  }
+
+  downloadTemplate(): void {
+    void downloadStudentImportTemplate(this.schoolClass?.name ?? '');
+  }
+
+  triggerExcelUpload(): void {
+    this.excelFileInput?.nativeElement.click();
+  }
+
+  async onExcelFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    this.importing = true;
+    try {
+      const parsed = await parseStudentImportFile(file);
+      if (!parsed.students.length) {
+        this.showImportResult(0, parsed.errors.length
+          ? parsed.errors
+          : [{ row: 1, message: 'لا توجد صفوف صالحة للاستيراد في الملف' }]);
+        return;
+      }
+
+      this.studentService.import(this.classId, parsed.students).subscribe({
+        next: (result) => {
+          this.importing = false;
+          if (result.created > 0) {
+            this.lookup.invalidate();
+            this.load();
+            this.toast.success(`تم إضافة ${result.created} طالب`);
+          }
+          const errors = [...parsed.errors, ...(result.errors ?? [])];
+          if (errors.length) {
+            this.showImportResult(result.created, errors);
+          } else if (result.created === 0) {
+            this.toast.warning('لم يتم استيراد أي طالب');
+          }
+        },
+        error: (e) => {
+          this.importing = false;
+          this.toast.fromError(e);
+        }
+      });
+    } catch {
+      this.importing = false;
+      this.toast.error('تعذر قراءة ملف Excel. تأكد من استخدام القالب الصحيح');
+    }
   }
 
   openStudentDialog(student?: Student): void {
@@ -156,6 +210,15 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
 
   private formatDate(value?: string): string {
     return new AppDatePipeProxy().transform(value);
+  }
+
+  private showImportResult(created: number, errors: StudentImportError[]): void {
+    this.importing = false;
+    this.dialog.open(StudentImportResultDialogComponent, {
+      width: '560px',
+      maxWidth: '95vw',
+      data: { created, errors }
+    });
   }
 
   private attachTableControls(): void {

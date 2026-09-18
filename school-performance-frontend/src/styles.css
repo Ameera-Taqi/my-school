@@ -1309,6 +1309,11 @@ code,
   padding-inline: 2px 4px;
 }
 
+.mat-mdc-form-field .mat-mdc-form-field-icon-suffix:has(app-ui-icon) {
+  padding-inline-start: 4px;
+  padding-inline-end: 12px;
+}
+
 .mat-mdc-form-field .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
   --mdc-icon-button-state-layer-size: 40px;
   width: 40px;

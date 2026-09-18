@@ -15,8 +15,6 @@ import { ConfirmService } from '../../shared/services/confirm.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { Teacher } from '../../core/models';
-import { DepartmentApiService } from '../../departments/services/department-api.service';
-import { DepartmentFormDialogComponent } from '../../departments/department-form-dialog/department-form-dialog.component';
 import { TeacherApiService } from '../../teachers/services/teacher-api.service';
 import { TeacherFormDialogComponent } from '../../teachers/teacher-form-dialog/teacher-form-dialog.component';
 import { CredentialsDialogComponent } from '../../shared/components/credentials-dialog/credentials-dialog.component';
@@ -56,7 +54,6 @@ export class OrgStructurePageComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly auth = inject(AuthService);
   private readonly lookup = inject(AcademicLookupService);
-  private readonly departmentsApi = inject(DepartmentApiService);
   private readonly teachersApi = inject(TeacherApiService);
 
   loading = true;
@@ -94,10 +91,6 @@ export class OrgStructurePageComponent implements OnInit {
       },
       error: (e) => { this.loading = false; this.toast.fromError(e); }
     });
-  }
-
-  get canManageDepartments(): boolean {
-    return this.auth.hasPermission('departments.manage');
   }
 
   get canManageTeachers(): boolean {
@@ -298,26 +291,6 @@ export class OrgStructurePageComponent implements OnInit {
         { label: 'الجوال', value: person.phone, mono: true },
         { label: 'الحالة', value: person.active ? 'نشط' : 'غير نشط', chip: person.active ? 'success' : 'danger' }
       ]
-    });
-  }
-
-  openAddSection(): void {
-    const ref = this.dialog.open(DepartmentFormDialogComponent, {
-      width: '640px',
-      maxWidth: '95vw',
-      panelClass: 'sp-form-dialog',
-      data: null
-    });
-    ref.afterClosed().subscribe((result) => {
-      if (!result) return;
-      this.departmentsApi.create(result).subscribe({
-        next: () => {
-          this.lookup.invalidate();
-          this.toast.success('تمت إضافة الشعبة الجديدة بنجاح');
-          this.load();
-        },
-        error: (e) => this.toast.fromError(e)
-      });
     });
   }
 

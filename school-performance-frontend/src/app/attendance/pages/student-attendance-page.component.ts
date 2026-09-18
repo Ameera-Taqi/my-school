@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,8 +27,29 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-student-attendance-page',
   standalone: true,
-  imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
-  templateUrl: './student-attendance-page.component.html'
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
+  templateUrl: './student-attendance-page.component.html',
+  styles: [`
+    .student-att-filters {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+    }
+    .student-att-filters .filter-field {
+      flex: 1 1 0;
+      min-width: 0;
+      margin: 0;
+    }
+    .student-att-filters__actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.5rem;
+      margin-inline-start: auto;
+    }
+  `]
 })
 export class StudentAttendancePageComponent implements OnInit {
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;
@@ -40,7 +62,7 @@ export class StudentAttendancePageComponent implements OnInit {
   private readonly toast = inject(ToastService);
 
   readonly statusLabels = ATTENDANCE_STATUS_LABELS;
-  readonly statusOptions = Object.keys(ATTENDANCE_STATUS_LABELS);
+  readonly statusOptions = ['PRESENT', 'ABSENT', 'LATE'] as const;
 
   stages: AcademicStage[] = [];
   classes: SchoolClass[] = [];
@@ -48,7 +70,7 @@ export class StudentAttendancePageComponent implements OnInit {
   loadingStudents = false;
   exportingStudentsPdf = false;
 
-  studentCols = ['personName', 'className', 'status', 'actions'];
+  studentCols = ['personName', 'className', 'status'];
 
   studentFilters = this.fb.group({
     date: [new Date()],
@@ -81,15 +103,24 @@ export class StudentAttendancePageComponent implements OnInit {
     }
     this.loadingStudents = true;
     this.attendanceService.getStudentAttendance(stageId, classId, this.formatDate(date)).subscribe({
-      next: (data) => { this.studentRecords = data; this.loadingStudents = false; },
+      next: (data) => {
+        this.studentRecords = data.map(r => ({ ...r, status: this.normalizeStatus(r.status) }));
+        this.loadingStudents = false;
+      },
       error: (e) => { this.loadingStudents = false; this.toast.fromError(e); }
     });
   }
 
 
   setStatus(record: AttendanceRecord, status: string): void {
-    record.status = status as AttendanceRecord['status'];
+    record.status = this.normalizeStatus(status);
     this.studentRecords = [...this.studentRecords];
+  }
+
+  private normalizeStatus(status: string): AttendanceRecord['status'] {
+    if (status === 'LATE') return 'LATE';
+    if (status === 'ABSENT' || status === 'EXCUSED') return 'ABSENT';
+    return 'PRESENT';
   }
 
   statusChip(status: string): 'success' | 'danger' | 'warning' | 'info' {
@@ -98,15 +129,6 @@ export class StudentAttendancePageComponent implements OnInit {
       case 'ABSENT': return 'danger';
       case 'LATE': return 'warning';
       default: return 'info';
-    }
-  }
-
-  statusIcon(status: string): string {
-    switch (status) {
-      case 'PRESENT': return 'check_circle';
-      case 'ABSENT': return 'cancel';
-      case 'LATE': return 'schedule';
-      default: return 'event_busy';
     }
   }
 
@@ -170,7 +192,6 @@ export class StudentAttendancePageComponent implements OnInit {
       { label: 'حاضر', value: String(counts.PRESENT) },
       { label: 'غائب', value: String(counts.ABSENT) },
       { label: 'متأخر', value: String(counts.LATE) },
-      { label: 'مستأذن', value: String(counts.EXCUSED) },
       { label: 'الإجمالي', value: String(records.length) }
     ];
   }

@@ -76,7 +76,7 @@ export interface TeacherFormDialogData {
             <mat-label>رقم الجوال</mat-label>
             <input matInput formControlName="phone" dir="ltr" autocomplete="off">
           </mat-form-field>
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="self-start" subscriptSizing="dynamic">
             <mat-label>تاريخ التعيين</mat-label>
             <input matInput [matDatepicker]="hirePicker" formControlName="hireDate" placeholder="اختر التاريخ">
             <mat-datepicker-toggle matIconSuffix [for]="hirePicker">

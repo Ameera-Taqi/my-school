@@ -81,13 +81,6 @@
       <app-ui-icon name="refresh" [class.animate-spin]="loading"></app-ui-icon>
       <span class="hide-mobile">تحديث</span>
     </button>
-
-    @if (canManageDepartments) {
-      <button type="button" class="box-border inline-flex h-10 cursor-pointer items-center gap-[0.4rem] rounded-sp-sm border-0 bg-primary-mid px-[0.95rem] text-[0.85rem] font-extrabold text-white shadow-[0_10px_22px_rgba(79,70,229,0.28)] transition-colors duration-150 hover:bg-primary-dark" (click)="openAddSection()">
-        <app-ui-icon name="add"></app-ui-icon>
-        <span>إضافة</span>
-      </button>
-    }
   </div>
 </div>
 
@@ -103,12 +96,12 @@
     </div>
   </div>
 } @else if (!data || isEmpty) {
-  <app-empty-state icon="account_tree" title="لا يوجد هيكل بعد" description="أضف مدير المدرسة والشعب والمعلمين من صفحات المستخدمين والمعلمين ليظهر الهيكل هنا.">
+  <app-empty-state icon="account_tree" title="لا يوجد هيكل بعد" description="أضف مدير المدرسة من صفحة المستخدمين، والشعب من صفحة الشعب الدراسية، ليظهر الهيكل هنا.">
     @if ('users.manage' | hasPermission) {
       <a mat-flat-button color="primary" routerLink="/users"><app-ui-icon name="manage_accounts"></app-ui-icon> المستخدمون</a>
     }
-    @if (canManageDepartments) {
-      <button mat-stroked-button type="button" (click)="openAddSection()"><app-ui-icon name="add"></app-ui-icon> إضافة شعبة</button>
+    @if ('departments.manage' | hasPermission) {
+      <a mat-stroked-button routerLink="/departments"><app-ui-icon name="domain"></app-ui-icon> الشعب الدراسية</a>
     }
   </app-empty-state>
 } @else {

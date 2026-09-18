@@ -21,6 +21,7 @@ import { TeacherMonitoringRecord } from '../../core/models';
 import { TeacherMonitoringApiService } from '../services/teacher-monitoring-api.service';
 import { TeacherMonitoringDetailDialogComponent } from '../teacher-monitoring-detail-dialog/teacher-monitoring-detail-dialog.component';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
+import { AuthService } from '../../core/services/auth.service';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
@@ -34,6 +35,7 @@ export class TeacherMonitoringPageComponent implements OnInit, AfterViewInit {
   private readonly dialog = inject(MatDialog);
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastService);
+  private readonly auth = inject(AuthService);
   readonly departmentScope = inject(DepartmentScopeService);
 
   // Setter form: the table lives inside @if blocks, so attach the moment Angular creates the paginator.
@@ -72,7 +74,10 @@ export class TeacherMonitoringPageComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.load();
+    this.auth.refreshCurrentUser().subscribe({
+      next: () => this.load(),
+      error: () => this.load()
+    });
   }
 
   ngAfterViewInit(): void {
@@ -87,8 +92,11 @@ export class TeacherMonitoringPageComponent implements OnInit, AfterViewInit {
       search: v.search || undefined
     }).subscribe({
       next: (data) => {
-        this.dataSource.data = data;
-        this.updateStats(data);
+        const scoped = this.departmentScope.isScoped()
+          ? data.filter(r => r.departmentName === this.departmentScope.departmentName())
+          : data;
+        this.dataSource.data = scoped;
+        this.updateStats(scoped);
         this.loading = false;
         setTimeout(() => this.attachTableControls());
       },

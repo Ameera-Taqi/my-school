@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { SubjectStudentResult } from '../../core/models';
+import { Observable, forkJoin, of } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
+import { SubjectStudentResult, Teacher } from '../../core/models';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
 
@@ -14,7 +14,7 @@ export interface SubjectResultsFilters {
   search?: string;
 }
 
-const ALL_RESULTS: SubjectStudentResult[] = [
+const FALLBACK_RESULTS: SubjectStudentResult[] = [
   { id: 1, studentName: 'محمد العتيبي', className: '10-أ', stageName: 'العاشر', subject: 'رياضيات', teacherName: 'أ. سالم الحربي', score: 92, maxScore: 100, percentage: 92, term: 'الفصل الثاني', gradeLevel: 'EXCELLENT', examDate: '2026-06-10' },
   { id: 2, studentName: 'سارة القحطاني', className: '10-أ', stageName: 'العاشر', subject: 'رياضيات', teacherName: 'أ. سالم الحربي', score: 78, maxScore: 100, percentage: 78, term: 'الفصل الثاني', gradeLevel: 'GOOD', examDate: '2026-06-10' },
   { id: 3, studentName: 'عبدالله الشمري', className: '10-ب', stageName: 'العاشر', subject: 'رياضيات', teacherName: 'أ. سالم الحربي', score: 55, maxScore: 100, percentage: 55, term: 'الفصل الثاني', gradeLevel: 'FAIL', examDate: '2026-06-10', notes: 'يحتاج دعم إضافي' },
@@ -31,16 +31,19 @@ const ALL_RESULTS: SubjectStudentResult[] = [
   { id: 14, studentName: 'مها العسيري', className: '12-ب', stageName: 'الثاني عشر', subject: 'إحصاء', teacherName: 'أ. فهد الدوسري', score: 93, maxScore: 100, percentage: 93, term: 'الفصل الثاني', gradeLevel: 'EXCELLENT', examDate: '2026-06-09' }
 ];
 
+const TERM = 'الفصل الثاني';
+
 @Injectable({ providedIn: 'root' })
 export class SubjectResultsMockService {
   private readonly lookup = inject(AcademicLookupService);
   private readonly departmentScope = inject(DepartmentScopeService);
 
   getSubjects(): Observable<string[]> {
-    const subjects = this.departmentScope.isScoped()
-      ? this.departmentScope.subjects()
-      : [...new Set(ALL_RESULTS.map(r => r.subject))];
-    return of(subjects).pipe(delay(100));
+    const subjects = this.departmentSubjects();
+    if (subjects.length) {
+      return of(subjects).pipe(delay(100));
+    }
+    return of([...new Set(FALLBACK_RESULTS.map(r => r.subject))]).pipe(delay(100));
   }
 
   getStages(): Observable<string[]> {
@@ -52,33 +55,138 @@ export class SubjectResultsMockService {
   }
 
   getTerms(): Observable<string[]> {
-    const terms = [...new Set(ALL_RESULTS.map(r => r.term))];
-    return of(terms).pipe(delay(100));
+    return of([TERM]).pipe(delay(100));
   }
 
   search(filters: SubjectResultsFilters): Observable<SubjectStudentResult[]> {
-    let data = this.departmentScope.filterByDepartmentScope(ALL_RESULTS);
-
-    if (filters.subjects?.length) {
-      data = data.filter(r => filters.subjects!.includes(r.subject));
-    } else if (filters.subject) {
-      data = data.filter(r => r.subject === filters.subject);
+    const subjects = this.resolveSubjects(filters);
+    if (!subjects.length) {
+      return of([]).pipe(delay(150));
     }
 
-    if (filters.stage) {
-      data = data.filter(r => r.stageName === filters.stage);
+    return forkJoin({
+      students: this.lookup.getAllStudents(),
+      teachers: this.lookup.getAllTeachers()
+    }).pipe(
+      map(({ students, teachers }) => {
+        const rows = students.length
+          ? this.fromRoster(students, teachers, subjects, filters)
+          : this.fromFallback(subjects, filters);
+        return this.sortByClass(this.applyFilters(rows, filters));
+      }),
+      delay(250)
+    );
+  }
+
+  private departmentSubjects(): string[] {
+    return this.departmentScope.isScoped() ? this.departmentScope.subjects() : [];
+  }
+
+  private resolveSubjects(filters: SubjectResultsFilters): string[] {
+    const scoped = this.departmentSubjects();
+    if (scoped.length) {
+      if (filters.subject) {
+        return scoped.includes(filters.subject) ? [filters.subject] : [];
+      }
+      if (filters.subjects?.length) {
+        return filters.subjects.filter(s => scoped.includes(s));
+      }
+      return scoped;
     }
-    if (filters.className) {
-      data = data.filter(r => r.className === filters.className);
+    if (filters.subjects?.length) return filters.subjects;
+    if (filters.subject) return [filters.subject];
+    return [];
+  }
+
+  private fromRoster(
+    students: { id?: number; fullName: string; className?: string; academicStageName?: string }[],
+    teachers: Teacher[],
+    subjects: string[],
+    filters: SubjectResultsFilters
+  ): SubjectStudentResult[] {
+    const deptName = this.departmentScope.departmentName();
+    const deptTeachers = this.departmentScope.isScoped()
+      ? teachers.filter(t => t.departmentId === this.departmentScope.departmentId() || t.departmentName === deptName)
+      : teachers;
+
+    const rows: SubjectStudentResult[] = [];
+    for (const student of students) {
+      const className = student.className || '—';
+      const stageName = student.academicStageName || '—';
+      if (filters.stage && stageName !== filters.stage) continue;
+      if (filters.className && className !== filters.className) continue;
+
+      for (const subject of subjects) {
+        const seed = this.seed(student.id ?? student.fullName, subject);
+        const score = 48 + (seed % 53);
+        rows.push({
+          id: seed,
+          studentName: student.fullName,
+          className,
+          stageName,
+          subject,
+          teacherName: this.teacherFor(deptTeachers, subject),
+          score,
+          maxScore: 100,
+          percentage: score,
+          term: filters.term || TERM,
+          gradeLevel: this.gradeLevel(score),
+          examDate: this.examDate(seed)
+        });
+      }
     }
-    if (filters.term) {
-      data = data.filter(r => r.term === filters.term);
-    }
+    return rows;
+  }
+
+  private fromFallback(subjects: string[], filters: SubjectResultsFilters): SubjectStudentResult[] {
+    return FALLBACK_RESULTS.filter(r => subjects.includes(r.subject));
+  }
+
+  private applyFilters(rows: SubjectStudentResult[], filters: SubjectResultsFilters): SubjectStudentResult[] {
+    let data = rows;
+    if (filters.stage) data = data.filter(r => r.stageName === filters.stage);
+    if (filters.className) data = data.filter(r => r.className === filters.className);
+    if (filters.term) data = data.filter(r => r.term === filters.term);
     if (filters.search?.trim()) {
       const q = filters.search.trim().toLowerCase();
       data = data.filter(r => r.studentName.toLowerCase().includes(q));
     }
+    return data;
+  }
 
-    return of([...data]).pipe(delay(300));
+  private sortByClass(rows: SubjectStudentResult[]): SubjectStudentResult[] {
+    return [...rows].sort((a, b) =>
+      a.className.localeCompare(b.className, 'ar')
+      || a.studentName.localeCompare(b.studentName, 'ar')
+      || a.subject.localeCompare(b.subject, 'ar')
+    );
+  }
+
+  private teacherFor(teachers: Teacher[], subject: string): string {
+    return teachers.find(t => t.specialization === subject)?.fullName
+      || teachers[0]?.fullName
+      || '—';
+  }
+
+  private seed(id: number | string, subject: string): number {
+    const text = `${id}|${subject}`;
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash);
+  }
+
+  private gradeLevel(score: number): SubjectStudentResult['gradeLevel'] {
+    if (score >= 90) return 'EXCELLENT';
+    if (score >= 80) return 'VERY_GOOD';
+    if (score >= 70) return 'GOOD';
+    if (score >= 50) return 'PASS';
+    return 'FAIL';
+  }
+
+  private examDate(seed: number): string {
+    const day = 8 + (seed % 10);
+    return `2026-06-${String(day).padStart(2, '0')}`;
   }
 }

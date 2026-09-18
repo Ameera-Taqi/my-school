@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { TeacherNote } from '../../core/models';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-teacher-note-form-dialog',
@@ -63,6 +64,7 @@ export class TeacherNoteFormDialogComponent {
   readonly data: TeacherNote | null = inject(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<TeacherNoteFormDialogComponent>);
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
 
   form = this.fb.nonNullable.group({
     studentName: ['', Validators.required],
@@ -83,6 +85,11 @@ export class TeacherNoteFormDialogComponent {
     }
     const v = this.form.getRawValue();
     const noteDate = v.noteDate instanceof Date ? v.noteDate.toISOString().slice(0, 10) : String(v.noteDate);
-    this.dialogRef.close({ ...this.data, ...v, noteDate });
+    this.dialogRef.close({
+      ...this.data,
+      ...v,
+      noteDate,
+      teacherName: this.data?.teacherName || this.auth.fullName()
+    });
   }
 }

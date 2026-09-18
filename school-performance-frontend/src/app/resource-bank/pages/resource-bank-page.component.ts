@@ -92,6 +92,11 @@ export class ResourceBankPageComponent implements OnInit, AfterViewInit {
     });
   }
 
+  download(file: ResourceFile): void {
+    this.service.download(file);
+    this.toast.success('بدأ تحميل الملف');
+  }
+
   fileIcon(type: string): string {
     switch ((type || '').toUpperCase()) {
       case 'PDF': return 'picture_as_pdf';

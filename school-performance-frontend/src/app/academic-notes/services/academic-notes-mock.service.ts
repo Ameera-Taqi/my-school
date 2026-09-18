@@ -1,13 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { AcademicNote } from '../../core/models';
+import { Observable, forkJoin, of } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
+import { AcademicNote, Teacher, TeacherNote, BehaviorNote } from '../../core/models';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
+import { TeacherPortalMockService } from '../../teacher-portal/services/teacher-portal-mock.service';
+import { BehaviorMockService } from '../../behavior/services/behavior-mock.service';
 
 export interface AcademicNotesFilters {
   subjects?: string[];
   subject?: string;
+  noteType?: string;
   stage?: string;
   className?: string;
   category?: string;
@@ -16,32 +19,191 @@ export interface AcademicNotesFilters {
   search?: string;
 }
 
-const MOCK: AcademicNote[] = [
-  { id: 1, studentName: 'محمد العتيبي', className: '10-أ', stageName: 'العاشر', subject: 'رياضيات', teacherName: 'أ. سالم الحربي', category: 'PERFORMANCE', priority: 'HIGH', content: 'انخفاض ملحوظ في نتائج الاختبارات القصيرة خلال الأسبوعين الماضيين.', noteDate: '2026-06-18', status: 'OPEN' },
-  { id: 2, studentName: 'سارة القحطاني', className: '10-أ', stageName: 'العاشر', subject: 'رياضيات', teacherName: 'أ. سالم الحربي', category: 'PARTICIPATION', priority: 'MEDIUM', content: 'مشاركة جيدة في حل المسائل على السبورة.', noteDate: '2026-06-16', status: 'REVIEWED' },
-  { id: 3, studentName: 'عبدالله الشمري', className: '10-ب', stageName: 'العاشر', subject: 'رياضيات', teacherName: 'أ. سالم الحربي', category: 'HOMEWORK', priority: 'HIGH', content: 'تأخر متكرر في تسليم الواجبات المنزلية.', noteDate: '2026-06-15', status: 'OPEN' },
-  { id: 4, studentName: 'نورة الدوسري', className: '10-ب', stageName: 'العاشر', subject: 'أحياء', teacherName: 'أ. مريم العتيبي', category: 'ASSESSMENT', priority: 'LOW', content: 'أداء ممتاز في اختبار الوحدة الثالثة.', noteDate: '2026-06-14', status: 'RESOLVED' },
-  { id: 5, studentName: 'خالد العنزي', className: '10-أ', stageName: 'العاشر', subject: 'أحياء', teacherName: 'أ. مريم العتيبي', category: 'PERFORMANCE', priority: 'MEDIUM', content: 'يحتاج مراجعة دروس الخلية قبل الاختبار النهائي.', noteDate: '2026-06-12', status: 'OPEN' },
-  { id: 6, studentName: 'أحمد الزهراني', className: '12-أ', stageName: 'الثاني عشر', subject: 'لغة عربية', teacherName: 'أ. يوسف القحطاني', category: 'GENERAL', priority: 'LOW', content: 'تحسن في أسلوب التعبير الكتابي.', noteDate: '2026-06-11', status: 'REVIEWED' },
-  { id: 7, studentName: 'هند الغامدي', className: '12-أ', stageName: 'الثاني عشر', subject: 'لغة عربية', teacherName: 'أ. يوسف القحطاني', category: 'HOMEWORK', priority: 'MEDIUM', content: 'لم تسلم تقرير القراءة المطلوب.', noteDate: '2026-06-10', status: 'OPEN' },
-  { id: 8, studentName: 'سلمان البلوي', className: '11-ب', stageName: 'الحادي عشر', subject: 'إنجليزي', teacherName: 'أ. نورة الشمري', category: 'PARTICIPATION', priority: 'LOW', content: 'تفاعل إيجابي في الأنشطة الصفية.', noteDate: '2026-06-09', status: 'RESOLVED' },
-  { id: 9, studentName: 'دانة الرشيدي', className: '11-ب', stageName: 'الحادي عشر', subject: 'إنجليزي', teacherName: 'أ. نورة الشمري', category: 'ASSESSMENT', priority: 'HIGH', content: 'ضعف في مهارة الاستماع يؤثر على نتائج الاختبارات.', noteDate: '2026-06-08', status: 'OPEN' },
-  { id: 10, studentName: 'ياسر الفيصل', className: '11-أ', stageName: 'الحادي عشر', subject: 'إحصاء', teacherName: 'أ. فهد الدوسري', category: 'PERFORMANCE', priority: 'MEDIUM', content: 'تحسن تدريجي بعد جلسات الدعم الإضافية.', noteDate: '2026-06-07', status: 'REVIEWED' }
+const ACADEMIC_TEXTS = [
+  'انخفاض ملحوظ في نتائج الاختبارات القصيرة خلال الأسبوعين الماضيين.',
+  'مشاركة جيدة في حل المسائل على السبورة.',
+  'تأخر متكرر في تسليم الواجبات المنزلية.',
+  'أداء ممتاز في اختبار الوحدة الأخيرة.',
+  'يحتاج مراجعة الدروس الأساسية قبل الاختبار النهائي.',
+  'تحسن تدريجي بعد جلسات الدعم الإضافية.'
 ];
+
+const BEHAVIOR_TEXTS = [
+  'مشاركة متميزة وتعاون مع زملائه داخل الحصة.',
+  'تأخر متكرر عن بداية الحصة.',
+  'التزام جيد بأنظمة الصف والحصة.',
+  'يحتاج متابعة في الانضباط أثناء العمل الجماعي.'
+];
+
+const CATEGORIES: AcademicNote['category'][] = ['PERFORMANCE', 'PARTICIPATION', 'HOMEWORK', 'ASSESSMENT', 'GENERAL'];
+const PRIORITIES: AcademicNote['priority'][] = ['HIGH', 'MEDIUM', 'LOW'];
+const STATUSES: AcademicNote['status'][] = ['OPEN', 'REVIEWED', 'RESOLVED'];
 
 @Injectable({ providedIn: 'root' })
 export class AcademicNotesMockService {
   private readonly lookup = inject(AcademicLookupService);
   private readonly departmentScope = inject(DepartmentScopeService);
+  private readonly teacherPortal = inject(TeacherPortalMockService);
+  private readonly behaviorService = inject(BehaviorMockService);
+  private readonly statusOverrides = new Map<number, AcademicNote['status']>();
 
   getAll(filters?: AcademicNotesFilters): Observable<AcademicNote[]> {
-    let data = this.departmentScope.filterByDepartmentScope([...MOCK]);
+    return forkJoin({
+      students: this.lookup.getAllStudents(),
+      teachers: this.lookup.getAllTeachers(),
+      portalNotes: this.teacherPortal.getNotes(),
+      behaviorNotes: this.behaviorService.getAll()
+    }).pipe(
+      map(({ students, teachers, portalNotes, behaviorNotes }) => {
+        const deptTeachers = this.departmentTeachers(teachers);
+        if (this.departmentScope.isScoped() && !deptTeachers.length) {
+          return [];
+        }
 
+        const generated = students.length && deptTeachers.length
+          ? this.fromRoster(students, deptTeachers)
+          : [];
+        const fromTeachers = this.fromPortalNotes(portalNotes, deptTeachers);
+        const fromBehavior = this.fromBehaviorNotes(behaviorNotes, deptTeachers);
+        const merged = this.mergeNotes([...generated, ...fromTeachers, ...fromBehavior]);
+        return this.applyFilters(merged, filters);
+      }),
+      delay(250)
+    );
+  }
+
+  getSubjects(): Observable<string[]> {
+    if (this.departmentScope.isScoped()) {
+      return of(this.departmentScope.subjects()).pipe(delay(100));
+    }
+    return this.lookup.getAllTeachers().pipe(
+      map(teachers => [...new Set(
+        teachers.map(t => t.specialization).filter((s): s is string => !!s)
+      )]),
+      delay(100)
+    );
+  }
+
+  getStages(): Observable<string[]> {
+    return this.lookup.getStageNames().pipe(delay(100));
+  }
+
+  getClasses(stage?: string): Observable<string[]> {
+    return this.lookup.getClassNamesByStageName(stage).pipe(delay(100));
+  }
+
+  markReviewed(id: number): Observable<void> {
+    this.statusOverrides.set(id, 'REVIEWED');
+    return of(void 0).pipe(delay(200));
+  }
+
+  private departmentTeachers(teachers: Teacher[]): Teacher[] {
+    const active = teachers.filter(t => t.active !== false);
+    if (!this.departmentScope.isScoped()) {
+      return active;
+    }
+    const id = this.departmentScope.departmentId();
+    const name = this.departmentScope.departmentName();
+    return active.filter(t =>
+      (id != null && t.departmentId === id) ||
+      (!!name && t.departmentName === name)
+    );
+  }
+
+  private fromRoster(
+    students: { id?: number; fullName: string; className?: string; academicStageName?: string }[],
+    teachers: Teacher[]
+  ): AcademicNote[] {
+    const rows: AcademicNote[] = [];
+    teachers.forEach((teacher, teacherIndex) => {
+      const subject = teacher.specialization || '—';
+      for (let n = 0; n < 3; n++) {
+        const student = students[(teacherIndex * 3 + n) % students.length];
+        const seed = this.seed(teacher.fullName, student.fullName, n);
+        const isBehavior = n === 2;
+        rows.push(this.withStatus({
+          id: seed,
+          studentName: student.fullName,
+          className: student.className || '—',
+          stageName: student.academicStageName || '—',
+          subject,
+          teacherName: teacher.fullName,
+          noteType: isBehavior ? 'BEHAVIOR' : 'ACADEMIC',
+          category: isBehavior ? 'GENERAL' : CATEGORIES[seed % CATEGORIES.length],
+          priority: PRIORITIES[seed % PRIORITIES.length],
+          content: isBehavior
+            ? BEHAVIOR_TEXTS[seed % BEHAVIOR_TEXTS.length]
+            : ACADEMIC_TEXTS[seed % ACADEMIC_TEXTS.length],
+          noteDate: this.noteDate(seed),
+          status: STATUSES[seed % STATUSES.length]
+        }));
+      }
+    });
+    return rows;
+  }
+
+  private fromPortalNotes(notes: TeacherNote[], teachers: Teacher[]): AcademicNote[] {
+    return notes.flatMap(note => {
+      const teacher = this.matchTeacher(teachers, note.teacherName);
+      if (!teacher) return [];
+      const seed = this.seed('portal', note.id ?? note.content, note.noteDate);
+      return [this.withStatus({
+        id: 10_000 + (note.id ?? seed % 9_000),
+        studentName: note.studentName,
+        className: note.className,
+        stageName: '—',
+        subject: teacher.specialization || '—',
+        teacherName: teacher.fullName,
+        noteType: note.noteType,
+        category: 'GENERAL',
+        priority: 'MEDIUM',
+        content: note.content,
+        noteDate: note.noteDate,
+        status: 'OPEN'
+      })];
+    });
+  }
+
+  private fromBehaviorNotes(notes: BehaviorNote[], teachers: Teacher[]): AcademicNote[] {
+    return notes.flatMap(note => {
+      const teacher = this.matchTeacher(teachers, note.recordedBy);
+      if (!teacher) return [];
+      const seed = this.seed('behavior', note.id ?? note.description, note.noteDate);
+      return [this.withStatus({
+        id: 20_000 + (note.id ?? seed % 9_000),
+        studentName: note.studentName,
+        className: '—',
+        stageName: '—',
+        subject: teacher.specialization || '—',
+        teacherName: teacher.fullName,
+        noteType: 'BEHAVIOR',
+        category: 'GENERAL',
+        priority: note.type === 'WARNING' || note.type === 'NEGATIVE' ? 'HIGH' : 'LOW',
+        content: note.description,
+        noteDate: note.noteDate,
+        status: 'OPEN'
+      })];
+    });
+  }
+
+  private mergeNotes(notes: AcademicNote[]): AcademicNote[] {
+    const seen = new Set<string>();
+    return notes.filter(note => {
+      const key = `${note.teacherName}|${note.studentName}|${note.noteDate}|${note.content}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).sort((a, b) => b.noteDate.localeCompare(a.noteDate) || a.studentName.localeCompare(b.studentName, 'ar'));
+  }
+
+  private applyFilters(rows: AcademicNote[], filters?: AcademicNotesFilters): AcademicNote[] {
+    let data = rows;
     if (filters?.subjects?.length) {
       data = data.filter(n => filters.subjects!.includes(n.subject));
     } else if (filters?.subject) {
       data = data.filter(n => n.subject === filters.subject);
     }
+    if (filters?.noteType) data = data.filter(n => n.noteType === filters.noteType);
     if (filters?.stage) data = data.filter(n => n.stageName === filters.stage);
     if (filters?.className) data = data.filter(n => n.className === filters.className);
     if (filters?.category) data = data.filter(n => n.category === filters.category);
@@ -55,28 +217,42 @@ export class AcademicNotesMockService {
         n.content.toLowerCase().includes(q)
       );
     }
-
-    return of(data).pipe(delay(300));
+    return data;
   }
 
-  getSubjects(): Observable<string[]> {
-    const subjects = this.departmentScope.isScoped()
-      ? this.departmentScope.subjects()
-      : [...new Set(MOCK.map(n => n.subject))];
-    return of(subjects).pipe(delay(100));
+  private matchTeacher(teachers: Teacher[], name?: string): Teacher | undefined {
+    const needle = this.normalizeName(name);
+    if (!needle) return undefined;
+    return teachers.find(t => {
+      const full = this.normalizeName(t.fullName);
+      return full === needle || full.includes(needle) || needle.includes(full);
+    });
   }
 
-  getStages(): Observable<string[]> {
-    return this.lookup.getStageNames().pipe(delay(100));
+  private normalizeName(name?: string): string {
+    return (name ?? '')
+      .replace(/^أ\.\s*/, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
   }
 
-  getClasses(stage?: string): Observable<string[]> {
-    return this.lookup.getClassNamesByStageName(stage).pipe(delay(100));
+  private withStatus(note: AcademicNote): AcademicNote {
+    const status = note.id != null ? this.statusOverrides.get(note.id) : undefined;
+    return status ? { ...note, status } : note;
   }
 
-  markReviewed(id: number): Observable<void> {
-    const note = MOCK.find(n => n.id === id);
-    if (note) note.status = 'REVIEWED';
-    return of(void 0).pipe(delay(200));
+  private seed(a: string | number, b: string | number, c: string | number): number {
+    const text = `${a}|${b}|${c}`;
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+      hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash) || 1;
+  }
+
+  private noteDate(seed: number): string {
+    const day = 5 + (seed % 14);
+    return `2026-06-${String(day).padStart(2, '0')}`;
   }
 }

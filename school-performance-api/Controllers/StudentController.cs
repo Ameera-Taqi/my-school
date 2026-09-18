@@ -28,6 +28,11 @@ public class StudentController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, created);
     }
 
+    [HttpPost("api/classes/{classId:long}/students/import")]
+    [RequirePermission(Perms.StudentsCreate)]
+    public async Task<ActionResult<StudentImportResultDto>> Import(long classId, [FromBody] StudentImportRequestDto request) =>
+        Ok(await _service.ImportAsync(classId, request.Students));
+
     [HttpGet("api/students/{studentId:long}")]
     [RequirePermission(Perms.AcademicRead)]
     public async Task<ActionResult<StudentDto>> FindById(long studentId) => Ok(await _service.FindByIdAsync(studentId));

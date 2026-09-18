@@ -10,23 +10,25 @@
     <!-- Day view -->
     <mat-tab>
       <ng-template mat-tab-label><app-ui-icon name="today" class="me-[0.35rem] size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon> سجل اليوم</ng-template>
-      <mat-card class="my-5 flex flex-row flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
-        <mat-form-field appearance="outline" class="filter-field m-0 w-[200px] max-sm:w-full" subscriptSizing="dynamic">
-          <mat-label>التاريخ</mat-label>
-          <input matInput [matDatepicker]="picker" [formControl]="filters.controls.date">
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-        @if (canRecord) {
-          <label class="inline-flex items-center gap-[0.4rem] text-[0.85rem] text-muted [&_app-ui-icon]:size-[18px] [&_app-ui-icon]:text-[18px] [&_app-ui-icon]:text-primary-mid" matTooltip="البصمة بعد هذا الوقت تُسجَّل «متأخر» تلقائياً">
-            <app-ui-icon name="alarm"></app-ui-icon>
-            <span>بداية الدوام</span>
-            <input type="time" class="w-24 border border-border bg-surface px-[0.4rem] py-[0.2rem] font-inherit text-[0.85rem] text-text rounded-lg [direction:ltr] focus:border-transparent focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-primary-mid disabled:opacity-45" [value]="schoolStart" (change)="setSchoolStart($any($event.target).value)" aria-label="بداية الدوام">
-          </label>
-        }
-        <div class="ms-auto flex flex-wrap items-center gap-2 max-sm:w-full max-sm:justify-end">
-          <button mat-stroked-button type="button" (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> اليوم</button>
-          <button mat-flat-button color="primary" type="button" (click)="loadDay()"><app-ui-icon name="search"></app-ui-icon> عرض</button>
+      <mat-card class="my-5 px-5 py-3">
+        <div class="teacher-att-filters">
+          <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+            <mat-label>التاريخ</mat-label>
+            <input matInput [matDatepicker]="picker" [formControl]="filters.controls.date">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          @if (canRecord) {
+            <label class="teacher-att-filters__time" matTooltip="البصمة بعد هذا الوقت تُسجَّل «متأخر» تلقائياً">
+              <app-ui-icon name="alarm"></app-ui-icon>
+              <span>بداية الدوام</span>
+              <input type="time" class="teacher-att-filters__time-input" [value]="schoolStart" (change)="setSchoolStart($any($event.target).value)" aria-label="بداية الدوام">
+            </label>
+          }
+          <div class="teacher-att-filters__actions">
+            <button mat-stroked-button type="button" (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> اليوم</button>
+            <button mat-flat-button color="primary" type="button" (click)="loadDay()"><app-ui-icon name="search"></app-ui-icon> عرض</button>
+          </div>
         </div>
       </mat-card>
       @if (canRecord) {

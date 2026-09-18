@@ -30,9 +30,13 @@ export interface StudentFormDialogData {
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>الرقم المدني</mat-label>
-            <input matInput formControlName="civilId" [readonly]="!!data.student" cdkFocusInitial autocomplete="off" dir="ltr">
+            <input matInput formControlName="civilId" [readonly]="!!data.student" cdkFocusInitial autocomplete="off" dir="ltr" maxlength="12" inputmode="numeric">
             <app-ui-icon name="badge" matSuffix></app-ui-icon>
-            <mat-error>الرقم المدني مطلوب</mat-error>
+            @if (form.controls.civilId.hasError('required')) {
+              <mat-error>الرقم المدني مطلوب</mat-error>
+            } @else if (form.controls.civilId.hasError('pattern')) {
+              <mat-error>يجب أن يتكون الرقم المدني من 12 رقماً</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>اسم الطالب</mat-label>
@@ -61,8 +65,9 @@ export interface StudentFormDialogData {
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>رقم ولي الأمر</mat-label>
-            <input matInput formControlName="guardianPhone" autocomplete="off" dir="ltr">
+            <input matInput formControlName="guardianPhone" autocomplete="off" dir="ltr" maxlength="8" inputmode="numeric">
             <app-ui-icon name="phone" matSuffix></app-ui-icon>
+            <mat-error>يجب أن يتكون رقم ولي الأمر من 8 أرقام</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>الحالة</mat-label>
@@ -94,11 +99,11 @@ export class StudentFormDialogComponent {
   private readonly fb = inject(FormBuilder);
 
   form = this.fb.group({
-    civilId: ['', Validators.required],
+    civilId: ['', this.data.student ? [Validators.required] : [Validators.required, Validators.pattern(/^\d{12}$/)]],
     fullName: ['', Validators.required],
     birthDate: [null as Date | null],
     gender: ['MALE', Validators.required],
-    guardianPhone: [''],
+    guardianPhone: ['', this.data.student ? [] : [Validators.pattern(/^$|^\d{8}$/)]],
     status: ['ACTIVE', Validators.required],
     notes: ['']
   });

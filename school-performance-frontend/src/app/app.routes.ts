@@ -64,6 +64,7 @@ export const routes: Routes = [
       { path: 'students/classes/:classId', component: ClassDetailsComponent, canActivate: [permissionGuard], data: { permission: 'students.view' } },
       { path: 'teachers', component: DepartmentsListComponent, canActivate: [permissionGuard], data: { permission: 'teachers.view' } },
       { path: 'teachers/departments/:departmentId', component: DepartmentTeachersComponent, canActivate: [permissionGuard], data: { permission: 'teachers.view' } },
+      { path: 'departments', component: AcademicDepartmentsPageComponent, canActivate: [permissionGuard], data: { permission: 'departments.view' } },
       { path: 'attendance', redirectTo: 'attendance/students', pathMatch: 'full' },
       { path: 'attendance/students', component: StudentAttendancePageComponent, canActivate: [permissionGuard], data: { permission: ['attendance.view', 'wing_supervisor.view'] } },
       { path: 'attendance/teachers', component: TeacherAttendancePageComponent, canActivate: [permissionGuard], data: { permission: 'teacher_attendance.view' } },
@@ -89,7 +90,6 @@ export const routes: Routes = [
       { path: 'roles', component: RoleListComponent, canActivate: [permissionGuard], data: { permission: 'roles.view' } },
       { path: 'permissions', component: PermissionListComponent, canActivate: [permissionGuard], data: { permission: 'permissions.view' } },
       { path: 'role-permissions', component: RolePermissionsComponent, canActivate: [permissionGuard], data: { permission: 'role_permissions.manage' } },
-      { path: 'departments', component: AcademicDepartmentsPageComponent, canActivate: [permissionGuard], data: { permission: 'departments.view' } },
       { path: 'settings', component: SettingsPageComponent, canActivate: [permissionGuard], data: { permission: 'settings.view' } }
     ]
   },

@@ -43,6 +43,7 @@ export const MATERIAL_TO_UICON: Record<string, string> = {
   delete_sweep: 'trash',
   description: 'document',
   domain: 'building',
+  download: 'download',
   done_all: 'check-double',
   edit: 'pencil',
   edit_note: 'edit',

@@ -125,7 +125,7 @@ public class UserService
     {
         if (HasTeacherRole(roles) && departmentId == null)
         {
-            throw new AppException("يجب تحديد الشعبة للمعلم");
+            throw new AppException("يجب تحديد الشعبة للمعلم ورئيس الشعبة");
         }
     }
 
@@ -165,7 +165,7 @@ public class UserService
     }
 
     private static bool HasTeacherRole(IEnumerable<Role> roles) =>
-        roles.Any(r => r.RoleKey == "TEACHER");
+        roles.Any(r => r.RoleKey == "TEACHER" || r.RoleKey.StartsWith("DEPARTMENT_HEAD"));
 
     private async Task<string> GenerateEmployeeNumberAsync(User user)
     {

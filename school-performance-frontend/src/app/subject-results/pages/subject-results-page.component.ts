@@ -24,11 +24,27 @@ import { DepartmentScopeService } from '../../core/services/department-scope.ser
 import { AuthService } from '../../core/services/auth.service';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
+interface ClassGroupRow {
+  isGroup: true;
+  className: string;
+  stageName: string;
+  count: number;
+}
+
+type ResultTableRow = SubjectStudentResult | ClassGroupRow;
+
 @Component({
   selector: 'app-subject-results-page',
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatCardModule, MatProgressSpinnerModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './subject-results-page.component.html'
+  templateUrl: './subject-results-page.component.html',
+  styles: [`
+    tr.result-group-row td {
+      background: #f3f4f6;
+      font-weight: 800;
+      color: var(--sp-primary, #312e81);
+    }
+  `]
 })
 export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
   private readonly service = inject(SubjectResultsMockService);
@@ -45,7 +61,8 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
   sort?: MatSort;
 
   readonly gradeLabels = GRADE_LEVEL_LABELS;
-  readonly dataSource = new MatTableDataSource<SubjectStudentResult>([]);
+  readonly dataSource = new MatTableDataSource<ResultTableRow>([]);
+  private results: SubjectStudentResult[] = [];
 
   subjects: string[] = [];
   stages: string[] = [];
@@ -54,7 +71,7 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
   loading = false;
   searched = false;
 
-  stats = { total: 0, average: 0, passRate: 0, failCount: 0 };
+  stats = { total: 0, students: 0, average: 0, passRate: 0, failCount: 0 };
 
   filters = this.fb.group({
     subject: ['', { validators: [] }],
@@ -64,9 +81,24 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
     search: ['']
   });
 
-  cols = ['studentName', 'className', 'stageName', 'score', 'percentage', 'gradeLevel', 'teacherName', 'examDate', 'actions'];
+  cols = ['studentName', 'className', 'stageName', 'subject', 'score', 'percentage', 'gradeLevel', 'teacherName', 'examDate', 'actions'];
 
-  get total(): number { return this.dataSource.data.length; }
+  get tableCols(): string[] {
+    let cols = this.cols;
+    if (!this.departmentScope.isScoped() && !this.showsMultipleSubjects) {
+      cols = cols.filter(c => c !== 'subject');
+    }
+    if (this.grouped) {
+      cols = cols.filter(c => c !== 'className');
+    }
+    return cols;
+  }
+
+  get showsMultipleSubjects(): boolean {
+    return new Set(this.results.map(r => r.subject)).size > 1;
+  }
+
+  get total(): number { return this.results.length; }
 
   ngOnInit(): void {
     this.service.getSubjects().subscribe(s => this.subjects = s);
@@ -112,7 +144,8 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
       search: v.search || undefined
     }).subscribe({
       next: (data) => {
-        this.dataSource.data = data;
+        this.results = data;
+        this.dataSource.data = this.toTableRows(data);
         this.updateStats(data);
         this.loading = false;
         setTimeout(() => this.attachTableControls());
@@ -124,15 +157,17 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
   resetFilters(): void {
     this.filters.reset({ subject: '', stage: '', className: '', term: '', search: '' });
     this.dataSource.data = [];
+    this.results = [];
     this.searched = false;
-    this.stats = { total: 0, average: 0, passRate: 0, failCount: 0 };
+    this.stats = { total: 0, students: 0, average: 0, passRate: 0, failCount: 0 };
     this.service.getClasses().subscribe(c => this.classes = c);
     if (this.departmentScope.isScoped()) {
       this.search();
     }
   }
 
-  view(result: SubjectStudentResult): void {
+  view(result: ResultTableRow): void {
+    if (this.isGroupRow(result)) return;
     this.dialog.open(SubjectResultDetailDialogComponent, {
       width: '540px',
       maxWidth: '95vw',
@@ -156,6 +191,38 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
     }
   }
 
+  get grouped(): boolean {
+    return !this.filters.controls.className.value && this.results.length > 0;
+  }
+
+  isGroup = (_index: number, row: ResultTableRow): boolean => this.isGroupRow(row);
+  isData = (_index: number, row: ResultTableRow): boolean => !this.isGroupRow(row);
+
+  private isGroupRow(row: ResultTableRow): row is ClassGroupRow {
+    return 'isGroup' in row && row.isGroup === true;
+  }
+
+  private toTableRows(data: SubjectStudentResult[]): ResultTableRow[] {
+    if (this.filters.controls.className.value) {
+      return data;
+    }
+    const rows: ResultTableRow[] = [];
+    let current = '';
+    for (const row of data) {
+      if (row.className !== current) {
+        current = row.className;
+        rows.push({
+          isGroup: true,
+          className: row.className,
+          stageName: row.stageName,
+          count: data.filter(r => r.className === row.className).length
+        });
+      }
+      rows.push(row);
+    }
+    return rows;
+  }
+
   private updateStats(data: SubjectStudentResult[]): void {
     const total = data.length;
     const average = total
@@ -164,7 +231,8 @@ export class SubjectResultsPageComponent implements OnInit, AfterViewInit {
     const passCount = data.filter(r => r.gradeLevel !== 'FAIL').length;
     const passRate = total ? Math.round((passCount / total) * 100) : 0;
     const failCount = data.filter(r => r.gradeLevel === 'FAIL').length;
-    this.stats = { total, average, passRate, failCount };
+    const students = new Set(data.map(r => `${r.className}|${r.studentName}`)).size;
+    this.stats = { total, students, average, passRate, failCount };
   }
 
   private attachTableControls(): void {

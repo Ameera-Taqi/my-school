@@ -28,4 +28,46 @@ export class ResourceBankMockService {
     MOCK = MOCK.filter(x => x.id !== id);
     return of(void 0).pipe(delay(200));
   }
+
+  download(file: ResourceFile): void {
+    const extension = this.extensionFor(file);
+    const name = file.fileName || `${file.title}.${extension}`;
+    const blob = new Blob([this.placeholderContent(file)], { type: this.mimeFor(file.fileType) });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = name;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private extensionFor(file: ResourceFile): string {
+    const fromName = file.fileName?.split('.').pop()?.toLowerCase();
+    if (fromName) return fromName;
+    switch ((file.fileType || '').toUpperCase()) {
+      case 'PPTX': return 'pptx';
+      case 'DOCX': return 'docx';
+      case 'VIDEO': return 'mp4';
+      default: return 'pdf';
+    }
+  }
+
+  private mimeFor(fileType: string): string {
+    switch ((fileType || '').toUpperCase()) {
+      case 'PPTX': return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+      case 'DOCX': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      case 'VIDEO': return 'video/mp4';
+      default: return 'application/pdf';
+    }
+  }
+
+  private placeholderContent(file: ResourceFile): string {
+    return [
+      file.title,
+      `المادة: ${file.subject}`,
+      `المرحلة: ${file.stageName}`,
+      `المعلم: ${file.teacherName}`,
+      file.description || ''
+    ].filter(Boolean).join('\n');
+  }
 }

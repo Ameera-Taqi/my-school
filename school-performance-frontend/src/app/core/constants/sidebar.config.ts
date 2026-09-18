@@ -2,12 +2,12 @@ import { SidebarSection } from '../models';
 
 const HEADS_PERMISSIONS = [
   'teacher_monitoring.view', 'lesson_plans.view', 'subject_results.view',
-  'academic_notes.view', 'resource_bank.view'
+  'academic_notes.view', 'resource_bank.view', 'resource_bank.manage'
 ];
 
 const TEACHERS_PERMISSIONS = [
   'my_classes.view', 'my_students.view', 'attendance_record.view',
-  'assignments.view', 'grades.view', 'notes.view'
+  'assignments.view', 'grades.view', 'notes.view', 'resource_bank.view'
 ];
 
 const SYSTEM_PERMISSIONS = [
@@ -61,7 +61,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { labelKey: 'nav.lessonPlans', icon: 'menu_book', route: '/lesson-plans', permission: 'lesson_plans.view' },
       { labelKey: 'nav.subjectResults', icon: 'bar_chart', route: '/subject-results', permission: 'subject_results.view' },
       { labelKey: 'nav.academicNotes', icon: 'sticky_note_2', route: '/academic-notes', permission: 'academic_notes.view' },
-      { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.view' }
+      { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.manage' }
     ]
   },
   {
@@ -72,7 +72,8 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { labelKey: 'nav.attendanceRecord', icon: 'how_to_reg', route: '/attendance-record', permission: 'attendance_record.view' },
       { labelKey: 'nav.assignments', icon: 'assignment', route: '/assignments', permission: 'assignments.view' },
       { labelKey: 'nav.grades', icon: 'grade', route: '/grades', permission: 'grades.view' },
-      { labelKey: 'nav.notes', icon: 'comment', route: '/notes', permission: 'notes.view' }
+      { labelKey: 'nav.notes', icon: 'comment', route: '/notes', permission: 'notes.view' },
+      { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.view' }
     ]
   },
   {

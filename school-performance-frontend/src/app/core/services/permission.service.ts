@@ -29,10 +29,16 @@ export class PermissionService {
 
   private buildVisibleSections(): SidebarSection[] {
     const perms = this.authService.permissions();
+    const seenRoutes = new Set<string>();
     return SIDEBAR_SECTIONS
       .map(section => ({
         ...section,
-        items: section.items.filter(item => this.hasAnyPermission(item.permission, perms))
+        items: section.items.filter(item => {
+          if (!this.hasAnyPermission(item.permission, perms)) return false;
+          if (seenRoutes.has(item.route)) return false;
+          seenRoutes.add(item.route);
+          return true;
+        })
       }))
       .filter(section => section.items.length > 0);
   }

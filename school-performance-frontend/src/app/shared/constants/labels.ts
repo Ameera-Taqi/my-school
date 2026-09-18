@@ -65,6 +65,11 @@ export const GRADE_LEVEL_LABELS: Record<string, string> = {
   FAIL: 'راسب'
 };
 
+export const ACADEMIC_NOTE_KIND_LABELS: Record<string, string> = {
+  ACADEMIC: 'أكاديمية',
+  BEHAVIOR: 'سلوكية'
+};
+
 export const ACADEMIC_NOTE_CATEGORY_LABELS: Record<string, string> = {
   PERFORMANCE: 'مستوى الأداء',
   PARTICIPATION: 'المشاركة الصفية',

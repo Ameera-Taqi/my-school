@@ -78,7 +78,11 @@
   @if (loading) {
     <app-table-skeleton [rows]="6" [columns]="8"></app-table-skeleton>
   } @else if (total === 0) {
-    <app-empty-state [icon]="hasFilters ? 'search_off' : 'groups'" title="لا توجد نتائج مطابقة للبحث" description="جرّب تعديل حالة المتابعة أو كلمة البحث." [compact]="true">
+    <app-empty-state
+      [icon]="hasFilters ? 'search_off' : 'groups'"
+      [title]="hasFilters ? 'لا توجد نتائج مطابقة للبحث' : (departmentScope.isScoped() ? 'لا يوجد معلمون في هذه الشعبة' : 'لا توجد سجلات متابعة')"
+      [description]="hasFilters ? 'جرّب تعديل حالة المتابعة أو كلمة البحث.' : (departmentScope.isScoped() ? 'يظهر لرئيس الشعبة معلمو شعبته فقط.' : 'جرّب تعديل حالة المتابعة أو كلمة البحث.')"
+      [compact]="true">
       @if (hasFilters) {
         <button mat-stroked-button (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> إعادة ضبط الفلاتر</button>
       }

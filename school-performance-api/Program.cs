@@ -31,6 +31,11 @@ builder.Services.AddControllers()
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage)
                 .FirstOrDefault(m => !string.IsNullOrWhiteSpace(m)) ?? "بيانات غير صالحة";
+            if (message.Contains("field is required", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("is required", StringComparison.OrdinalIgnoreCase))
+            {
+                message = "تعذر قراءة بيانات الطلاب من الملف. استخدم القالب ثم املأ صفوفاً كاملة قبل الرفع";
+            }
             return new BadRequestObjectResult(new { message });
         };
     });

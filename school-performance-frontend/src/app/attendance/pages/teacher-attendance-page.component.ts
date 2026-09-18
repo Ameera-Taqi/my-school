@@ -42,7 +42,59 @@ interface TeacherMonthRow {
   selector: 'app-teacher-attendance-page',
   standalone: true,
   imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatMenuModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, MatTabsModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
-  templateUrl: './teacher-attendance-page.component.html'
+  templateUrl: './teacher-attendance-page.component.html',
+  styles: [`
+    .teacher-att-filters {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+    }
+    .teacher-att-filters .filter-field {
+      flex: 1 1 0;
+      min-width: 0;
+      margin: 0;
+    }
+    .teacher-att-filters__time {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      color: var(--sp-text-muted);
+    }
+    .teacher-att-filters__time app-ui-icon {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      color: var(--sp-primary-mid, var(--color-primary, #3949ab));
+    }
+    .teacher-att-filters__time-input {
+      width: 6.5rem;
+      border: 1px solid var(--sp-border, #e2e8f0);
+      background: var(--sp-surface, #fff);
+      padding: 0.35rem 0.45rem;
+      font: inherit;
+      font-size: 0.85rem;
+      color: var(--sp-text, inherit);
+      border-radius: 0.5rem;
+      direction: ltr;
+    }
+    .teacher-att-filters__time-input:focus {
+      border-color: transparent;
+      outline: 2px solid var(--sp-primary-mid, #3949ab);
+      outline-offset: 1px;
+    }
+    .teacher-att-filters__actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 0.5rem;
+      margin-inline-start: auto;
+    }
+  `]
 })
 export class TeacherAttendancePageComponent implements OnInit {
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;

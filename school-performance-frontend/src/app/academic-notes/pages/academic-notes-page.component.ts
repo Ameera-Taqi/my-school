@@ -18,6 +18,7 @@ import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { ToastService } from '../../shared/services/toast.service';
 import {
   ACADEMIC_NOTE_CATEGORY_LABELS,
+  ACADEMIC_NOTE_KIND_LABELS,
   ACADEMIC_NOTE_STATUS_LABELS,
   PRIORITY_LABELS
 } from '../../shared/constants/labels';
@@ -49,9 +50,11 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
   sort?: MatSort;
 
   readonly categoryLabels = ACADEMIC_NOTE_CATEGORY_LABELS;
+  readonly kindLabels = ACADEMIC_NOTE_KIND_LABELS;
   readonly statusLabels = ACADEMIC_NOTE_STATUS_LABELS;
   readonly priorityLabels = PRIORITY_LABELS;
   readonly categoryOptions = Object.keys(ACADEMIC_NOTE_CATEGORY_LABELS);
+  readonly kindOptions = Object.keys(ACADEMIC_NOTE_KIND_LABELS);
   readonly statusOptions = Object.keys(ACADEMIC_NOTE_STATUS_LABELS);
   readonly priorityOptions = Object.keys(PRIORITY_LABELS);
   readonly dataSource = new MatTableDataSource<AcademicNote>([]);
@@ -65,6 +68,7 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
 
   filters = this.fb.group({
     subject: [''],
+    noteType: [''],
     stage: [''],
     className: [''],
     category: [''],
@@ -73,7 +77,7 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
     search: ['']
   });
 
-  cols = ['studentName', 'className', 'subject', 'category', 'priority', 'teacherName', 'noteDate', 'status', 'actions'];
+  cols = ['studentName', 'className', 'subject', 'noteType', 'category', 'priority', 'teacherName', 'noteDate', 'status', 'actions'];
 
   get total(): number { return this.dataSource.data.length; }
 
@@ -101,8 +105,8 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
     this.loading = true;
     const v = this.filters.getRawValue();
     this.service.getAll({
-      subjects: this.departmentScope.isScoped() ? this.departmentScope.subjects() : undefined,
       subject: this.departmentScope.isScoped() ? undefined : (v.subject || undefined),
+      noteType: v.noteType || undefined,
       stage: v.stage || undefined,
       className: v.className || undefined,
       category: v.category || undefined,
@@ -123,6 +127,7 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
   resetFilters(): void {
     this.filters.reset({
       subject: '',
+      noteType: '',
       stage: '',
       className: '',
       category: '',
@@ -149,6 +154,14 @@ export class AcademicNotesPageComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  kindLabel(kind: AcademicNote['noteType']): string {
+    return this.kindLabels[kind] ?? kind;
+  }
+
+  kindChip(kind: AcademicNote['noteType']): string {
+    return kind === 'BEHAVIOR' ? 'warning' : 'info';
   }
 
   categoryLabel(category: AcademicNote['category']): string {

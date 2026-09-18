@@ -21,12 +21,18 @@ public class DataSeeder
     private static readonly string[] SchoolManagerPerms =
     {
         "dashboard.view", "kpi.view", "reports.view", "meetings.view", "meetings.create", "tasks.view", "roles.view",
-        "students.view", "teachers.view", "attendance.view", "behavior.view", "internal_requests.view", "alerts.view",
+        "students.view", "teachers.view", "departments.view", "departments.manage",
+        "attendance.view", "behavior.view", "internal_requests.view", "alerts.view",
         "class_schedule.view", "class_schedule.manage"
     };
-    private static readonly string[] DepartmentHeadPerms = { "teacher_monitoring.view", "lesson_plans.view", "subject_results.view", "academic_notes.view", "resource_bank.view" };
+    private static readonly string[] DepartmentHeadPerms = { "teacher_monitoring.view", "lesson_plans.view", "subject_results.view", "academic_notes.view", "resource_bank.view", "resource_bank.manage" };
     private static readonly string[] ClassSchedulePerms = { "class_schedule.view", "class_schedule.manage" };
     private static readonly string[] MeetingManagePerms = { "meetings.create", "tasks.create", "roles.view" };
+    private static readonly PermissionDef[] DepartmentPermissionDefs =
+    {
+        new("departments.view", "الشعب الدراسية", "إدارة المدرسة", "عرض الشعب الأكاديمية"),
+        new("departments.manage", "إدارة الشعب الدراسية", "إدارة المدرسة", "إدارة الشعب الأكاديمية")
+    };
 
     public DataSeeder(AppDbContext db, ILogger<DataSeeder> logger)
     {
@@ -39,6 +45,7 @@ public class DataSeeder
         await SeedCoreAsync();                 // 1  DataSeeder
         await SeedAcademicAsync();             // 2  AcademicDataSeeder
         await SeedDepartmentsAsync();          // 3  DepartmentDataSeeder
+        await RelocateDepartmentPermissionsAsync();
         await SeedCalendarAsync();             // 4  CalendarDataSeeder
         await SeedTeacherPortalAsync();        // 5  TeacherPortalDataSeeder
         await SeedDemoUsersAsync();            // 6  DemoUsersSeeder
@@ -127,8 +134,8 @@ public class DataSeeder
             new("permissions.manage", "إدارة الصلاحيات", "النظام والصلاحيات", "إضافة وتعديل الصلاحيات"),
             new("role_permissions.manage", "ربط الصلاحيات بالأدوار", "النظام والصلاحيات", "إدارة صلاحيات الأدوار"),
             new("settings.view", "إعدادات النظام", "النظام والصلاحيات", "الوصول لإعدادات النظام"),
-            new("departments.view", "عرض الشعب", "النظام والصلاحيات", "عرض الشعب الأكاديمية"),
-            new("departments.manage", "إدارة الشعب", "النظام والصلاحيات", "إدارة الشعب الأكاديمية")
+            new("departments.view", "الشعب الدراسية", "إدارة المدرسة", "عرض الشعب الأكاديمية"),
+            new("departments.manage", "إدارة الشعب الدراسية", "إدارة المدرسة", "إدارة الشعب الأكاديمية")
         };
 
         var permissions = defs.Select(d => new Permission
@@ -240,6 +247,25 @@ public class DataSeeder
         await _db.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Keep department screens under school management, including databases seeded
+    /// when these permissions still lived in the system section.
+    /// </summary>
+    private async Task RelocateDepartmentPermissionsAsync()
+    {
+        foreach (var def in DepartmentPermissionDefs)
+        {
+            var permission = await EnsurePermissionAsync(def);
+            if (permission.ModuleName != def.Module || permission.PermissionName != def.Name)
+            {
+                permission.ModuleName = def.Module;
+                permission.PermissionName = def.Name;
+                permission.Description = def.Description;
+                await _db.SaveChangesAsync();
+            }
+        }
+    }
+
     // ---- 4. Calendar permissions + sample events --------------------------------------------
 
     private async Task SeedCalendarAsync()
@@ -314,6 +340,7 @@ public class DataSeeder
             return;
         }
         await GrantKeysIfMissingAsync(teacherRole, TeacherPortalPerms);
+        await GrantKeysIfMissingAsync(teacherRole, new[] { "resource_bank.view" });
     }
 
     // ---- 6. Demo users ----------------------------------------------------------------------

@@ -51,18 +51,24 @@ public class TeacherMonitoringService
 
     private async Task<List<Teacher>> ScopedTeachersAsync(User currentUser)
     {
-        var scopedDepartmentId = await _scopeService.ResolveDepartmentIdAsync(currentUser);
-        var teachers = await _db.Teachers
+        var query = _db.Teachers
             .Include(t => t.Department)
             .Include(t => t.User).ThenInclude(u => u!.Roles)
             .Where(t => t.Active)
-            .OrderBy(t => t.FullName)
-            .ToListAsync();
+            .Where(t => t.User == null || !t.User.Roles.Any(r => r.RoleKey.StartsWith("DEPARTMENT_HEAD")));
 
-        return teachers
-            .Where(t => t.User == null || !_scopeService.IsDepartmentHeadUser(t.User))
-            .Where(t => scopedDepartmentId == null || t.DepartmentId == scopedDepartmentId)
-            .ToList();
+        if (_scopeService.IsDepartmentHeadUser(currentUser))
+        {
+            var departmentId = await _scopeService.ResolveDepartmentIdAsync(currentUser);
+            if (departmentId == null)
+            {
+                return [];
+            }
+
+            query = query.Where(t => t.DepartmentId == departmentId);
+        }
+
+        return await query.OrderBy(t => t.FullName).ToListAsync();
     }
 
     private static TeacherMonitoringDto ToMonitoringDto(Teacher teacher)

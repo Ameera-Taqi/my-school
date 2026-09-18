@@ -7,7 +7,16 @@
 
   <app-page-header [title]="'فصل ' + schoolClass.name" [subtitle]="'المرحلة: ' + (schoolClass.academicStageName ?? '')">
     @if ('students.create' | hasPermission) {
-      <button mat-flat-button color="primary" (click)="openStudentDialog()">
+      <input #excelFileInput type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" class="hidden" (change)="onExcelFileSelected($event)">
+      <button mat-stroked-button type="button" (click)="downloadTemplate()" [disabled]="importing">
+        <app-ui-icon name="download"></app-ui-icon>
+        تحميل قالب Excel
+      </button>
+      <button mat-stroked-button type="button" (click)="triggerExcelUpload()" [disabled]="importing">
+        <app-ui-icon name="upload"></app-ui-icon>
+        رفع ملف Excel
+      </button>
+      <button mat-flat-button color="primary" (click)="openStudentDialog()" [disabled]="importing">
         <app-ui-icon name="person_add"></app-ui-icon>
         إضافة طالب
       </button>
@@ -43,7 +52,9 @@
   } @else if (total === 0) {
     <app-empty-state icon="person_off" title="لا يوجد طلاب في هذا الفصل بعد" description="أضف أول طالب لبدء تسجيل الحضور والدرجات لهذا الفصل.">
       @if ('students.create' | hasPermission) {
-        <button mat-flat-button color="primary" (click)="openStudentDialog()"><app-ui-icon name="person_add"></app-ui-icon> إضافة أول طالب</button>
+        <button mat-stroked-button type="button" (click)="downloadTemplate()" [disabled]="importing"><app-ui-icon name="download"></app-ui-icon> تحميل قالب Excel</button>
+        <button mat-stroked-button type="button" (click)="triggerExcelUpload()" [disabled]="importing"><app-ui-icon name="upload"></app-ui-icon> رفع ملف Excel</button>
+        <button mat-flat-button color="primary" (click)="openStudentDialog()" [disabled]="importing"><app-ui-icon name="person_add"></app-ui-icon> إضافة أول طالب</button>
       }
     </app-empty-state>
   } @else if (filteredCount === 0) {

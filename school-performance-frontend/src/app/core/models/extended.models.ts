@@ -243,6 +243,7 @@ export interface TeacherNote {
   noteType: 'BEHAVIOR' | 'ACADEMIC';
   content: string;
   noteDate: string;
+  teacherName?: string;
 }
 
 export interface ClassAttendanceRow {
@@ -290,6 +291,7 @@ export interface AcademicNote {
   stageName: string;
   subject: string;
   teacherName: string;
+  noteType: 'ACADEMIC' | 'BEHAVIOR';
   category: 'PERFORMANCE' | 'PARTICIPATION' | 'HOMEWORK' | 'ASSESSMENT' | 'GENERAL';
   priority: 'LOW' | 'MEDIUM' | 'HIGH';
   content: string;

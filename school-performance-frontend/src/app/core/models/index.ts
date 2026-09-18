@@ -77,6 +77,29 @@ export interface Student {
   academicStageName?: string;
 }
 
+export interface StudentImportItem {
+  row: number;
+  civilId: string;
+  fullName: string;
+  birthDate?: string;
+  gender?: string;
+  guardianPhone?: string;
+  status?: string;
+  notes?: string;
+}
+
+export interface StudentImportError {
+  row: number;
+  civilId?: string;
+  message: string;
+}
+
+export interface StudentImportResult {
+  created: number;
+  failed: number;
+  errors: StudentImportError[];
+}
+
 export interface AcademicStage {
   id?: number;
   name: string;

@@ -1,43 +1,45 @@
 <app-page-header title="حضور الطلاب" subtitle="تسجيل ومتابعة حضور الطلاب حسب المرحلة والفصل"></app-page-header>
 
-<mat-card class="my-5 flex flex-row flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
-  <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1 max-sm:w-full" subscriptSizing="dynamic">
-    <mat-label>التاريخ</mat-label>
-    <input matInput [matDatepicker]="studentDate" [formControl]="studentFilters.controls.date">
-    <mat-datepicker-toggle matIconSuffix [for]="studentDate"></mat-datepicker-toggle>
-    <mat-datepicker #studentDate></mat-datepicker>
-  </mat-form-field>
-  <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1 max-sm:w-full" subscriptSizing="dynamic">
-    <mat-label>المرحلة</mat-label>
-    <mat-select [formControl]="studentFilters.controls.stageId">
-      @for (s of stages; track s.id) {
-        <mat-option [value]="s.id">{{ s.name }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1 max-sm:w-full" subscriptSizing="dynamic">
-    <mat-label>الفصل</mat-label>
-    <mat-select [formControl]="studentFilters.controls.classId">
-      @for (c of classes; track c.id) {
-        <mat-option [value]="c.id">{{ c.name }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <div class="ms-auto flex flex-wrap items-center gap-2 max-sm:w-full max-sm:justify-end">
-    <button mat-stroked-button type="button" (click)="resetStudentFilters()">
-      <app-ui-icon name="restart_alt"></app-ui-icon>
-      إعادة ضبط
-    </button>
-    <button mat-flat-button color="primary" (click)="loadStudents()">
-      <app-ui-icon name="search"></app-ui-icon>
-      عرض
-    </button>
+<mat-card class="my-5 px-5 py-3">
+  <div class="student-att-filters">
+    <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-label>التاريخ</mat-label>
+      <input matInput [matDatepicker]="studentDate" [formControl]="studentFilters.controls.date">
+      <mat-datepicker-toggle matIconSuffix [for]="studentDate"></mat-datepicker-toggle>
+      <mat-datepicker #studentDate></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-label>المرحلة</mat-label>
+      <mat-select [formControl]="studentFilters.controls.stageId">
+        @for (s of stages; track s.id) {
+          <mat-option [value]="s.id">{{ s.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+      <mat-label>الفصل</mat-label>
+      <mat-select [formControl]="studentFilters.controls.classId">
+        @for (c of classes; track c.id) {
+          <mat-option [value]="c.id">{{ c.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <div class="student-att-filters__actions">
+      <button mat-stroked-button type="button" (click)="resetStudentFilters()">
+        <app-ui-icon name="restart_alt"></app-ui-icon>
+        إعادة ضبط
+      </button>
+      <button mat-flat-button color="primary" (click)="loadStudents()">
+        <app-ui-icon name="search"></app-ui-icon>
+        عرض
+      </button>
+    </div>
   </div>
 </mat-card>
 
 <div class="data-card">
   @if (loadingStudents) {
-    <app-table-skeleton [rows]="6" [columns]="4"></app-table-skeleton>
+    <app-table-skeleton [rows]="6" [columns]="3"></app-table-skeleton>
   } @else if (!studentRecords.length) {
     <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" description="اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور الطلاب."></app-empty-state>
   } @else {
@@ -45,7 +47,7 @@
       <div class="flex flex-wrap gap-1.5">
         <span class="chip neutral">{{ studentRecords.length }} طالب</span>
         @for (s of statusOptions; track s) {
-          <span class="chip" [class]="'chip ' + statusChip(s)"><app-ui-icon [name]="statusIcon(s)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
+          <span class="chip" [class]="'chip ' + statusChip(s)">{{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
         }
       </div>
     </div>
@@ -60,19 +62,24 @@
           <td mat-cell *matCellDef="let row">{{ row.className || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>الحالة</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="chip" [class]="'chip ' + statusChip(row.status)"><app-ui-icon [name]="statusIcon(row.status)" class="size-3.5 text-sm"></app-ui-icon> {{ statusLabels[row.status] }}</span>
-          </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">تسجيل الحالة</th>
+          <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الحالة</th>
           <td mat-cell *matCellDef="let row" class="w-px whitespace-nowrap">
-            <mat-button-toggle-group class="status-group" [value]="row.status" (change)="setStatus(row, $event.value)" hideSingleSelectionIndicator aria-label="حالة الحضور">
+            <mat-button-toggle-group
+              class="gap-[3px] rounded-full border-none bg-[#f3f4f6] p-[3px] shadow-none"
+              hideSingleSelectionIndicator
+              [value]="row.status"
+              (change)="setStatus(row, $event.value)"
+              aria-label="حالة الحضور">
               @for (s of statusOptions; track s) {
-                <mat-button-toggle [value]="s" [class]="'toggle-' + statusChip(s)" [matTooltip]="statusLabels[s]">
-                  <app-ui-icon [name]="statusIcon(s)"></app-ui-icon>
-                  <span class="toggle-label max-[899px]:hidden">{{ statusLabels[s] }}</span>
+                <mat-button-toggle
+                  [value]="s"
+                  class="!rounded-full !border-none bg-transparent text-[0.78rem] font-semibold text-muted transition-[background,color] duration-150 hover:bg-[#e9ebf3] [&_.mat-button-toggle-label-content]:px-3 [&_.mat-button-toggle-label-content]:leading-7"
+                  [ngClass]="{
+                    '!bg-success !text-white hover:!bg-success': row.status === s && s === 'PRESENT',
+                    '!bg-danger !text-white hover:!bg-danger': row.status === s && s === 'ABSENT',
+                    '!bg-warning !text-white hover:!bg-warning': row.status === s && s === 'LATE'
+                  }">
+                  {{ statusLabels[s] }}
                 </mat-button-toggle>
               }
             </mat-button-toggle-group>

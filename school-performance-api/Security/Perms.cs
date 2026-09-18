@@ -46,6 +46,7 @@ public static class Perms
     public const string SubjectResultsView = "subject_results.view";
     public const string AcademicNotesView = "academic_notes.view";
     public const string ResourceBankView = "resource_bank.view";
+    public const string ResourceBankManage = "resource_bank.manage";
 
     public const string MyClassesView = "my_classes.view";
     public const string MyStudentsView = "my_students.view";

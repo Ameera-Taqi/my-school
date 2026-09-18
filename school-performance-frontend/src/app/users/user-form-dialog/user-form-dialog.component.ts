@@ -79,7 +79,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
                 }
               </mat-select>
               <mat-hint>سيُنشأ ملف معلم مرتبط بهذه الشعبة تلقائياً</mat-hint>
-              <mat-error>الشعبة مطلوبة للمعلم</mat-error>
+              <mat-error>الشعبة مطلوبة للمعلم ورئيس الشعبة</mat-error>
             </mat-form-field>
           }
 
@@ -140,7 +140,9 @@ export class UserFormDialogComponent implements OnInit {
 
   updateDepartmentValidators(): void {
     const selected = this.form.controls.roleIds.value ?? [];
-    this.isTeacherRole = this.roles.some(r => r.roleKey === 'TEACHER' && selected.includes(r.id!));
+    this.isTeacherRole = this.roles.some(r =>
+      selected.includes(r.id!) && (r.roleKey === 'TEACHER' || !!r.roleKey?.startsWith('DEPARTMENT_HEAD'))
+    );
     const departmentControl = this.form.controls.departmentId;
     if (this.isTeacherRole) {
       departmentControl.setValidators(Validators.required);

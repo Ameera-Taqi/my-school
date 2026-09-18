@@ -67,7 +67,7 @@
     <mat-card class="flex items-center gap-4 px-5 py-4">
       <app-ui-icon name="groups" class="size-9 text-[36px] text-primary"></app-ui-icon>
       <div>
-        <span class="block text-2xl font-bold text-primary">{{ stats.total }}</span>
+        <span class="block text-2xl font-bold text-primary">{{ stats.students }}</span>
         <span class="text-[0.85rem] text-muted">عدد الطلاب</span>
       </div>
     </mat-card>
@@ -106,16 +106,29 @@
   @if (loading) {
     <app-table-skeleton [rows]="6" [columns]="8"></app-table-skeleton>
   } @else if (!searched) {
-    <app-empty-state icon="filter_alt" title="اختر المادة لعرض النتائج" description="حدّد المادة والمرحلة والفصل ثم اضغط «عرض النتائج»." [compact]="true"></app-empty-state>
+    <app-empty-state
+      icon="filter_alt"
+      [title]="departmentScope.isScoped() ? 'اعرض نتائج شعبتك حسب الفصل' : 'اختر المادة لعرض النتائج'"
+      [description]="departmentScope.isScoped() ? 'يمكنك تصفية المرحلة والفصل ثم الضغط على «عرض النتائج».' : 'حدّد المادة والمرحلة والفصل ثم اضغط «عرض النتائج».'"
+      [compact]="true"></app-empty-state>
   } @else if (total === 0) {
     <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة للفلاتر المحددة" description="جرّب تعديل الفلاتر أو كلمة البحث." [compact]="true">
       <button mat-stroked-button (click)="resetFilters()"><app-ui-icon name="restart_alt"></app-ui-icon> إعادة ضبط الفلاتر</button>
     </app-empty-state>
   } @else {
     <div class="table-scroll">
-      <table mat-table [dataSource]="dataSource" matSort matSortActive="studentName" matSortDirection="asc">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="className" matSortDirection="asc">
+        <ng-container matColumnDef="group">
+          <td mat-cell *matCellDef="let r" [attr.colspan]="tableCols.length">
+            <span class="inline-flex items-center gap-2">
+              <app-ui-icon name="class" class="size-[18px] text-lg text-primary-mid"></app-ui-icon>
+              <span>فصل {{ r.className }}</span>
+              <span class="text-[0.8rem] font-semibold text-muted">{{ r.stageName }} · {{ r.count }} نتيجة</span>
+            </span>
+          </td>
+        </ng-container>
         <ng-container matColumnDef="studentName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">اسم الطالب</th>
           <td mat-cell *matCellDef="let r">
             <div class="flex items-center gap-[0.7rem]">
               <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.studentName?.charAt(0) }}</span>
@@ -124,19 +137,23 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="className">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>الفصل</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">الفصل</th>
           <td mat-cell *matCellDef="let r">{{ r.className }}</td>
         </ng-container>
         <ng-container matColumnDef="stageName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>المرحلة</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">المرحلة</th>
           <td mat-cell *matCellDef="let r">{{ r.stageName }}</td>
         </ng-container>
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">المادة</th>
+          <td mat-cell *matCellDef="let r">{{ r.subject }}</td>
+        </ng-container>
         <ng-container matColumnDef="score">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>الدرجة</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">الدرجة</th>
           <td mat-cell *matCellDef="let r"><strong>{{ r.score }}</strong> <span class="text-[0.8rem] text-muted">/ {{ r.maxScore }}</span></td>
         </ng-container>
         <ng-container matColumnDef="percentage">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>النسبة</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">النسبة</th>
           <td mat-cell *matCellDef="let r">
             <div class="inline-flex min-w-[120px] items-center gap-2">
               <span class="h-1.5 min-w-[60px] flex-1 overflow-hidden rounded-full bg-[#e9ebf3]">
@@ -154,17 +171,17 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="gradeLevel">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>التقدير</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">التقدير</th>
           <td mat-cell *matCellDef="let r">
             <span class="chip" [class]="'chip ' + chipClass(r.gradeLevel)">{{ gradeLabel(r.gradeLevel) }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="teacherName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">المعلم</th>
           <td mat-cell *matCellDef="let r">{{ r.teacherName }}</td>
         </ng-container>
         <ng-container matColumnDef="examDate">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>تاريخ الاختبار</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">تاريخ الاختبار</th>
           <td mat-cell *matCellDef="let r">{{ r.examDate | appDate }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -175,8 +192,9 @@
             </div>
           </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="cols"></tr>
-        <tr mat-row *matRowDef="let row; columns: cols;" class="clickable" (click)="view(row)"></tr>
+        <tr mat-header-row *matHeaderRowDef="tableCols"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['group']; when: isGroup" class="result-group-row"></tr>
+        <tr mat-row *matRowDef="let row; columns: tableCols; when: isData" class="clickable" (click)="view(row)"></tr>
       </table>
     </div>
     <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>

@@ -5,6 +5,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { AcademicNote } from '../../core/models';
 import {
   ACADEMIC_NOTE_CATEGORY_LABELS,
+  ACADEMIC_NOTE_KIND_LABELS,
   ACADEMIC_NOTE_STATUS_LABELS,
   PRIORITY_LABELS
 } from '../../shared/constants/labels';
@@ -26,7 +27,7 @@ export interface AcademicNoteDetailDialogData {
         <app-ui-icon name="note_alt" class="size-[26px] text-[26px]"></app-ui-icon>
       </span>
       <div>
-        <h2 mat-dialog-title class="!m-0 !p-0 text-[1.15rem] font-bold">ملاحظة أكاديمية — {{ data.note.studentName }}</h2>
+        <h2 mat-dialog-title class="!m-0 !p-0 text-[1.15rem] font-bold">ملاحظة {{ kindLabels[data.note.noteType] }} — {{ data.note.studentName }}</h2>
         <p class="mt-1 mb-0 text-[0.85rem] text-muted">{{ data.note.className }} — {{ data.note.stageName }}</p>
       </div>
       <span class="chip ms-auto self-center" [class]="'chip ms-auto self-center ' + statusChip">
@@ -36,6 +37,13 @@ export interface AcademicNoteDetailDialogData {
 
     <mat-dialog-content class="min-w-0">
       <div class="mb-4 grid grid-cols-2 gap-3 max-[599px]:grid-cols-1">
+        <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
+          <app-ui-icon name="comment" class="mt-0.5 text-primary-mid"></app-ui-icon>
+          <div>
+            <span class="block text-xs text-muted">النوع</span>
+            <span class="block text-text">{{ kindLabels[data.note.noteType] }}</span>
+          </div>
+        </div>
         <div class="flex items-start gap-3 rounded-sp-sm bg-primary-bg p-3">
           <app-ui-icon name="menu_book" class="mt-0.5 text-primary-mid"></app-ui-icon>
           <div>
@@ -99,6 +107,7 @@ export class AcademicNoteDetailDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AcademicNoteDetailDialogComponent>);
 
   readonly categoryLabels = ACADEMIC_NOTE_CATEGORY_LABELS;
+  readonly kindLabels = ACADEMIC_NOTE_KIND_LABELS;
   readonly statusLabels = ACADEMIC_NOTE_STATUS_LABELS;
   readonly priorityLabels = PRIORITY_LABELS;
 
