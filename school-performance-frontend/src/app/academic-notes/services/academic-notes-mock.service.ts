@@ -6,6 +6,7 @@ import { AcademicLookupService } from '../../core/services/academic-lookup.servi
 import { DepartmentScopeService } from '../../core/services/department-scope.service';
 import { TeacherPortalMockService } from '../../teacher-portal/services/teacher-portal-mock.service';
 import { BehaviorMockService } from '../../behavior/services/behavior-mock.service';
+import { createMockStore } from '../../core/utils/mock-persistence';
 
 export interface AcademicNotesFilters {
   subjects?: string[];
@@ -38,6 +39,7 @@ const BEHAVIOR_TEXTS = [
 const CATEGORIES: AcademicNote['category'][] = ['PERFORMANCE', 'PARTICIPATION', 'HOMEWORK', 'ASSESSMENT', 'GENERAL'];
 const PRIORITIES: AcademicNote['priority'][] = ['HIGH', 'MEDIUM', 'LOW'];
 const STATUSES: AcademicNote['status'][] = ['OPEN', 'REVIEWED', 'RESOLVED'];
+const statusStore = createMockStore<Record<string, AcademicNote['status']>>('demo_academic_note_status', {});
 
 @Injectable({ providedIn: 'root' })
 export class AcademicNotesMockService {
@@ -45,7 +47,6 @@ export class AcademicNotesMockService {
   private readonly departmentScope = inject(DepartmentScopeService);
   private readonly teacherPortal = inject(TeacherPortalMockService);
   private readonly behaviorService = inject(BehaviorMockService);
-  private readonly statusOverrides = new Map<number, AcademicNote['status']>();
 
   getAll(filters?: AcademicNotesFilters): Observable<AcademicNote[]> {
     return forkJoin({
@@ -93,7 +94,7 @@ export class AcademicNotesMockService {
   }
 
   markReviewed(id: number): Observable<void> {
-    this.statusOverrides.set(id, 'REVIEWED');
+    statusStore.set({ ...statusStore.get(), [id]: 'REVIEWED' });
     return of(void 0).pipe(delay(200));
   }
 
@@ -238,7 +239,7 @@ export class AcademicNotesMockService {
   }
 
   private withStatus(note: AcademicNote): AcademicNote {
-    const status = note.id != null ? this.statusOverrides.get(note.id) : undefined;
+    const status = note.id != null ? statusStore.get()[String(note.id)] : undefined;
     return status ? { ...note, status } : note;
   }
 

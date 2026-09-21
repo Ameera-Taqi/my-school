@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { SearchFieldComponent } from '../../shared/components/search-field/search-field.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -18,20 +19,25 @@ import { TaskApiService } from '../services/task-api.service';
 import { TaskFormDialogComponent } from '../task-form-dialog/task-form-dialog.component';
 import { PRIORITY_LABELS, TASK_STATUS_LABELS } from '../../shared/constants/labels';
 import { SchoolTask } from '../../core/models';
+import { ReportPdfService } from '../../reports/services/report-pdf.service';
+import { ReportResult } from '../../reports/services/report-mock.service';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-tasks-page',
   standalone: true,
-  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatProgressSpinnerModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './tasks-page.component.html'
 })
 export class TasksPageComponent implements OnInit, AfterViewInit {
+  @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;
+
   private readonly service = inject(TaskApiService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly details = inject(DetailDialogService);
+  private readonly pdfService = inject(ReportPdfService);
   private readonly datePipe = new AppDatePipe();
 
   // Setter form: the table lives inside @if blocks, so attach the moment Angular creates the paginator.
@@ -44,6 +50,7 @@ export class TasksPageComponent implements OnInit, AfterViewInit {
   readonly statusLabels = TASK_STATUS_LABELS;
   readonly dataSource = new MatTableDataSource<SchoolTask>([]);
   loading = true;
+  exportingPdf = false;
   query = '';
   cols = ['title', 'assignee', 'dueDate', 'priority', 'status', 'meetingTitle', 'actions'];
 
@@ -100,6 +107,46 @@ export class TasksPageComponent implements OnInit, AfterViewInit {
     });
   }
 
+  exportPdf(): void {
+    const rows = this.dataSource.filteredData;
+    if (!rows.length) {
+      this.toast.info('لا توجد مهام لتصديرها');
+      return;
+    }
+    const root = this.pdfExportRoot?.nativeElement;
+    if (!root) {
+      this.toast.error('فشل تجهيز التقرير للتصدير');
+      return;
+    }
+    const report = this.buildPdfReport(rows);
+    this.exportingPdf = true;
+    const widthPx = this.pdfService.getContentWidthPx(report);
+    root.style.width = `${widthPx}px`;
+    root.style.maxWidth = `${widthPx}px`;
+    root.innerHTML = this.pdfService.buildExportHtml(report);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.pdfService.export(root, report)
+          .then(() => this.toast.success('تم تنزيل تقرير المهام PDF'))
+          .catch((err: Error) => {
+            console.error('PDF export failed:', err);
+            try {
+              this.pdfService.exportViaPrint(report);
+              this.toast.info('تم فتح نافذة الطباعة — اختر «حفظ كـ PDF»');
+            } catch (printErr) {
+              this.toast.error(printErr instanceof Error ? printErr.message : 'فشل تصدير PDF');
+            }
+          })
+          .finally(() => {
+            root.innerHTML = '';
+            root.style.width = '';
+            root.style.maxWidth = '';
+            this.exportingPdf = false;
+          });
+      });
+    });
+  }
+
   delete(t: SchoolTask): void {
     if (!t.id) return;
     this.confirm.deleteConfirmed(t.title, 'المهمة').subscribe(() => {
@@ -125,6 +172,38 @@ export class TasksPageComponent implements OnInit, AfterViewInit {
       case 'OVERDUE': return 'danger';
       default: return 'info';
     }
+  }
+
+  private buildPdfReport(tasks: SchoolTask[]): ReportResult {
+    const count = (status: SchoolTask['status']) => tasks.filter(t => t.status === status).length;
+    return {
+      title: 'تقرير متابعة المهام',
+      generatedAt: this.datePipe.transform(new Date(), 'withTime'),
+      summary: [
+        { label: 'إجمالي المهام', value: tasks.length },
+        { label: this.statusLabels['NEW'] ?? 'جديدة', value: count('NEW') },
+        { label: this.statusLabels['IN_PROGRESS'] ?? 'قيد التنفيذ', value: count('IN_PROGRESS') },
+        { label: this.statusLabels['COMPLETED'] ?? 'مكتملة', value: count('COMPLETED') },
+        { label: this.statusLabels['OVERDUE'] ?? 'متأخرة', value: count('OVERDUE') }
+      ],
+      columns: ['title', 'assignee', 'dueDate', 'priority', 'status', 'meetingTitle'],
+      columnLabels: {
+        title: 'العنوان',
+        assignee: 'المسؤول',
+        dueDate: 'الاستحقاق',
+        priority: 'الأولوية',
+        status: 'الحالة',
+        meetingTitle: 'الاجتماع'
+      },
+      rows: tasks.map(t => ({
+        title: t.description ? `${t.title} — ${t.description}` : t.title,
+        assignee: t.assignee || '—',
+        dueDate: this.datePipe.transform(t.dueDate),
+        priority: this.priorityLabels[t.priority] ?? t.priority,
+        status: this.statusLabels[t.status] ?? t.status,
+        meetingTitle: t.meetingTitle || '—'
+      }))
+    };
   }
 
   private attachTableControls(): void {

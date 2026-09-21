@@ -1,6 +1,5 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
-import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageService } from '../../core/services/language.service';
 import { DashboardCalendarComponent } from '../../calendar/dashboard-calendar/dashboard-calendar.component';
@@ -8,6 +7,7 @@ import { HomeStats, HomeStatsService } from '../services/home-stats.service';
 import { HomeStatsComponent } from '../widgets/home-stats.component';
 import { HomeListsComponent } from '../widgets/home-lists.component';
 import { HomeMyDayComponent } from '../widgets/home-my-day.component';
+import { HomeClassScheduleComponent } from '../widgets/home-class-schedule.component';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 /**
@@ -17,7 +17,7 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [UiIconComponent, AppDatePipe, HasPermissionPipe, DashboardCalendarComponent, HomeStatsComponent, HomeListsComponent, HomeMyDayComponent],
+  imports: [UiIconComponent, AppDatePipe, DashboardCalendarComponent, HomeStatsComponent, HomeListsComponent, HomeMyDayComponent, HomeClassScheduleComponent],
   templateUrl: './home-page.component.html'
 })
 export class HomePageComponent implements OnInit {
@@ -28,6 +28,8 @@ export class HomePageComponent implements OnInit {
   readonly today = new Date();
   loading = true;
   stats: HomeStats | null = null;
+  calendarOpen = false;
+  scheduleOpen = false;
 
   readonly greeting = computed(() => {
     const h = new Date().getHours();
@@ -52,7 +54,7 @@ export class HomePageComponent implements OnInit {
   }
 
   get showStats(): boolean {
-    return ['students.view', 'teachers.view', 'attendance.view', 'internal_requests.view', 'alerts.view', 'dashboard.view'].some(p => this.auth.hasPermission(p));
+    return true;
   }
   get showLists(): boolean { return ['meetings.view', 'tasks.view', 'alerts.view'].some(p => this.auth.hasPermission(p)); }
   get showMyDay(): boolean {
@@ -66,5 +68,19 @@ export class HomePageComponent implements OnInit {
       next: (data) => { this.stats = data; this.loading = false; },
       error: () => { this.loading = false; }
     });
+  }
+
+  toggleCalendar(): void {
+    this.calendarOpen = !this.calendarOpen;
+    if (this.calendarOpen) {
+      setTimeout(() => document.getElementById('home-calendar')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+  }
+
+  toggleSchedule(): void {
+    this.scheduleOpen = !this.scheduleOpen;
+    if (this.scheduleOpen) {
+      setTimeout(() => document.getElementById('home-schedule')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
   }
 }

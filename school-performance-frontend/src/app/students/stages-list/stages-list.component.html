@@ -1,4 +1,4 @@
-<app-page-header title="الطلاب" subtitle="اختر المرحلة الدراسية لعرض الفصول والطلاب"></app-page-header>
+<app-page-header title="المتعلمين" subtitle="اختر المرحلة الدراسية لعرض الفصول والمتعلمين"></app-page-header>
 
 @if (loading) {
   <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5" aria-busy="true">
@@ -23,7 +23,7 @@
         <h3 class="mt-[0.85rem] mb-1 text-[1.15rem] font-bold text-primary">{{ stage.name }}</h3>
         <div class="my-2 mb-[1.1rem] flex flex-wrap justify-center gap-[0.4rem]">
           <span class="chip neutral"><app-ui-icon name="class" class="size-3.5 text-sm"></app-ui-icon> {{ stage.classCount ?? 0 }} فصل</span>
-          <span class="chip info"><app-ui-icon name="people" class="size-3.5 text-sm"></app-ui-icon> {{ stage.studentCount ?? 0 }} طالب</span>
+          <span class="chip info"><app-ui-icon name="people" class="size-3.5 text-sm"></app-ui-icon> {{ stage.studentCount ?? 0 }} متعلم</span>
         </div>
         <button mat-flat-button color="primary" class="mt-auto w-full" [routerLink]="['/students/stages', stage.id]" (click)="$event.stopPropagation()">
           <app-ui-icon name="chevron_left"></app-ui-icon>

@@ -15,6 +15,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { TableSkeletonComponent } from '../../shared/components/table-skeleton/table-skeleton.component';
 import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
+import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { ToastService } from '../../shared/services/toast.service';
 import { AttendanceApiService } from '../services/attendance-api.service';
 import { AttendancePdfData, AttendancePdfService } from '../services/attendance-pdf.service';
@@ -60,6 +61,7 @@ export class StudentAttendancePageComponent implements OnInit {
   private readonly stageService = inject(AcademicStageApiService);
   private readonly classService = inject(SchoolClassApiService);
   private readonly toast = inject(ToastService);
+  private readonly datePipe = new AppDatePipe();
 
   readonly statusLabels = ATTENDANCE_STATUS_LABELS;
   readonly statusOptions = ['PRESENT', 'ABSENT', 'LATE'] as const;
@@ -91,8 +93,12 @@ export class StudentAttendancePageComponent implements OnInit {
   }
 
   private formatDate(d: Date | null): string {
-    if (!d) return new Date().toISOString().slice(0, 10);
-    return d instanceof Date ? d.toISOString().slice(0, 10) : String(d);
+    const date = d instanceof Date ? d : d ? new Date(d) : new Date();
+    if (isNaN(date.getTime())) {
+      const today = new Date();
+      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 
   loadStudents(): void {
@@ -138,7 +144,7 @@ export class StudentAttendancePageComponent implements OnInit {
 
   saveStudents(): void {
     this.attendanceService.saveStudentAttendance(this.studentRecords).subscribe({
-      next: () => this.toast.success('تم حفظ حضور الطلاب'),
+      next: () => this.toast.success('تم حفظ حضور المتعلمين'),
       error: (e) => this.toast.fromError(e)
     });
   }
@@ -159,17 +165,18 @@ export class StudentAttendancePageComponent implements OnInit {
     const { date, stageId, classId } = this.studentFilters.getRawValue();
     const stageName = this.stages.find(s => s.id === stageId)?.name ?? '';
     const className = this.classes.find(c => c.id === classId)?.name ?? '';
-    this.exportPdf(this.buildStudentPdfData(stageName, className, this.formatDate(date)));
+    const isoDate = this.formatDate(date);
+    this.exportPdf(this.buildStudentPdfData(stageName, className, isoDate));
   }
 
 
   private buildStudentPdfData(stageName: string, className: string, date: string): AttendancePdfData {
     return {
-      title: 'سجل حضور الطلاب',
+      title: 'تقرير حضور المتعلمين',
       date,
-      subtitle: `المرحلة: ${stageName} — الفصل: ${className}`,
+      subtitle: `${this.datePipe.transform(date)} — المرحلة: ${stageName} — الفصل: ${className}`,
       columns: [
-        { key: 'personName', label: 'اسم الطالب' },
+        { key: 'personName', label: 'اسم المتعلم' },
         { key: 'className', label: 'الفصل' },
         { key: 'status', label: 'الحالة' }
       ],
@@ -210,7 +217,7 @@ export class StudentAttendancePageComponent implements OnInit {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         this.pdfService.export(root, data)
-          .then(() => this.toast.success('تم تصدير PDF'))
+          .then(() => this.toast.success('تم تنزيل تقرير حضور المتعلمين PDF'))
           .catch((err: Error) => {
             console.error('Attendance PDF export failed:', err);
             try {

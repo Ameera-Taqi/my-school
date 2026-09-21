@@ -56,7 +56,7 @@ const MOCK_OVERVIEW: KpiOverview = {
         { id: 'avg-grade', name: 'متوسط الدرجات العام', category: 'ACADEMIC', value: 78.5, target: 75, unit: '%', trend: 'UP', trendValue: 2.1, status: 'GOOD' },
         { id: 'pass-rate', name: 'نسبة النجاح', category: 'ACADEMIC', value: 94.2, target: 90, unit: '%', trend: 'UP', trendValue: 1.5, status: 'EXCELLENT' },
         { id: 'excellence-rate', name: 'نسبة التفوق', category: 'ACADEMIC', value: 32.8, target: 30, unit: '%', trend: 'STABLE', trendValue: 0, status: 'GOOD' },
-        { id: 'remedial', name: 'طلاب يحتاجون دعم', category: 'ACADEMIC', value: 8.4, target: 10, unit: '%', trend: 'DOWN', trendValue: 1.2, status: 'GOOD', description: 'كلما انخفضت كانت أفضل' }
+        { id: 'remedial', name: 'متعلمين يحتاجون دعم', category: 'ACADEMIC', value: 8.4, target: 10, unit: '%', trend: 'DOWN', trendValue: 1.2, status: 'GOOD', description: 'كلما انخفضت كانت أفضل' }
       ]
     },
     {
@@ -66,7 +66,7 @@ const MOCK_OVERVIEW: KpiOverview = {
       color: '#388e3c',
       score: 91.5,
       indicators: [
-        { id: 'student-att', name: 'حضور الطلاب', category: 'ATTENDANCE', value: 91.5, target: 90, unit: '%', trend: 'UP', trendValue: 0.8, status: 'EXCELLENT' },
+        { id: 'student-att', name: 'حضور المتعلمين', category: 'ATTENDANCE', value: 91.5, target: 90, unit: '%', trend: 'UP', trendValue: 0.8, status: 'EXCELLENT' },
         { id: 'teacher-att', name: 'حضور المعلمين', category: 'ATTENDANCE', value: 96.8, target: 95, unit: '%', trend: 'STABLE', trendValue: 0, status: 'EXCELLENT' },
         { id: 'late-rate', name: 'نسبة التأخر', category: 'ATTENDANCE', value: 4.2, target: 5, unit: '%', trend: 'DOWN', trendValue: 0.6, status: 'GOOD' },
         { id: 'absence-days', name: 'متوسط أيام الغياب', category: 'ATTENDANCE', value: 2.1, target: 3, unit: 'يوم', trend: 'DOWN', trendValue: 0.3, status: 'GOOD' }

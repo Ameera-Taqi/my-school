@@ -64,7 +64,7 @@
               @if (isHead(row)) { <app-ui-icon name="star" class="size-3.5 text-sm"></app-ui-icon> }
               {{ roleLabel(row) }}
             </span>
-            @if (row.wingSupervisor) { <span class="chip warning" matTooltip="مشرف جناح: يسجّل حضور الطلاب"><app-ui-icon name="meeting_room" class="size-3.5 text-sm"></app-ui-icon> مشرف جناح</span> }
+            @if (row.wingSupervisor) { <span class="chip warning" matTooltip="مشرف جناح: يسجّل حضور المتعلمين"><app-ui-icon name="meeting_room" class="size-3.5 text-sm"></app-ui-icon> مشرف جناح</span> }
           </td>
         </ng-container>
         <ng-container matColumnDef="contact">

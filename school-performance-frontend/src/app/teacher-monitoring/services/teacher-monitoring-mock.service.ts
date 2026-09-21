@@ -51,7 +51,7 @@ const MOCK: TeacherMonitoringRecord[] = [
     evaluationScore: 3.5,
     lastVisitDate: '2026-06-08',
     status: 'NEEDS_FOLLOW_UP',
-    strengths: 'تفاعل جيد مع الطلاب',
+    strengths: 'تفاعل جيد مع المتعلمين',
     improvements: 'تسليم خطط الدروس في الوقت، توثيق الواجبات',
     notes: 'تم التنبيه بضرورة تحسين إنجاز الخطط'
   },
@@ -67,7 +67,7 @@ const MOCK: TeacherMonitoringRecord[] = [
     lastVisitDate: '2026-06-10',
     status: 'GOOD',
     strengths: 'استخدام التقنية في التعليم',
-    improvements: 'متابعة الطلاب ضعاف المستوى',
+    improvements: 'متابعة المتعلمين ضعاف المستوى',
     notes: '—'
   },
   {
@@ -82,7 +82,7 @@ const MOCK: TeacherMonitoringRecord[] = [
     lastVisitDate: '2026-05-28',
     status: 'CRITICAL',
     strengths: 'خبرة في المادة',
-    improvements: 'الالتزام بالحضور، إعداد الدروس، متابعة الطلاب',
+    improvements: 'الالتزام بالحضور، إعداد الدروس، متابعة المتعلمين',
     notes: 'اجتماع متابعة مجدول مع رئيس الشعبة'
   }
 ];

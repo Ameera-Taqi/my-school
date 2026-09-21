@@ -232,17 +232,40 @@ public class AttendanceService
 
         var present = Count(AttendanceStatus.PRESENT);
         var late = Count(AttendanceStatus.LATE);
+        var absent = Count(AttendanceStatus.ABSENT);
         var recorded = rows.Sum(r => r.Count);
+
+        var teachersTotal = await _db.Teachers.CountAsync(t => t.Active);
+        var teacherRows = await _db.TeacherAttendances.Where(a => a.AttendanceDate == date).GroupBy(a => a.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
+        int TeacherCount(AttendanceStatus s) => teacherRows.FirstOrDefault(r => r.Status == s)?.Count ?? 0;
+        var teachersPresent = TeacherCount(AttendanceStatus.PRESENT);
+        var teachersLate = TeacherCount(AttendanceStatus.LATE);
+        var teachersAbsent = TeacherCount(AttendanceStatus.ABSENT);
+        var teachersRecorded = teacherRows.Sum(r => r.Count);
+
+        static double? Pct(int part, int whole, int recordedCount) =>
+            recordedCount == 0 || whole == 0 ? null : Math.Round(part * 100.0 / whole, 1);
+
         return new AttendanceSummaryDto
         {
             Date = date.ToString("yyyy-MM-dd"),
             StudentsTotal = total,
             Recorded = recorded,
             Present = present,
-            Absent = Count(AttendanceStatus.ABSENT),
+            Absent = absent,
             Late = late,
             Excused = Count(AttendanceStatus.EXCUSED),
-            Rate = recorded == 0 ? null : Math.Round((present + late) * 100.0 / recorded, 1)
+            Rate = Pct(present + late, total, recorded),
+            AbsentRate = Pct(absent, total, recorded),
+            TeachersTotal = teachersTotal,
+            TeachersRecorded = teachersRecorded,
+            TeachersPresent = teachersPresent,
+            TeachersAbsent = teachersAbsent,
+            TeachersLate = teachersLate,
+            TeachersExcused = TeacherCount(AttendanceStatus.EXCUSED),
+            TeacherRate = Pct(teachersPresent + teachersLate, teachersTotal, teachersRecorded),
+            TeacherAbsentRate = Pct(teachersAbsent, teachersTotal, teachersRecorded)
         };
     }
 

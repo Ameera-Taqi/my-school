@@ -18,10 +18,10 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
     <mat-dialog-content class="max-h-[70vh]">
       <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>اسم الطالب</mat-label>
+          <mat-label>اسم المتعلم</mat-label>
           <input matInput formControlName="studentName" cdkFocusInitial autocomplete="off">
           <app-ui-icon name="school" matSuffix></app-ui-icon>
-          <mat-error>اسم الطالب مطلوب</mat-error>
+          <mat-error>اسم المتعلم مطلوب</mat-error>
         </mat-form-field>
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">

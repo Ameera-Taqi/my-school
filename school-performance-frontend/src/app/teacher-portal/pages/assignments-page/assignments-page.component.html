@@ -1,4 +1,4 @@
-<app-page-header title="الواجبات" subtitle="إدارة واجبات الطلاب">
+<app-page-header title="الواجبات" subtitle="إدارة واجبات المتعلمين">
   <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> واجب جديد</button>
 </app-page-header>
 
@@ -15,7 +15,7 @@
   @if (loading) {
     <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
   } @else if (total === 0) {
-    <app-empty-state icon="assignment" title="لا توجد واجبات بعد" description="أضف أول واجب لطلابك لبدء متابعة التسليم.">
+    <app-empty-state icon="assignment" title="لا توجد واجبات بعد" description="أضف أول واجب لمتعلميك لبدء متابعة التسليم.">
       <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> واجب جديد</button>
     </app-empty-state>
   } @else if (filteredCount === 0) {

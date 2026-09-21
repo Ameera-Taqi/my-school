@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using SchoolPerformance.Api.Dtos;
 using SchoolPerformance.Api.Entities;
+using SchoolPerformance.Api.Services.Scheduling;
 
 namespace SchoolPerformance.Api.Data;
 
@@ -11,6 +13,7 @@ public class DataSeeder
 {
     private readonly AppDbContext _db;
     private readonly ILogger<DataSeeder> _logger;
+    private readonly ScheduleService _schedule;
 
     private record PermissionDef(string Key, string Name, string Module, string Description);
 
@@ -34,10 +37,11 @@ public class DataSeeder
         new("departments.manage", "إدارة الشعب الدراسية", "إدارة المدرسة", "إدارة الشعب الأكاديمية")
     };
 
-    public DataSeeder(AppDbContext db, ILogger<DataSeeder> logger)
+    public DataSeeder(AppDbContext db, ILogger<DataSeeder> logger, ScheduleService schedule)
     {
         _db = db;
         _logger = logger;
+        _schedule = schedule;
     }
 
     public async Task SeedAsync()
@@ -58,10 +62,12 @@ public class DataSeeder
         await SeedDemoMeetingsAndTasksAsync(); // 13 demo meetings/tasks (previously browser-only mock data)
         await SeedOrgStructurePermissionAsync(); // 14 org chart permission for the executive section
         await SeedSchedulingAsync();             // 15 subjects, class assignments, sample teacher constraints
+        await SeedGeneratedTimetableAsync();     // 15b fill the weekly grid once so home/class-schedule have lessons
         await SeedTeacherAttendancePermissionAsync(); // 16 scoped teacher-attendance page permission
         await SeedWingSupervisorAsync();               // 17 wing supervisor role + permission
         await SeedDepartmentSubjectsAsync();          // 18 each department's subjects (created if missing, linked by name)
         await LocalizeRoleNamesAsync();               // 19 keep role display names Arabic (API RoleName)
+        await LocalizeLearnerTerminologyAsync();      // 20 طلاب → متعلمين on existing permission/role labels
         _logger.LogInformation("Database seeding completed");
     }
 
@@ -89,10 +95,10 @@ public class DataSeeder
             new("tasks.view", "متابعة المهام", "الإدارة العليا", "متابعة المهام الإدارية"),
             new("tasks.create", "إدارة المهام", "الإدارة العليا", "إنشاء وتعديل المهام"),
 
-            new("students.view", "عرض الطلاب", "إدارة المدرسة", "عرض قائمة الطلاب"),
-            new("students.create", "إضافة طالب", "إدارة المدرسة", "إضافة طلاب جدد"),
-            new("students.update", "تعديل طالب", "إدارة المدرسة", "تعديل بيانات الطلاب"),
-            new("students.delete", "حذف طالب", "إدارة المدرسة", "حذف الطلاب"),
+            new("students.view", "عرض المتعلمين", "إدارة المدرسة", "عرض قائمة المتعلمين"),
+            new("students.create", "إضافة متعلم", "إدارة المدرسة", "إضافة متعلمين جدد"),
+            new("students.update", "تعديل متعلم", "إدارة المدرسة", "تعديل بيانات المتعلمين"),
+            new("students.delete", "حذف متعلم", "إدارة المدرسة", "حذف المتعلمين"),
             new("academicStages.view", "عرض المراحل الدراسية", "إدارة المدرسة", "عرض المراحل الدراسية"),
             new("classes.view", "عرض الفصول", "إدارة المدرسة", "عرض الفصول الدراسية"),
             new("classes.create", "إضافة فصل", "إدارة المدرسة", "إضافة فصول جديدة"),
@@ -114,14 +120,14 @@ public class DataSeeder
             new("lesson_plans.manage", "إدارة خطط الدروس", "رؤساء الشعب", "إنشاء وتعديل خطط الدروس"),
             new("class_schedule.view", "جدول الحصص الدراسية", "إدارة المدرسة", "عرض جدول الحصص الأسبوعي"),
             new("class_schedule.manage", "إدارة جدول الحصص", "إدارة المدرسة", "إضافة وتعديل جدول الحصص"),
-            new("subject_results.view", "نتائج الطلاب حسب المادة", "رؤساء الشعب", "عرض نتائج الطلاب"),
+            new("subject_results.view", "نتائج المتعلمين حسب المادة", "رؤساء الشعب", "عرض نتائج المتعلمين"),
             new("academic_notes.view", "الملاحظات الأكاديمية", "رؤساء الشعب", "عرض الملاحظات الأكاديمية"),
             new("resource_bank.view", "بنك الملفات التعليمية", "رؤساء الشعب", "الوصول لبنك الملفات"),
             new("resource_bank.manage", "إدارة بنك الملفات", "رؤساء الشعب", "رفع وإدارة الملفات التعليمية"),
 
             new("my_classes.view", "فصولي", "المعلمين", "عرض الفصول الدراسية"),
-            new("my_students.view", "طلابي", "المعلمين", "عرض طلاب الفصل"),
-            new("attendance_record.view", "تسجيل الحضور", "المعلمين", "تسجيل حضور الطلاب"),
+            new("my_students.view", "متعلمي", "المعلمين", "عرض متعلمي الفصل"),
+            new("attendance_record.view", "تسجيل الحضور", "المعلمين", "تسجيل حضور المتعلمين"),
             new("assignments.view", "الواجبات", "المعلمين", "إدارة الواجبات"),
             new("grades.view", "الدرجات", "المعلمين", "إدارة الدرجات"),
             new("notes.view", "الملاحظات السلوكية والأكاديمية", "المعلمين", "إضافة الملاحظات"),
@@ -190,9 +196,9 @@ public class DataSeeder
             new("classes.create", "إضافة فصل", "إدارة المدرسة", "إضافة فصول جديدة"),
             new("classes.update", "تعديل فصل", "إدارة المدرسة", "تعديل بيانات الفصول"),
             new("classes.delete", "حذف فصل", "إدارة المدرسة", "حذف الفصول"),
-            new("students.create", "إضافة طالب", "إدارة المدرسة", "إضافة طلاب جدد"),
-            new("students.update", "تعديل طالب", "إدارة المدرسة", "تعديل بيانات الطلاب"),
-            new("students.delete", "حذف طالب", "إدارة المدرسة", "حذف الطلاب"),
+            new("students.create", "إضافة متعلم", "إدارة المدرسة", "إضافة متعلمين جدد"),
+            new("students.update", "تعديل متعلم", "إدارة المدرسة", "تعديل بيانات المتعلمين"),
+            new("students.delete", "حذف متعلم", "إدارة المدرسة", "حذف المتعلمين"),
             new("attendance.manage", "إدارة الحضور والانصراف", "إدارة المدرسة", "تسجيل وتحديث الحضور"),
             new("behavior.create", "تسجيل ملاحظات سلوكية", "إدارة المدرسة", "إضافة وتعديل الملاحظات السلوكية"),
             new("internal_requests.create", "إنشاء طلب داخلي", "إدارة المدرسة", "تقديم طلبات داخلية جديدة"),
@@ -658,6 +664,24 @@ public class DataSeeder
         await _db.SaveChangesAsync();
     }
 
+    private async Task SeedGeneratedTimetableAsync()
+    {
+        if (await _db.ScheduleEntries.AnyAsync() || !await _db.ClassSubjectAssignments.AnyAsync())
+        {
+            return;
+        }
+        try
+        {
+            var result = await _schedule.GenerateAsync(new GenerateScheduleRequest { KeepLocked = true });
+            _logger.LogInformation("Seeded timetable: {Placed}/{Required} lessons in {Duration} ms",
+                result.PlacedLessons, result.RequiredLessons, result.DurationMs);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not generate the demo timetable; the home grid will stay empty until generate is run");
+        }
+    }
+
     // ---- 16. Teacher attendance page permission --------------------------------------------------------
 
     private async Task SeedTeacherAttendancePermissionAsync()
@@ -679,11 +703,11 @@ public class DataSeeder
 
     private async Task SeedWingSupervisorAsync()
     {
-        var permission = await EnsurePermissionAsync(new PermissionDef("wing_supervisor.view", "حضور الطلاب (مشرف الجناح)", "مشرف الجناح", "تسجيل ومتابعة حضور الطلاب بصفة مشرف جناح"));
+        var permission = await EnsurePermissionAsync(new PermissionDef("wing_supervisor.view", "حضور المتعلمين (مشرف الجناح)", "مشرف الجناح", "تسجيل ومتابعة حضور المتعلمين بصفة مشرف جناح"));
         var role = await FindRoleAsync("WING_SUPERVISOR");
         if (role == null)
         {
-            role = new Role { RoleKey = "WING_SUPERVISOR", RoleName = "مشرف جناح", Description = "معلم مكلّف بالإشراف على جناح وتسجيل حضور طلابه (يُضاف إلى دور المعلم)", Active = true };
+            role = new Role { RoleKey = "WING_SUPERVISOR", RoleName = "مشرف جناح", Description = "معلم مكلّف بالإشراف على جناح وتسجيل حضور متعلميه (يُضاف إلى دور المعلم)", Active = true };
             _db.Roles.Add(role);
             await _db.SaveChangesAsync();
         }
@@ -818,5 +842,48 @@ public class DataSeeder
             changed = true;
         }
         if (changed) await _db.SaveChangesAsync();
+    }
+
+    /// <summary>Rename طلاب/طالب to متعلمين/متعلم on labels already stored in the database.</summary>
+    private async Task LocalizeLearnerTerminologyAsync()
+    {
+        var changed = false;
+        foreach (var permission in await _db.Permissions.ToListAsync())
+        {
+            var name = RelabelLearners(permission.PermissionName);
+            var description = RelabelLearners(permission.Description);
+            var module = RelabelLearners(permission.ModuleName);
+            if (name == permission.PermissionName && description == permission.Description && module == permission.ModuleName)
+            {
+                continue;
+            }
+            permission.PermissionName = name;
+            permission.Description = description;
+            permission.ModuleName = module;
+            changed = true;
+        }
+        foreach (var role in await _db.Roles.ToListAsync())
+        {
+            var description = RelabelLearners(role.Description);
+            if (description == role.Description) continue;
+            role.Description = description;
+            changed = true;
+        }
+        if (changed) await _db.SaveChangesAsync();
+    }
+
+    private static string RelabelLearners(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
+        return value
+            .Replace("طالباً", "متعلماً")
+            .Replace("طلابك", "متعلميك")
+            .Replace("طلابه", "متعلميه")
+            .Replace("طلابي", "متعلمي")
+            .Replace("الطلاب", "المتعلمين")
+            .Replace("الطالب", "المتعلم")
+            .Replace("طلاب", "متعلمين")
+            .Replace("طالب", "متعلم")
+            .Replace("متعلمين الفصل", "متعلمي الفصل");
     }
 }

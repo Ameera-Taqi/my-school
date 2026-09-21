@@ -34,7 +34,7 @@ builder.Services.AddControllers()
             if (message.Contains("field is required", StringComparison.OrdinalIgnoreCase)
                 || message.Contains("is required", StringComparison.OrdinalIgnoreCase))
             {
-                message = "تعذر قراءة بيانات الطلاب من الملف. استخدم القالب ثم املأ صفوفاً كاملة قبل الرفع";
+                message = "تعذر قراءة بيانات المتعلمين من الملف. استخدم القالب ثم املأ صفوفاً كاملة قبل الرفع";
             }
             return new BadRequestObjectResult(new { message });
         };

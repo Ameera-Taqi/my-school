@@ -1,6 +1,6 @@
 <app-page-header
   [title]="'الملاحظات الأكاديمية'"
-  [subtitle]="departmentScope.isScoped() ? 'ملاحظات معلمي ' + departmentScope.departmentName() : 'متابعة الملاحظات الأكاديمية والسلوكية المسجلة على الطلاب'">
+  [subtitle]="departmentScope.isScoped() ? 'ملاحظات معلمي ' + departmentScope.departmentName() : 'متابعة الملاحظات الأكاديمية والسلوكية المسجلة على المتعلمين'">
 </app-page-header>
 
 <mat-card class="mb-5 px-5 py-4">
@@ -72,7 +72,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>بحث</mat-label>
-      <input matInput formControlName="search" placeholder="اسم الطالب أو المعلم">
+      <input matInput formControlName="search" placeholder="اسم المتعلم أو المعلم">
     </mat-form-field>
     <div class="flex flex-wrap items-center gap-2">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
@@ -147,7 +147,7 @@
     <div class="table-scroll">
       <table mat-table [dataSource]="dataSource" matSort matSortActive="noteDate" matSortDirection="desc">
         <ng-container matColumnDef="studentName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>الطالب</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المتعلم</th>
           <td mat-cell *matCellDef="let r">
             <div class="flex items-center gap-[0.7rem]">
               <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.studentName?.charAt(0) }}</span>

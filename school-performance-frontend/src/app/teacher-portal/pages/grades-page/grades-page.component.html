@@ -1,4 +1,4 @@
-<app-page-header title="الدرجات" subtitle="كشف درجات الطلاب — أضف أعمدة التقييم وأدخل الدرجات مباشرة"></app-page-header>
+<app-page-header title="الدرجات" subtitle="كشف درجات المتعلمين — أضف أعمدة التقييم وأدخل الدرجات مباشرة"></app-page-header>
 
 <mat-card class="mb-4 px-4 py-[0.65rem]">
   <form [formGroup]="filters" class="flex flex-wrap items-center gap-3">
@@ -70,7 +70,7 @@
         [dataSource]="sheet.entries"
         class="[&_.mat-mdc-header-cell]:align-top [&_.mat-mdc-header-cell]:bg-[#f8f9fc] [&_.mat-mdc-cell]:bg-surface [&_.mat-mdc-row:nth-child(even)_.mat-mdc-cell]:bg-[#fafbfe] [&_.mat-mdc-row:hover_.mat-mdc-cell]:bg-primary-bg [&_td.mat-mdc-cell:last-child]:bg-[#f3f4fb] [&_th.mat-mdc-header-cell:last-child]:bg-[#f3f4fb]">
         <ng-container matColumnDef="studentName" sticky>
-          <th mat-header-cell *matHeaderCellDef>اسم الطالب</th>
+          <th mat-header-cell *matHeaderCellDef>اسم المتعلم</th>
           <td mat-cell *matCellDef="let row" class="whitespace-nowrap font-semibold">{{ row.studentName }}</td>
         </ng-container>
 

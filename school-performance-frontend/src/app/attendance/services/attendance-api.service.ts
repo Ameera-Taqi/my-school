@@ -22,8 +22,17 @@ export interface AttendanceSummary {
   absent: number;
   late: number;
   excused: number;
-  /** null when nothing has been recorded for that day */
+  /** present + late as a percentage of enrolled students; null when nothing recorded */
   rate: number | null;
+  absentRate: number | null;
+  teachersTotal: number;
+  teachersRecorded: number;
+  teachersPresent: number;
+  teachersAbsent: number;
+  teachersLate: number;
+  teachersExcused: number;
+  teacherRate: number | null;
+  teacherAbsentRate: number | null;
 }
 
 /** Daily attendance for students (by class) and teachers, stored in the database. */

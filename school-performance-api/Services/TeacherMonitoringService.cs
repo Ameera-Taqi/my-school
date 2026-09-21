@@ -119,7 +119,7 @@ public class TeacherMonitoringService
     {
         "EXCELLENT" => "تنويع استراتيجيات التدريس، التزام بالخطط",
         "GOOD" => "شرح واضح، إدارة صف جيدة",
-        "NEEDS_FOLLOW_UP" => "تفاعل جيد مع الطلاب",
+        "NEEDS_FOLLOW_UP" => "تفاعل جيد مع المتعلمين",
         _ => "خبرة في المادة"
     };
 
@@ -128,7 +128,7 @@ public class TeacherMonitoringService
         "EXCELLENT" => "زيادة الأنشطة التفاعلية",
         "GOOD" => "رفع نسبة إنجاز الخطط الأسبوعية",
         "NEEDS_FOLLOW_UP" => "تسليم خطط الدروس في الوقت، توثيق الواجبات",
-        _ => "الالتزام بالحضور، إعداد الدروس، متابعة الطلاب"
+        _ => "الالتزام بالحضور، إعداد الدروس، متابعة المتعلمين"
     };
 
     private static string DefaultNotes(string status) => status switch

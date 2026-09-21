@@ -103,6 +103,7 @@ export class TeacherAttendancePageComponent implements OnInit {
   private readonly api = inject(AttendanceApiService);
   private readonly pdfService = inject(AttendancePdfService);
   private readonly toast = inject(ToastService);
+  private readonly datePipe = new AppDatePipe();
 
   /** Toggle options (a teacher is marked present/late only when a punch time exists). */
   readonly statusOptions = Object.keys(ATTENDANCE_STATUS_LABELS);
@@ -115,6 +116,7 @@ export class TeacherAttendancePageComponent implements OnInit {
   loading = true;
   loadingHistory = false;
   exporting = false;
+  selectedTab = 0;
 
   dayCols: string[] = [];
   monthCols: string[] = [];
@@ -318,25 +320,191 @@ export class TeacherAttendancePageComponent implements OnInit {
   }
 
   exportPdf(): void {
-    if (!this.records.length) { this.toast.info('لا توجد سجلات لتصديرها'); return; }
-    const data: AttendancePdfData = {
-      title: this.title,
-      date: this.formatDate(this.filters.controls.date.value),
-      subtitle: this.scope?.scope === 'DEPARTMENT' ? `الشعبة: ${this.scope.departmentName ?? ''}` : undefined,
-      columns: [{ key: 'personName', label: 'اسم المعلم' }, { key: 'department', label: 'الشعبة' }, { key: 'status', label: 'الحالة' }, { key: 'checkIn', label: 'الحضور' }, { key: 'presence', label: 'التواجد' }, { key: 'checkOut', label: 'الانصراف' }, { key: 'hours', label: 'ساعات الدوام' }],
-      rows: this.records.map(r => ({ personName: r.personName, department: r.className ?? '—', status: this.statusLabels[r.status] ?? r.status, checkIn: r.checkInTime ?? '—', presence: r.presenceTime ?? '—', checkOut: r.checkOutTime ?? '—', hours: this.formatMinutes(r.presenceMinutes ?? this.presenceOf(r)) })),
-      summary: this.statusOptions.map(s => ({ label: this.statusLabels[s], value: String(this.countByStatus(s)) })).concat([{ label: 'الإجمالي', value: String(this.records.length) }])
+    if (this.selectedTab === 1) {
+      this.exportMonthPdf();
+    } else {
+      this.exportDayPdf();
+    }
+  }
+
+  private exportDayPdf(): void {
+    if (!this.records.length) {
+      this.toast.info('اعرض سجل حضور المعلمين أولاً');
+      return;
+    }
+    this.runPdfExport(this.buildDayPdfData());
+  }
+
+  private exportMonthPdf(): void {
+    if (!this.history.length) {
+      this.toast.info('لا توجد سجلات شهرية لتصديرها');
+      return;
+    }
+    this.runPdfExport(this.buildMonthPdfData());
+  }
+
+  private buildDayPdfData(): AttendancePdfData {
+    const isoDate = this.formatDate(this.filters.controls.date.value);
+    const parts = [`${this.datePipe.transform(isoDate)}`];
+    if (this.scope?.scope === 'DEPARTMENT' && this.scope.departmentName) {
+      parts.push(`الشعبة: ${this.scope.departmentName}`);
+    } else if (this.scope?.scope === 'SELF' && this.scope.teacherName) {
+      parts.push(`المعلم: ${this.scope.teacherName}`);
+    }
+    return {
+      title: 'تقرير حضور المعلمين',
+      date: isoDate,
+      subtitle: parts.join(' — '),
+      columns: [
+        { key: 'personName', label: 'اسم المعلم' },
+        { key: 'department', label: 'الشعبة' },
+        { key: 'status', label: 'الحالة' },
+        { key: 'checkIn', label: 'وقت الحضور' },
+        { key: 'presence', label: 'وقت التواجد' },
+        { key: 'checkOut', label: 'وقت الانصراف' },
+        { key: 'hours', label: 'ساعات الدوام' }
+      ],
+      rows: this.records.map(r => ({
+        personName: r.personName,
+        department: r.className ?? '—',
+        status: this.statusLabels[r.status] ?? r.status,
+        checkIn: r.checkInTime ?? '—',
+        presence: r.presenceTime ?? '—',
+        checkOut: r.checkOutTime ?? '—',
+        hours: this.formatMinutes(r.presenceMinutes ?? this.presenceOf(r))
+      })),
+      summary: this.statusOptions
+        .map(s => ({ label: this.statusLabels[s], value: String(this.countByStatus(s)) }))
+        .concat([{ label: 'الإجمالي', value: String(this.records.length) }])
     };
+  }
+
+  private buildMonthPdfData(): AttendancePdfData {
+    const monthValue = this.monthFilter.controls.month.value;
+    const monthLabel = this.monthOptions().find(m => m.value === monthValue)?.label ?? monthValue;
+    const parts = [`الشهر: ${monthLabel}`];
+    if (this.scope?.scope === 'DEPARTMENT' && this.scope.departmentName) {
+      parts.push(`الشعبة: ${this.scope.departmentName}`);
+    } else if (this.scope?.scope === 'SELF' && this.scope.teacherName) {
+      parts.push(`المعلم: ${this.scope.teacherName}`);
+    }
+
+    if (this.isSelf) {
+      const row = this.monthRows[0];
+      return {
+        title: 'تقرير ملخص حضور المعلمين',
+        date: monthValue,
+        subtitle: parts.join(' — '),
+        columns: [
+          { key: 'date', label: 'اليوم' },
+          { key: 'status', label: 'الحالة' },
+          { key: 'checkIn', label: 'وقت الحضور' },
+          { key: 'presence', label: 'وقت التواجد' },
+          { key: 'checkOut', label: 'وقت الانصراف' },
+          { key: 'hours', label: 'ساعات الدوام' }
+        ],
+        rows: this.history.map(r => ({
+          date: this.datePipe.transform(r.date),
+          status: this.statusLabels[r.status] ?? r.status,
+          checkIn: r.checkInTime ?? '—',
+          presence: r.presenceTime ?? '—',
+          checkOut: r.checkOutTime ?? '—',
+          hours: this.formatMinutes(r.presenceMinutes)
+        })),
+        summary: row
+          ? [
+              { label: 'أيام مسجّلة', value: String(row.recorded) },
+              { label: 'حاضر', value: String(row.present) },
+              { label: 'غائب', value: String(row.absent) },
+              { label: 'متأخر', value: String(row.late) },
+              { label: 'مستأذن', value: String(row.excused) },
+              { label: 'ساعات الدوام', value: this.formatMinutes(row.presenceMinutes) }
+            ]
+          : []
+      };
+    }
+
+    const totals = this.monthRows.reduce(
+      (acc, r) => {
+        acc.recorded += r.recorded;
+        acc.present += r.present;
+        acc.absent += r.absent;
+        acc.late += r.late;
+        acc.excused += r.excused;
+        acc.presenceMinutes += r.presenceMinutes;
+        return acc;
+      },
+      { recorded: 0, present: 0, absent: 0, late: 0, excused: 0, presenceMinutes: 0 }
+    );
+
+    return {
+      title: 'تقرير ملخص حضور المعلمين',
+      date: monthValue,
+      subtitle: parts.join(' — '),
+      columns: [
+        { key: 'teacherName', label: 'المعلم' },
+        { key: 'department', label: 'الشعبة' },
+        { key: 'recorded', label: 'أيام مسجّلة' },
+        { key: 'present', label: 'حاضر' },
+        { key: 'absent', label: 'غائب' },
+        { key: 'late', label: 'متأخر' },
+        { key: 'excused', label: 'مستأذن' },
+        { key: 'hours', label: 'ساعات الدوام' },
+        { key: 'rate', label: 'نسبة الحضور' }
+      ],
+      rows: this.monthRows.map(r => ({
+        teacherName: r.teacherName,
+        department: r.departmentName ?? '—',
+        recorded: String(r.recorded),
+        present: String(r.present),
+        absent: String(r.absent),
+        late: String(r.late),
+        excused: String(r.excused),
+        hours: this.formatMinutes(r.presenceMinutes),
+        rate: r.rate !== null ? `${r.rate}%` : '—'
+      })),
+      summary: [
+        { label: 'عدد المعلمين', value: String(this.monthRows.length) },
+        { label: 'حاضر', value: String(totals.present) },
+        { label: 'غائب', value: String(totals.absent) },
+        { label: 'متأخر', value: String(totals.late) },
+        { label: 'مستأذن', value: String(totals.excused) },
+        { label: 'ساعات الدوام', value: this.formatMinutes(totals.presenceMinutes) }
+      ]
+    };
+  }
+
+  private runPdfExport(data: AttendancePdfData): void {
     const root = this.pdfExportRoot?.nativeElement;
-    if (!root) { this.toast.error('فشل تجهيز التصدير'); return; }
+    if (!root) {
+      this.toast.error('فشل تجهيز التصدير');
+      return;
+    }
+
     this.exporting = true;
     root.innerHTML = this.pdfService.buildExportHtml(data);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      this.pdfService.export(root, data)
-        .then(() => this.toast.success('تم تصدير PDF'))
-        .catch(() => { try { this.pdfService.exportViaPrint(data); this.toast.info('تم فتح نافذة الطباعة — اختر "حفظ كـ PDF"'); } catch { this.toast.error('فشل تصدير PDF'); } })
-        .finally(() => { root.innerHTML = ''; this.exporting = false; });
-    }));
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.pdfService.export(root, data)
+          .then(() => this.toast.success('تم تنزيل تقرير حضور المعلمين PDF'))
+          .catch((err: Error) => {
+            console.error('Teacher attendance PDF export failed:', err);
+            try {
+              this.pdfService.exportViaPrint(data);
+              this.toast.info('تم فتح نافذة الطباعة — اختر "حفظ كـ PDF"');
+            } catch (printErr) {
+              this.toast.error(printErr instanceof Error ? printErr.message : 'فشل تصدير PDF');
+            }
+          })
+          .finally(() => {
+            root.innerHTML = '';
+            root.style.width = '';
+            root.style.maxWidth = '';
+            this.exporting = false;
+          });
+      });
+    });
   }
 
   private aggregate(rows: AttendanceRecord[]): TeacherMonthRow[] {

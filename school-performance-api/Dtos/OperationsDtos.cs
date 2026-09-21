@@ -108,6 +108,18 @@ public class AttendanceSummaryDto
     public int Absent { get; set; }
     public int Late { get; set; }
     public int Excused { get; set; }
-    /// <summary>Present + late as a percentage of recorded students; null when nothing recorded.</summary>
+    /// <summary>Present + late as a percentage of enrolled students; null when nothing recorded.</summary>
     public double? Rate { get; set; }
+    /// <summary>Absent as a percentage of enrolled students; null when nothing recorded.</summary>
+    public double? AbsentRate { get; set; }
+    public int TeachersTotal { get; set; }
+    public int TeachersRecorded { get; set; }
+    public int TeachersPresent { get; set; }
+    public int TeachersAbsent { get; set; }
+    public int TeachersLate { get; set; }
+    public int TeachersExcused { get; set; }
+    /// <summary>Present + late as a percentage of active teachers; null when nothing recorded.</summary>
+    public double? TeacherRate { get; set; }
+    /// <summary>Absent as a percentage of active teachers; null when nothing recorded.</summary>
+    public double? TeacherAbsentRate { get; set; }
 }

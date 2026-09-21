@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { SearchFieldComponent } from '../../shared/components/search-field/search-field.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -19,20 +20,25 @@ import { InternalRequestMockService } from '../services/internal-request-mock.se
 import { InternalRequestFormDialogComponent } from '../internal-request-form-dialog/internal-request-form-dialog.component';
 import { REQUEST_TYPE_LABELS, PRIORITY_LABELS, REQUEST_STATUS_LABELS } from '../../shared/constants/labels';
 import { InternalRequest } from '../../core/models';
+import { ReportPdfService } from '../../reports/services/report-pdf.service';
+import { ReportResult } from '../../reports/services/report-mock.service';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 @Component({
   selector: 'app-internal-requests-page',
   standalone: true,
-  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatMenuModule, MatProgressSpinnerModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, AppDatePipe],
   templateUrl: './internal-requests-page.component.html'
 })
 export class InternalRequestsPageComponent implements OnInit, AfterViewInit {
+  @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;
+
   private readonly service = inject(InternalRequestMockService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly details = inject(DetailDialogService);
+  private readonly pdfService = inject(ReportPdfService);
   private readonly datePipe = new AppDatePipe();
 
   // Setter form: the table lives inside @if blocks, so attach the moment Angular creates the paginator.
@@ -48,6 +54,7 @@ export class InternalRequestsPageComponent implements OnInit, AfterViewInit {
 
   readonly dataSource = new MatTableDataSource<InternalRequest>([]);
   loading = true;
+  exportingPdf = false;
   query = '';
   cols = ['requestType', 'requesterName', 'description', 'priority', 'status', 'requestDate', 'actions'];
 
@@ -85,6 +92,46 @@ export class InternalRequestsPageComponent implements OnInit, AfterViewInit {
       req$.subscribe({
         next: () => { this.toast.success(req?.id ? 'تم تحديث الطلب' : 'تم إرسال الطلب'); this.load(); },
         error: (e) => this.toast.fromError(e)
+      });
+    });
+  }
+
+  exportPdf(): void {
+    const rows = this.dataSource.filteredData;
+    if (!rows.length) {
+      this.toast.info('لا توجد طلبات لتصديرها');
+      return;
+    }
+    const root = this.pdfExportRoot?.nativeElement;
+    if (!root) {
+      this.toast.error('فشل تجهيز التقرير للتصدير');
+      return;
+    }
+    const report = this.buildPdfReport(rows);
+    this.exportingPdf = true;
+    const widthPx = this.pdfService.getContentWidthPx(report);
+    root.style.width = `${widthPx}px`;
+    root.style.maxWidth = `${widthPx}px`;
+    root.innerHTML = this.pdfService.buildExportHtml(report);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.pdfService.export(root, report)
+          .then(() => this.toast.success('تم تنزيل تقرير الطلبات الداخلية PDF'))
+          .catch((err: Error) => {
+            console.error('Internal requests PDF export failed:', err);
+            try {
+              this.pdfService.exportViaPrint(report);
+              this.toast.info('تم فتح نافذة الطباعة — اختر «حفظ كـ PDF»');
+            } catch (printErr) {
+              this.toast.error(printErr instanceof Error ? printErr.message : 'فشل تصدير PDF');
+            }
+          })
+          .finally(() => {
+            root.innerHTML = '';
+            root.style.width = '';
+            root.style.maxWidth = '';
+            this.exportingPdf = false;
+          });
       });
     });
   }
@@ -146,6 +193,39 @@ export class InternalRequestsPageComponent implements OnInit, AfterViewInit {
       case 'NEW': return 'info';
       default: return 'neutral';
     }
+  }
+
+  private buildPdfReport(requests: InternalRequest[]): ReportResult {
+    const count = (status: InternalRequest['status']) => requests.filter(r => r.status === status).length;
+    return {
+      title: 'تقرير الطلبات الداخلية',
+      generatedAt: this.datePipe.transform(new Date(), 'withTime'),
+      summary: [
+        { label: 'إجمالي الطلبات', value: requests.length },
+        { label: this.statusLabels['NEW'] ?? 'جديد', value: count('NEW') },
+        { label: this.statusLabels['IN_REVIEW'] ?? 'قيد المراجعة', value: count('IN_REVIEW') },
+        { label: this.statusLabels['APPROVED'] ?? 'معتمد', value: count('APPROVED') },
+        { label: this.statusLabels['REJECTED'] ?? 'مرفوض', value: count('REJECTED') },
+        { label: this.statusLabels['COMPLETED'] ?? 'مكتمل', value: count('COMPLETED') }
+      ],
+      columns: ['requestType', 'requesterName', 'description', 'priority', 'status', 'requestDate'],
+      columnLabels: {
+        requestType: 'النوع',
+        requesterName: 'مقدم الطلب',
+        description: 'الوصف',
+        priority: 'الأولوية',
+        status: 'الحالة',
+        requestDate: 'التاريخ'
+      },
+      rows: requests.map(r => ({
+        requestType: this.requestTypeLabel(r),
+        requesterName: r.requesterName || '—',
+        description: r.description || '—',
+        priority: this.priorityLabels[r.priority] ?? r.priority,
+        status: this.statusLabels[r.status] ?? r.status,
+        requestDate: this.datePipe.transform(r.requestDate)
+      }))
+    };
   }
 
   private attachTableControls(): void {

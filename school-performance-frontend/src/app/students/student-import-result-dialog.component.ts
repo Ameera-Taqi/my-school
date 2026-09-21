@@ -14,11 +14,11 @@ export interface StudentImportResultDialogData {
   standalone: true,
   imports: [UiIconComponent, MatDialogModule, MatButtonModule],
   template: `
-    <h2 mat-dialog-title>نتيجة استيراد الطلاب</h2>
+    <h2 mat-dialog-title>نتيجة استيراد المتعلمين</h2>
     <mat-dialog-content class="max-h-[70vh]">
       <p class="m-0 mb-3 leading-relaxed text-muted">
         @if (data.created > 0) {
-          تم إضافة {{ data.created }} طالب.
+          تم إضافة {{ data.created }} متعلم.
         }
         @if (data.errors.length) {
           تعذر استيراد {{ data.errors.length }} صف.

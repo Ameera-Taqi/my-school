@@ -33,7 +33,7 @@ public class AttendanceController : ControllerBase
     {
         var user = await _currentUser.RequireUserAsync();
         await _service.SaveStudentAttendanceAsync(user, records);
-        return Ok(new { message = "تم حفظ حضور الطلاب", count = records.Count });
+        return Ok(new { message = "تم حفظ حضور المتعلمين", count = records.Count });
     }
 
     private const string TeacherRead = Perms.AttendanceView + "," + Perms.AttendanceManage + "," + Perms.TeacherAttendanceView;
@@ -74,7 +74,7 @@ public class AttendanceController : ControllerBase
     }
 
     [HttpGet("summary")]
-    [RequirePermission(Perms.DashboardView, Perms.AttendanceView, Perms.AttendanceManage, Perms.KpiView, Perms.ReportsView)]
+    [RequirePermission(Perms.DashboardView, Perms.AttendanceView, Perms.AttendanceManage, Perms.KpiView, Perms.ReportsView, Perms.TeacherAttendanceView)]
     public async Task<ActionResult<AttendanceSummaryDto>> Summary([FromQuery] string? date) =>
         Ok(await _service.GetSummaryAsync(date));
 }

@@ -32,10 +32,10 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
           <mat-error>المرحلة مطلوبة</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>عدد الطلاب</mat-label>
+          <mat-label>عدد المتعلمين</mat-label>
           <input matInput type="number" formControlName="studentCount" min="0">
-          @if (form.controls.studentCount.hasError('required')) { <mat-error>عدد الطلاب مطلوب</mat-error> }
-          @if (form.controls.studentCount.hasError('min')) { <mat-error>عدد الطلاب لا يمكن أن يكون سالباً</mat-error> }
+          @if (form.controls.studentCount.hasError('required')) { <mat-error>عدد المتعلمين مطلوب</mat-error> }
+          @if (form.controls.studentCount.hasError('min')) { <mat-error>عدد المتعلمين لا يمكن أن يكون سالباً</mat-error> }
         </mat-form-field>
       </form>
     </mat-dialog-content>

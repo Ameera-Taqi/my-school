@@ -1,10 +1,10 @@
-<app-page-header title="الملاحظات السلوكية والأكاديمية" subtitle="تسجيل ملاحظات الطلاب">
+<app-page-header title="الملاحظات السلوكية والأكاديمية" subtitle="تسجيل ملاحظات المتعلمين">
   <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> ملاحظة جديدة</button>
 </app-page-header>
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث باسم الطالب أو الفصل أو نص الملاحظة" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
+    <app-search-field placeholder="ابحث باسم المتعلم أو الفصل أو نص الملاحظة" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
         @if (query) { {{ filteredCount }} من {{ total }} ملاحظة } @else { {{ total }} ملاحظة }
@@ -15,7 +15,7 @@
   @if (loading) {
     <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
   } @else if (total === 0) {
-    <app-empty-state icon="sticky_note_2" title="لا توجد ملاحظات بعد" description="سجّل أول ملاحظة سلوكية أو أكاديمية على طلابك.">
+    <app-empty-state icon="sticky_note_2" title="لا توجد ملاحظات بعد" description="سجّل أول ملاحظة سلوكية أو أكاديمية على متعلميك.">
       <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> ملاحظة جديدة</button>
     </app-empty-state>
   } @else if (filteredCount === 0) {
@@ -24,7 +24,7 @@
     <div class="table-scroll">
       <table mat-table [dataSource]="dataSource" matSort matSortActive="noteDate" matSortDirection="desc">
         <ng-container matColumnDef="studentName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>الطالب</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>المتعلم</th>
           <td mat-cell *matCellDef="let r">
             <div class="flex items-center gap-[0.7rem]">
               <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.studentName?.charAt(0) }}</span>

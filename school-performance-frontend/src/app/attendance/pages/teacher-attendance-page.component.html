@@ -1,12 +1,27 @@
 <app-page-header [title]="title" [subtitle]="subtitle">
   @if (scope?.scope === 'DEPARTMENT') { <span class="chip info self-center [&_app-ui-icon]:size-4 [&_app-ui-icon]:text-base"><app-ui-icon name="domain"></app-ui-icon> {{ scope?.departmentName }}</span> }
   @if (scope?.scope === 'SELF') { <span class="chip info self-center [&_app-ui-icon]:size-4 [&_app-ui-icon]:text-base"><app-ui-icon name="person"></app-ui-icon> {{ scope?.teacherName }}</span> }
+  @if (scope?.scope !== 'NONE') {
+    <button
+      mat-stroked-button
+      color="primary"
+      type="button"
+      matTooltip="تصدير تقرير حضور المعلمين كملف PDF وتحميله"
+      (click)="exportPdf()"
+      [disabled]="exporting || (selectedTab === 0 ? loading || !records.length : loadingHistory || !history.length)">
+      @if (exporting) {
+        <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
+      } @else {
+        <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
+      }
+    </button>
+  }
 </app-page-header>
 
 @if (scope?.scope === 'NONE') {
   <div class="data-card"><app-empty-state icon="lock" title="لا يوجد نطاق صالح لحسابك" description="حسابك غير مرتبط بمعلم أو شعبة. تواصل مع مدير النظام."></app-empty-state></div>
 } @else {
-  <mat-tab-group animationDuration="150ms">
+  <mat-tab-group animationDuration="150ms" [(selectedIndex)]="selectedTab">
     <!-- Day view -->
     <mat-tab>
       <ng-template mat-tab-label><app-ui-icon name="today" class="me-[0.35rem] size-[1.1rem] align-middle text-[1.1rem]"></app-ui-icon> سجل اليوم</ng-template>
@@ -134,8 +149,12 @@
             </table>
           </div>
           <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
-            <button mat-stroked-button color="primary" type="button" matTooltip="تصدير كملف PDF" (click)="exportPdf()" [disabled]="exporting">
-              @if (exporting) { <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> } @else { <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container> }
+            <button mat-stroked-button color="primary" type="button" matTooltip="تصدير تقرير حضور المعلمين كملف PDF" (click)="exportPdf()" [disabled]="exporting">
+              @if (exporting) {
+                <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
+              } @else {
+                <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
+              }
             </button>
             @if (canRecord) {
               <button mat-flat-button color="primary" type="button" (click)="save()"><app-ui-icon name="save"></app-ui-icon> حفظ الحضور</button>
@@ -185,6 +204,15 @@
               }
             </div>
           </div>
+          <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
+            <button mat-stroked-button color="primary" type="button" matTooltip="تصدير ملخص حضوري كملف PDF" (click)="exportPdf()" [disabled]="exporting">
+              @if (exporting) {
+                <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
+              } @else {
+                <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
+              }
+            </button>
+          </div>
         } @else {
           <div class="table-scroll">
             <table mat-table [dataSource]="monthRows">
@@ -199,6 +227,15 @@
               <tr mat-header-row *matHeaderRowDef="monthCols"></tr>
               <tr mat-row *matRowDef="let row; columns: monthCols;"></tr>
             </table>
+          </div>
+          <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
+            <button mat-stroked-button color="primary" type="button" matTooltip="تصدير ملخص حضور المعلمين كملف PDF" (click)="exportPdf()" [disabled]="exporting">
+              @if (exporting) {
+                <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
+              } @else {
+                <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
+              }
+            </button>
           </div>
         }
       </div>

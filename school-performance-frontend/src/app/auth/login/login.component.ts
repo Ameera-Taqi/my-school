@@ -70,7 +70,7 @@ export class LoginComponent {
       error: (err) => {
         this.loading = false;
         let message = 'فشل تسجيل الدخول. حاول مرة أخرى.';
-        if (err.status === 0) {
+        if (err.status === 0 || err.status === 502 || err.status === 503 || err.status === 504) {
           message = 'تعذر الاتصال بالخادم. تأكد أن الـ API يعمل ثم حاول مجدداً.';
         } else if (err.status === 401) {
           message = err.error?.message || 'اسم المستخدم أو كلمة المرور غير صحيحة.';

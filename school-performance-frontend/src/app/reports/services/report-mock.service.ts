@@ -47,7 +47,7 @@ export class ReportMockService {
           ],
           columns: ['studentName', 'className', 'stage', 'presentDays', 'absentDays', 'rate'],
           columnLabels: {
-            studentName: 'الطالب', className: 'الفصل', stage: 'المرحلة',
+            studentName: 'المتعلم', className: 'الفصل', stage: 'المرحلة',
             presentDays: 'أيام الحضور', absentDays: 'أيام الغياب', rate: 'النسبة'
           },
           rows: [
@@ -58,11 +58,11 @@ export class ReportMockService {
         };
       case 'STUDENTS':
         return {
-          title: 'تقرير الطلاب',
+          title: 'تقرير المتعلمين',
           generatedAt: now,
           summary: [
-            { label: 'إجمالي الطلاب', value: 248 },
-            { label: 'الطلاب النشطون', value: 240 },
+            { label: 'إجمالي المتعلمين', value: 248 },
+            { label: 'المتعلمون النشطون', value: 240 },
             { label: 'المرحلة المحددة', value: filters.stage || 'الكل' }
           ],
           columns: ['fullName', 'className', 'stage', 'guardianPhone', 'status'],
@@ -105,7 +105,7 @@ export class ReportMockService {
           ],
           columns: ['studentName', 'type', 'description', 'noteDate', 'recordedBy'],
           columnLabels: {
-            studentName: 'الطالب', type: 'النوع', description: 'الوصف',
+            studentName: 'المتعلم', type: 'النوع', description: 'الوصف',
             noteDate: 'التاريخ', recordedBy: 'المسجل'
           },
           rows: [

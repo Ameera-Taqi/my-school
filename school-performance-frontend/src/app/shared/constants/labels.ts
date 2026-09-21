@@ -42,7 +42,7 @@ export const ALERT_STATUS_LABELS: Record<string, string> = {
 };
 
 export const REPORT_TYPE_LABELS: Record<string, string> = {
-  ATTENDANCE: 'تقرير الحضور', STUDENTS: 'تقرير الطلاب', TEACHERS: 'تقرير المعلمين',
+  ATTENDANCE: 'تقرير الحضور', STUDENTS: 'تقرير المتعلمين', TEACHERS: 'تقرير المعلمين',
   BEHAVIOR: 'تقرير السلوك', REQUESTS: 'تقرير الطلبات الداخلية', TASKS: 'تقرير المهام'
 };
 

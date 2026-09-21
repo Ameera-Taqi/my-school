@@ -75,7 +75,7 @@ public class SchoolClassService
         var schoolClass = await RequireAsync(classId);
         if (await CountStudentsAsync(classId) > 0)
         {
-            throw new AppException("لا يمكن حذف فصل يحتوي على طلاب");
+            throw new AppException("لا يمكن حذف فصل يحتوي على متعلمين");
         }
         _db.SchoolClasses.Remove(schoolClass);
         await _db.SaveChangesAsync();

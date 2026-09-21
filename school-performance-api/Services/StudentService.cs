@@ -69,7 +69,7 @@ public class StudentService
         }
         if (items.Count > 500)
         {
-            throw new AppException("الحد الأقصى للاستيراد 500 طالب في الملف الواحد");
+            throw new AppException("الحد الأقصى للاستيراد 500 متعلم في الملف الواحد");
         }
 
         var existingCount = await _db.Students.CountAsync(s => s.SchoolClassId == classId);
@@ -98,11 +98,11 @@ public class StudentService
                 }
                 if (string.IsNullOrWhiteSpace(fullName))
                 {
-                    throw new AppException("اسم الطالب مطلوب");
+                    throw new AppException("اسم المتعلم مطلوب");
                 }
                 if (fullName.Length > 150)
                 {
-                    throw new AppException("اسم الطالب يجب ألا يتجاوز 150 حرفاً");
+                    throw new AppException("اسم المتعلم يجب ألا يتجاوز 150 حرفاً");
                 }
                 var phone = string.IsNullOrWhiteSpace(item.GuardianPhone) ? null : item.GuardianPhone.Trim();
                 if (phone != null && !IsDigits(phone, 8))
@@ -124,7 +124,7 @@ public class StudentService
                 }
                 if (toAdd.Count >= remaining)
                 {
-                    throw new AppException("الفصل ممتلئ ولا يمكن إضافة مزيد من الطلاب");
+                    throw new AppException("الفصل ممتلئ ولا يمكن إضافة مزيد من المتعلمين");
                 }
                 if (string.IsNullOrWhiteSpace(item.Gender))
                 {
@@ -203,7 +203,7 @@ public class StudentService
         {
             student.Status = Enum.TryParse<StudentStatus>(dto.Status, true, out var status)
                 ? status
-                : throw new AppException("حالة الطالب غير صحيحة");
+                : throw new AppException("حالة المتعلم غير صحيحة");
         }
         student.Notes = dto.Notes;
     }
@@ -247,7 +247,7 @@ public class StudentService
         {
             return nameof(StudentStatus.SUSPENDED);
         }
-        throw new AppException("حالة الطالب غير صحيحة. استخدم نشط أو منقول أو موقوف");
+        throw new AppException("حالة المتعلم غير صحيحة. استخدم نشط أو منقول أو موقوف");
     }
 
     private static bool IsDigits(string value, int length) =>
@@ -255,5 +255,5 @@ public class StudentService
 
     private async Task<Student> RequireAsync(long id) =>
         await _db.Students.Include(s => s.SchoolClass).ThenInclude(c => c.AcademicStage).FirstOrDefaultAsync(s => s.Id == id)
-        ?? throw new NotFoundException("الطالب غير موجود");
+        ?? throw new NotFoundException("المتعلم غير موجود");
 }

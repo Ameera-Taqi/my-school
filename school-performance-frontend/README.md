@@ -32,7 +32,7 @@ src/app/
 ├── dashboard/      # لوحة التحكم
 ├── roles/          # إدارة الأدوار
 ├── permissions/    # إدارة الصلاحيات وربطها بالأدوار
-├── students/       # الطلاب
+├── students/       # المتعلمين
 ├── teachers/       # المعلمون
 └── departments/    # الشعب
 ```
@@ -60,7 +60,7 @@ All pages share one visual system. When adding a page, reuse these instead of wr
 | Need | Use |
 |------|-----|
 | Success / error toast | `ToastService` (`shared/services/toast.service.ts`) — `success()`, `error()`, `fromError(err)` |
-| Delete / confirm prompt | `ConfirmService` — `deleteConfirmed(name, 'الطالب').subscribe(...)` |
+| Delete / confirm prompt | `ConfirmService` — `deleteConfirmed(name, 'المتعلم').subscribe(...)` |
 | Read-only details popup | `DetailDialogService.open({ title, fields: [...] })` |
 | Table loading | `<app-table-skeleton>` |
 | No data / no results | `<app-empty-state icon title description>` |

@@ -2,7 +2,7 @@ import { StudentImportError, StudentImportItem } from '../core/models';
 
 const HEADERS = {
   civilId: 'الرقم المدني',
-  fullName: 'اسم الطالب',
+  fullName: 'اسم المتعلم',
   birthDate: 'تاريخ الميلاد',
   gender: 'الجنس',
   guardianPhone: 'رقم ولي الأمر',
@@ -12,7 +12,7 @@ const HEADERS = {
 
 const HEADER_ALIASES: Record<keyof typeof HEADERS, string[]> = {
   civilId: ['الرقم المدني', 'رقم مدني', 'civilid', 'civil id'],
-  fullName: ['اسم الطالب', 'الاسم', 'fullname', 'full name', 'name'],
+  fullName: ['اسم المتعلم', 'اسم الطالب', 'الاسم', 'fullname', 'full name', 'name'],
   birthDate: ['تاريخ الميلاد', 'الميلاد', 'birthdate', 'birth date', 'dob'],
   gender: ['الجنس', 'gender', 'sex'],
   guardianPhone: ['رقم ولي الأمر', 'رقم ولي الامر', 'هاتف ولي الأمر', 'guardianphone', 'phone'],
@@ -38,7 +38,7 @@ export async function downloadStudentImportTemplate(className: string): Promise<
 
   const dataStart = 3;
   const lastRow = dataStart + TEMPLATE_ROWS - 1;
-  const sheet = workbook.addWorksheet('الطلاب', { views: [{ rightToLeft: true, state: 'frozen', ySplit: 2 }] });
+  const sheet = workbook.addWorksheet('المتعلمين', { views: [{ rightToLeft: true, state: 'frozen', ySplit: 2 }] });
   sheet.columns = [
     { width: 18 },
     { width: 28 },
@@ -66,10 +66,10 @@ export async function downloadStudentImportTemplate(className: string): Promise<
     error: 'اختر ذكر أو أنثى',
     showInputMessage: true,
     promptTitle: 'الجنس',
-    prompt: 'يُطبَّق على عمود الجنس لكل الطلاب'
+    prompt: 'يُطبَّق على عمود الجنس لكل المتعلمين'
   });
   sheet.mergeCells('C1:G1');
-  sheet.getCell('C1').value = 'اختر الجنس مرة واحدة، ويُنسخ تلقائياً إلى كل الصفوف. الحالة الافتراضية نشط ويمكن تغييرها لكل طالب.';
+  sheet.getCell('C1').value = 'اختر الجنس مرة واحدة، ويُنسخ تلقائياً إلى كل الصفوف. الحالة الافتراضية نشط ويمكن تغييرها لكل متعلم.';
   sheet.getCell('C1').font = { italic: true, color: { argb: 'FF6B7280' } };
   sheet.getRow(1).height = 24;
 
@@ -151,16 +151,16 @@ export async function downloadStudentImportTemplate(className: string): Promise<
     error: 'اختر نشط أو موقوف أو منقول',
     showInputMessage: true,
     promptTitle: 'الحالة',
-    prompt: 'الافتراضي: نشط — يمكن تغييرها لكل طالب'
+    prompt: 'الافتراضي: نشط — يمكن تغييرها لكل متعلم'
   });
 
   const guide = workbook.addWorksheet('تعليمات', { views: [{ rightToLeft: true }] });
   guide.getColumn(1).width = 92;
   const guideLines = [
-    'تعليمات تعبئة قالب الطلاب',
+    'تعليمات تعبئة قالب المتعلمين',
     '',
     '1. اختر الجنس مرة واحدة من أعلى الورقة (ذكر أو أنثى). يُنسخ تلقائياً إلى عمود الجنس لكل الصفوف.',
-    '2. الحالة الافتراضية نشط، ويمكن تغييرها لكل طالب: نشط أو موقوف أو منقول.',
+    '2. الحالة الافتراضية نشط، ويمكن تغييرها لكل متعلم: نشط أو موقوف أو منقول.',
     '3. الرقم المدني: 12 رقماً.',
     '4. تاريخ الميلاد: اختر التاريخ من تقويم الخلية.',
     '5. رقم ولي الأمر: 8 أرقام.',
@@ -179,7 +179,7 @@ export async function downloadStudentImportTemplate(className: string): Promise<
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `قالب-طلاب-${sanitizeFileName(className)}.xlsx`;
+  link.download = `قالب-متعلمين-${sanitizeFileName(className)}.xlsx`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -201,7 +201,7 @@ export async function parseStudentImportFile(file: File): Promise<StudentExcelPa
     blankrows: false
   });
   if (!rows.length) {
-    return { students: [], errors: [{ row: 1, message: 'الملف فارغ. استخدم قالب الطلاب ثم أعد الرفع' }] };
+    return { students: [], errors: [{ row: 1, message: 'الملف فارغ. استخدم قالب المتعلمين ثم أعد الرفع' }] };
   }
 
   const headerIndex = findHeaderRow(rows);
@@ -211,7 +211,7 @@ export async function parseStudentImportFile(file: File): Promise<StudentExcelPa
 
   const columnMap = mapColumns(rows[headerIndex]);
   if (columnMap.civilId === undefined || columnMap.fullName === undefined) {
-    return { students: [], errors: [{ row: headerIndex + 1, message: 'أعمدة الرقم المدني واسم الطالب مطلوبة' }] };
+    return { students: [], errors: [{ row: headerIndex + 1, message: 'أعمدة الرقم المدني واسم المتعلم مطلوبة' }] };
   }
 
   const sheetGender = findSheetGender(rows, headerIndex);
@@ -256,7 +256,7 @@ export async function parseStudentImportFile(file: File): Promise<StudentExcelPa
       errors.push({
         row: excelRow,
         civilId: civilId || undefined,
-        message: !civilId ? 'الرقم المدني مطلوب' : 'اسم الطالب مطلوب'
+        message: !civilId ? 'الرقم المدني مطلوب' : 'اسم المتعلم مطلوب'
       });
       continue;
     }
@@ -285,7 +285,7 @@ export async function parseStudentImportFile(file: File): Promise<StudentExcelPa
 }
 
 function pickStudentsSheet(names: string[]): string {
-  return names.find(name => name.trim() === 'الطلاب') ?? names.find(name => name.trim() !== 'تعليمات') ?? names[0];
+  return names.find(name => ['المتعلمين', 'الطلاب'].includes(name.trim())) ?? names.find(name => name.trim() !== 'تعليمات') ?? names[0];
 }
 
 function findHeaderRow(rows: (string | number | Date | null | undefined)[][]): number {

@@ -20,9 +20,9 @@ import { AuthService } from '../../core/services/auth.service';
       <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
-            <mat-label>اسم الطالب</mat-label>
+            <mat-label>اسم المتعلم</mat-label>
             <input matInput formControlName="studentName" cdkFocusInitial autocomplete="off">
-            <mat-error>اسم الطالب مطلوب</mat-error>
+            <mat-error>اسم المتعلم مطلوب</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>الفصل</mat-label>

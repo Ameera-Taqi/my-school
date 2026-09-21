@@ -1,10 +1,10 @@
 @if (stage) {
   <app-breadcrumb [items]="[
-    { label: 'الطلاب', route: '/students' },
+    { label: 'المتعلمين', route: '/students' },
     { label: stage.name }
   ]"></app-breadcrumb>
 
-  <app-page-header [title]="stage.name" [subtitle]="'عدد الفصول: ' + (stage.classCount ?? 0) + ' | عدد الطلاب: ' + (stage.studentCount ?? 0)">
+  <app-page-header [title]="stage.name" [subtitle]="'عدد الفصول: ' + (stage.classCount ?? 0) + ' | عدد المتعلمين: ' + (stage.studentCount ?? 0)">
     @if ('classes.create' | hasPermission) {
       <button mat-flat-button color="primary" (click)="openClassDialog()">
         <app-ui-icon name="add"></app-ui-icon>
@@ -15,7 +15,7 @@
 
   <div class="flow-hint">
     <app-ui-icon name="info"></app-ui-icon>
-    <span>الخطوة 1: أضف فصلاً لهذه المرحلة — الخطوة 2: اضغط «عرض الطلاب» لإضافة الطلاب داخل كل فصل</span>
+    <span>الخطوة 1: أضف فصلاً لهذه المرحلة — الخطوة 2: اضغط «عرض المتعلمين» لإضافة المتعلمين داخل كل فصل</span>
   </div>
 }
 
@@ -33,7 +33,7 @@
   </div>
 } @else if (classes.length === 0) {
   <div class="data-card">
-    <app-empty-state icon="class" title="لا توجد فصول في هذه المرحلة بعد" description="أضف أول فصل لهذه المرحلة ثم سجّل الطلاب داخله.">
+    <app-empty-state icon="class" title="لا توجد فصول في هذه المرحلة بعد" description="أضف أول فصل لهذه المرحلة ثم سجّل المتعلمين داخله.">
       @if ('classes.create' | hasPermission) {
         <button mat-flat-button color="primary" (click)="openClassDialog()"><app-ui-icon name="add"></app-ui-icon> إضافة أول فصل</button>
       }
@@ -52,7 +52,7 @@
           <h3 class="m-0 text-[1.1rem] font-bold text-primary">{{ cls.name }}</h3>
         </div>
         <div class="mb-[0.6rem] flex flex-wrap gap-[0.4rem]">
-          <span class="chip info"><app-ui-icon name="people" class="size-3.5 text-sm"></app-ui-icon> {{ cls.studentCount ?? 0 }} طالب</span>
+          <span class="chip info"><app-ui-icon name="people" class="size-3.5 text-sm"></app-ui-icon> {{ cls.studentCount ?? 0 }} متعلم</span>
           <span class="chip neutral"><app-ui-icon name="event_seat" class="size-3.5 text-sm"></app-ui-icon> الطاقة {{ cls.capacity }}</span>
         </div>
         <div class="h-1.5 overflow-hidden rounded-full bg-[#e9ebf3]" [matTooltip]="fillPercent(cls) + '% من الطاقة الاستيعابية'">
@@ -65,7 +65,7 @@
           @if ('students.view' | hasPermission) {
             <button mat-flat-button color="primary" [routerLink]="['/students/classes', cls.id]" (click)="$event.stopPropagation()">
               <app-ui-icon name="people"></app-ui-icon>
-              عرض الطلاب
+              عرض المتعلمين
             </button>
           }
           <span class="flex-1"></span>

@@ -87,7 +87,7 @@ export interface TeacherFormDialogData {
           <div class="flex flex-col gap-3 pb-4 pt-1">
             <mat-slide-toggle formControlName="active">نشط</mat-slide-toggle>
             <mat-checkbox class="department-head-check" formControlName="departmentHead">رئيس شعبة</mat-checkbox>
-            <mat-checkbox class="department-head-check" formControlName="wingSupervisor" matTooltip="يمنحه قائمة «مشرف الجناح» وصلاحية تسجيل حضور الطلاب">مشرف جناح</mat-checkbox>
+            <mat-checkbox class="department-head-check" formControlName="wingSupervisor" matTooltip="يمنحه قائمة «مشرف الجناح» وصلاحية تسجيل حضور المتعلمين">مشرف جناح</mat-checkbox>
           </div>
         </div>
 

@@ -20,7 +20,7 @@ export interface StudentFormDialogData {
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
-    <h2 mat-dialog-title>{{ data.student ? 'تعديل طالب' : 'إضافة طالب' }}</h2>
+    <h2 mat-dialog-title>{{ data.student ? 'تعديل متعلم' : 'إضافة متعلم' }}</h2>
     <mat-dialog-content class="max-h-[70vh]">
       <p class="mb-2 flex items-center gap-2 rounded-lg bg-primary-light px-[0.85rem] py-[0.6rem] text-[0.9rem] text-primary-mid">
         <app-ui-icon name="school" class="size-5 shrink-0 text-xl"></app-ui-icon>
@@ -39,9 +39,9 @@ export interface StudentFormDialogData {
             }
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>اسم الطالب</mat-label>
+            <mat-label>اسم المتعلم</mat-label>
             <input matInput formControlName="fullName" autocomplete="off">
-            <mat-error>اسم الطالب مطلوب</mat-error>
+            <mat-error>اسم المتعلم مطلوب</mat-error>
           </mat-form-field>
         </div>
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
@@ -88,7 +88,7 @@ export interface StudentFormDialogData {
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close type="button">إلغاء</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
-        <app-ui-icon name="check"></app-ui-icon> {{ data.student ? 'حفظ التعديلات' : 'إضافة الطالب' }}
+        <app-ui-icon name="check"></app-ui-icon> {{ data.student ? 'حفظ التعديلات' : 'إضافة المتعلم' }}
       </button>
     </mat-dialog-actions>
   `

@@ -1,4 +1,4 @@
-<app-page-header title="تسجيل الحضور" subtitle="تسجيل حضور طلاب فصلك"></app-page-header>
+<app-page-header title="تسجيل الحضور" subtitle="تسجيل حضور متعلمي فصلك"></app-page-header>
 
 <div class="mb-4 flex flex-wrap items-end gap-4">
   <mat-form-field appearance="outline" class="filter-field min-w-[180px] flex-1">
@@ -34,7 +34,7 @@
     <div class="list-toolbar">
       <span class="inline-flex items-center gap-[0.4rem] font-bold text-primary [&_app-ui-icon]:size-5 [&_app-ui-icon]:text-xl"><app-ui-icon name="fact_check"></app-ui-icon> {{ form.controls.className.value }}</span>
       <span class="toolbar-count inline-flex flex-wrap items-center gap-2">
-        <span>{{ rows.length }} طالب</span>
+        <span>{{ rows.length }} متعلم</span>
         <span class="chip present">{{ statusLabels['PRESENT'] }} {{ countOf('PRESENT') }}</span>
         <span class="chip absent">{{ statusLabels['ABSENT'] }} {{ countOf('ABSENT') }}</span>
         <span class="chip late">{{ statusLabels['LATE'] }} {{ countOf('LATE') }}</span>
@@ -43,7 +43,7 @@
     <div class="table-scroll max-h-[65vh] overflow-auto">
       <table mat-table [dataSource]="rows" class="[&_.mat-mdc-header-row]:shadow-[0_1px_0_var(--sp-border)] [&_.mat-mdc-row:nth-child(even)]:bg-[#fafbfe]">
         <ng-container matColumnDef="studentName">
-          <th mat-header-cell *matHeaderCellDef>الطالب</th>
+          <th mat-header-cell *matHeaderCellDef>المتعلم</th>
           <td mat-cell *matCellDef="let r; let i = index">
             <div class="flex items-center gap-[0.7rem]">
               <span class="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.studentName?.charAt(0) }}</span>

@@ -69,8 +69,8 @@ SQL Server المضمّن اختياري: `docker compose --profile bundled-db u
 | GET/POST/PUT/DELETE | /api/academic-stages | المراحل الدراسية |
 | GET/POST | /api/academic-stages/{id}/classes | فصول المرحلة |
 | GET/PUT/DELETE | /api/classes/{id} | إدارة الفصول |
-| GET/POST | /api/classes/{id}/students | طلاب الفصل |
-| GET/PUT/DELETE | /api/students/{id} | إدارة الطلاب |
+| GET/POST | /api/classes/{id}/students | متعلمين الفصل |
+| GET/PUT/DELETE | /api/students/{id} | إدارة المتعلمين |
 | GET/POST/PUT/DELETE | /api/departments | إدارة الشعب |
 | GET/POST | /api/departments/{id}/teachers | معلمو الشعبة |
 | GET/PUT/DELETE | /api/teachers/{id} | إدارة المعلمين |
@@ -78,7 +78,7 @@ SQL Server المضمّن اختياري: `docker compose --profile bundled-db u
 | GET | /api/teacher-monitoring | متابعة المعلمين |
 | GET/POST/PUT/DELETE | /api/meetings | الاجتماعات (تُنشئ حدثاً في التقويم للأدوار المستهدفة) |
 | GET/POST/PUT/DELETE | /api/tasks | المهام |
-| GET/PUT | /api/attendance/students?classId=&date= | حضور طلاب فصل في يوم |
+| GET/PUT | /api/attendance/students?classId=&date= | حضور متعلمين فصل في يوم |
 | GET/PUT | /api/attendance/teachers?date= | حضور المعلمين في يوم |
 | GET | /api/attendance/summary?date= | ملخص حضور اليوم |
 | GET | /api/org-structure | الهيكل التنظيمي (يُبنى من المستخدمين والأدوار والشعب) |

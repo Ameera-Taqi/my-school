@@ -25,18 +25,13 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     ]
   },
   {
-    titleKey: 'section.executive',
+    titleKey: 'section.school',
     items: [
       { labelKey: 'nav.kpi', icon: 'bar_chart', route: '/kpi', permission: 'kpi.view' },
       { labelKey: 'nav.reports', icon: 'description', route: '/reports', permission: 'reports.view' },
       { labelKey: 'nav.meetings', icon: 'groups', route: '/meetings', permission: 'meetings.view' },
       { labelKey: 'nav.tasks', icon: 'check_box', route: '/tasks', permission: 'tasks.view' },
-      { labelKey: 'nav.orgStructure', icon: 'hub', route: '/org-structure', permission: 'org_structure.view' }
-    ]
-  },
-  {
-    titleKey: 'section.school',
-    items: [
+      { labelKey: 'nav.orgStructure', icon: 'hub', route: '/org-structure', permission: 'org_structure.view' },
       { labelKey: 'nav.students', icon: 'school', route: '/students', permission: 'students.view' },
       { labelKey: 'nav.teachers', icon: 'how_to_reg', route: '/teachers', permission: 'teachers.view' },
       { labelKey: 'nav.departments', icon: 'domain', route: '/departments', permission: 'departments.view' },

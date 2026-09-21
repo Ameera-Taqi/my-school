@@ -128,13 +128,13 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
           if (result.created > 0) {
             this.lookup.invalidate();
             this.load();
-            this.toast.success(`تم إضافة ${result.created} طالب`);
+            this.toast.success(`تم إضافة ${result.created} متعلم`);
           }
           const errors = [...parsed.errors, ...(result.errors ?? [])];
           if (errors.length) {
             this.showImportResult(result.created, errors);
           } else if (result.created === 0) {
-            this.toast.warning('لم يتم استيراد أي طالب');
+            this.toast.warning('لم يتم استيراد أي متعلم');
           }
         },
         error: (e) => {
@@ -165,7 +165,7 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
       request$.subscribe({
         next: () => {
           this.lookup.invalidate();
-          this.toast.success(student?.id ? 'تم تحديث بيانات الطالب' : 'تمت إضافة الطالب');
+          this.toast.success(student?.id ? 'تم تحديث بيانات المتعلم' : 'تمت إضافة المتعلم');
           this.load();
         },
         error: (e) => this.toast.fromError(e)
@@ -191,9 +191,9 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
 
   deleteStudent(student: Student): void {
     if (!student.id) return;
-    this.confirm.deleteConfirmed(student.fullName, 'الطالب').subscribe(() => {
+    this.confirm.deleteConfirmed(student.fullName, 'المتعلم').subscribe(() => {
       this.studentService.delete(student.id!).subscribe({
-        next: () => { this.lookup.invalidate(); this.toast.success('تم حذف الطالب'); this.load(); },
+        next: () => { this.lookup.invalidate(); this.toast.success('تم حذف المتعلم'); this.load(); },
         error: (e) => this.toast.fromError(e)
       });
     });

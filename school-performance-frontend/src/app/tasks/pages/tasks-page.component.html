@@ -1,4 +1,17 @@
 <app-page-header title="متابعة المهام" subtitle="إدارة المهام الإدارية والتعليمية">
+  <button
+    mat-stroked-button
+    color="primary"
+    type="button"
+    matTooltip="تصدير تقرير المهام كملف PDF وتحميله"
+    (click)="exportPdf()"
+    [disabled]="loading || exportingPdf || filteredCount === 0">
+    @if (exportingPdf) {
+      <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
+    } @else {
+      <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
+    }
+  </button>
   @if ('tasks.create' | hasPermission) {
     <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> مهمة جديدة</button>
   }
@@ -75,3 +88,5 @@
     <mat-paginator [pageSizeOptions]="[20, 50, 100]" [pageSize]="20" showFirstLastButtons></mat-paginator>
   }
 </div>
+
+<div #pdfExportRoot class="pdf-export-root" dir="rtl" lang="ar"></div>

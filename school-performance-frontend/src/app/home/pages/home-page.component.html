@@ -14,15 +14,25 @@
 </div>
 
 @if (showStats) {
-  <app-home-stats [stats]="stats" [loading]="loading"></app-home-stats>
+  <app-home-stats
+    [stats]="stats"
+    [loading]="loading"
+    [calendarOpen]="calendarOpen"
+    [scheduleOpen]="scheduleOpen"
+    (calendarToggle)="toggleCalendar()"
+    (scheduleToggle)="toggleSchedule()"></app-home-stats>
 }
 
 @if (showMyDay) {
   <section class="mb-[1.35rem]"><app-home-my-day></app-home-my-day></section>
 }
 
-@if ('calendar.view' | hasPermission) {
-  <section class="mb-[1.35rem]"><app-dashboard-calendar></app-dashboard-calendar></section>
+@if (scheduleOpen) {
+  <section id="home-schedule" class="mb-[1.35rem]"><app-home-class-schedule></app-home-class-schedule></section>
+}
+
+@if (calendarOpen) {
+  <section id="home-calendar" class="mb-[1.35rem]"><app-dashboard-calendar></app-dashboard-calendar></section>
 }
 
 @if (showLists) {

@@ -25,12 +25,12 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
             <mat-label>اسم الصلاحية</mat-label>
-            <input matInput formControlName="permissionName" placeholder="عرض الطلاب" autocomplete="off">
+            <input matInput formControlName="permissionName" placeholder="عرض المتعلمين" autocomplete="off">
             <mat-error>اسم الصلاحية مطلوب</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>اسم الوحدة (moduleName)</mat-label>
-            <input matInput formControlName="moduleName" placeholder="الطلاب" autocomplete="off">
+            <input matInput formControlName="moduleName" placeholder="المتعلمين" autocomplete="off">
             <mat-error>اسم الوحدة مطلوب</mat-error>
           </mat-form-field>
         </div>

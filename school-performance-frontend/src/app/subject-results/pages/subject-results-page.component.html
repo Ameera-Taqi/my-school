@@ -1,6 +1,6 @@
 <app-page-header
-  [title]="'نتائج الطلاب حسب المادة'"
-  [subtitle]="departmentScope.isScoped() ? 'عرض نتائج طلاب ' + departmentScope.departmentName() : 'عرض وتحليل درجات الطلاب لكل مادة دراسية'">
+  [title]="'نتائج المتعلمين حسب المادة'"
+  [subtitle]="departmentScope.isScoped() ? 'عرض نتائج متعلمي ' + departmentScope.departmentName() : 'عرض وتحليل درجات المتعلمين لكل مادة دراسية'">
 </app-page-header>
 
 <mat-card class="mb-5 px-5 py-4">
@@ -44,7 +44,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="min-w-40 flex-1">
       <mat-label>بحث بالاسم</mat-label>
-      <input matInput formControlName="search" placeholder="اسم الطالب">
+      <input matInput formControlName="search" placeholder="اسم المتعلم">
     </mat-form-field>
     <div class="flex flex-wrap items-center gap-2">
       <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
@@ -68,7 +68,7 @@
       <app-ui-icon name="groups" class="size-9 text-[36px] text-primary"></app-ui-icon>
       <div>
         <span class="block text-2xl font-bold text-primary">{{ stats.students }}</span>
-        <span class="text-[0.85rem] text-muted">عدد الطلاب</span>
+        <span class="text-[0.85rem] text-muted">عدد المتعلمين</span>
       </div>
     </mat-card>
     <mat-card class="flex items-center gap-4 px-5 py-4">
@@ -97,7 +97,7 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <span class="inline-flex items-center gap-[0.4rem] font-bold text-primary"><app-ui-icon name="grading" class="size-5 text-xl"></app-ui-icon> نتائج الطلاب</span>
+    <span class="inline-flex items-center gap-[0.4rem] font-bold text-primary"><app-ui-icon name="grading" class="size-5 text-xl"></app-ui-icon> نتائج المتعلمين</span>
     @if (searched && !loading) {
       <span class="toolbar-count">{{ total }} نتيجة</span>
     }
@@ -128,7 +128,7 @@
           </td>
         </ng-container>
         <ng-container matColumnDef="studentName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">اسم الطالب</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="grouped">اسم المتعلم</th>
           <td mat-cell *matCellDef="let r">
             <div class="flex items-center gap-[0.7rem]">
               <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-info-bg font-bold text-info">{{ r.studentName?.charAt(0) }}</span>

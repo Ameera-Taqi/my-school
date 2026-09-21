@@ -57,6 +57,11 @@ export class AuthService {
     return permissions.some(p => userPerms.has(p));
   }
 
+  hasAnyRole(roles: string[]): boolean {
+    const userRoles = this.currentUser()?.roles ?? [];
+    return roles.some(role => userRoles.includes(role));
+  }
+
   private setSession(response: LoginResponse): void {
     if (response.token) {
       localStorage.setItem(TOKEN_KEY, response.token);
