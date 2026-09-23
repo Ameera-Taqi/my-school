@@ -381,7 +381,7 @@ public class ScheduleService
     }
 
     private IQueryable<ScheduleEntry> EntriesQuery() =>
-        _db.ScheduleEntries.Include(e => e.SchoolClass).Include(e => e.Subject).Include(e => e.Teacher);
+        _db.ScheduleEntries.Include(e => e.SchoolClass).ThenInclude(c => c.AcademicStage).Include(e => e.Subject).Include(e => e.Teacher);
 
     private static SubjectDto ToDto(Subject s) => new() { Id = s.Id, Name = s.Name, Code = s.Code, Color = s.Color, Active = s.Active, DepartmentId = s.DepartmentId, DepartmentName = s.Department?.Name };
 
@@ -411,7 +411,9 @@ public class ScheduleService
 
     private static ScheduleEntryDto ToDto(ScheduleEntry e) => new()
     {
-        Id = e.Id, ClassId = e.SchoolClassId, ClassName = e.SchoolClass.Name, DayOfWeek = DayKeys[e.Day], Period = e.Period,
+        Id = e.Id, ClassId = e.SchoolClassId, ClassName = e.SchoolClass.Name,
+        StageId = e.SchoolClass.AcademicStageId, StageName = e.SchoolClass.AcademicStage?.Name ?? string.Empty,
+        DayOfWeek = DayKeys[e.Day], Period = e.Period,
         SubjectId = e.SubjectId, Subject = e.Subject.Name, SubjectColor = e.Subject.Color, TeacherId = e.TeacherId, TeacherName = e.Teacher.FullName, Room = e.Room, Locked = e.Locked
     };
 }

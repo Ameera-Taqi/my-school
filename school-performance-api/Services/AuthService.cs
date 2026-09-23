@@ -36,6 +36,28 @@ public class AuthService
         return await BuildLoginResponseAsync(user, _jwt.GenerateToken(user));
     }
 
+    /// <summary>Teachers belong to a department even when they are not its head, so department files can reach them.</summary>
+    private async Task AttachTeacherDepartmentAsync(User user, LoginResponse response)
+    {
+        var teacher = await _db.Teachers
+            .Include(t => t.Department)
+            .FirstOrDefaultAsync(t => t.UserId == user.Id && t.DepartmentId != null);
+        if (teacher?.Department == null)
+        {
+            return;
+        }
+
+        response.DepartmentId = teacher.Department.Id;
+        response.DepartmentName = teacher.Department.Name;
+        response.DepartmentCode = teacher.Department.Code;
+        response.DepartmentSubjects = await _db.Teachers
+            .Where(t => t.DepartmentId == teacher.DepartmentId && t.Specialization != null && t.Specialization.Trim() != "")
+            .Select(t => t.Specialization!.Trim())
+            .Distinct()
+            .OrderBy(s => s)
+            .ToListAsync();
+    }
+
     public async Task<LoginResponse> BuildLoginResponseAsync(User user, string? token)
     {
         var scope = await _scopeService.ResolveForUserAsync(user);
@@ -56,6 +78,10 @@ public class AuthService
             response.DepartmentName = scope.DepartmentName;
             response.DepartmentCode = scope.DepartmentCode;
             response.DepartmentSubjects = scope.Subjects;
+        }
+        else
+        {
+            await AttachTeacherDepartmentAsync(user, response);
         }
         return response;
     }

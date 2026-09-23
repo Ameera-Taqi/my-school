@@ -25,6 +25,9 @@ import { LessonPlansPageComponent } from './lesson-plans/pages/lesson-plans-page
 import { ResourceBankPageComponent } from './resource-bank/pages/resource-bank-page.component';
 import { UsersPageComponent } from './users/pages/users-page.component';
 import { MyClassesPageComponent } from './teacher-portal/pages/my-classes-page/my-classes-page.component';
+import { MyLessonsPageComponent } from './teacher-portal/pages/my-lessons-page/my-lessons-page.component';
+import { LessonPrepPageComponent } from './teacher-portal/pages/lesson-prep-page/lesson-prep-page.component';
+import { MyClassLessonPageComponent } from './teacher-portal/pages/my-class-lesson-page/my-class-lesson-page.component';
 import { MyStudentsPageComponent } from './teacher-portal/pages/my-students-page/my-students-page.component';
 import { AttendanceRecordPageComponent } from './teacher-portal/pages/attendance-record-page/attendance-record-page.component';
 import { AssignmentsPageComponent } from './teacher-portal/pages/assignments-page/assignments-page.component';
@@ -79,6 +82,9 @@ export const routes: Routes = [
       { path: 'academic-notes', component: AcademicNotesPageComponent, canActivate: [permissionGuard], data: { permission: 'academic_notes.view' } },
       { path: 'resource-bank', component: ResourceBankPageComponent, canActivate: [permissionGuard], data: { permission: 'resource_bank.view' } },
 
+      { path: 'my-lessons', component: MyLessonsPageComponent, canActivate: [permissionGuard], data: { permission: 'my_classes.view' } },
+      { path: 'lesson-prep', component: LessonPrepPageComponent, canActivate: [permissionGuard], data: { permission: 'my_classes.view' } },
+      { path: 'my-lessons/:classId', component: MyClassLessonPageComponent, canActivate: [permissionGuard], data: { permission: 'my_classes.view' } },
       { path: 'my-classes', component: MyClassesPageComponent, canActivate: [permissionGuard], data: { permission: 'my_classes.view' } },
       { path: 'my-students', component: MyStudentsPageComponent, canActivate: [permissionGuard], data: { permission: 'my_students.view' } },
       { path: 'attendance-record', component: AttendanceRecordPageComponent, canActivate: [permissionGuard], data: { permission: 'attendance_record.view' } },

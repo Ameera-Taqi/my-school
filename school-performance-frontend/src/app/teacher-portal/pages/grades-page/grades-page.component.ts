@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +17,7 @@ import { TableSkeletonComponent } from '../../../shared/components/table-skeleto
 import { ToastService } from '../../../shared/services/toast.service';
 import { ConfirmService } from '../../../shared/services/confirm.service';
 import { TeacherPortalMockService } from '../../services/teacher-portal-mock.service';
+import { AttendanceApiService } from '../../../attendance/services/attendance-api.service';
 import { GradeColumnDialogComponent } from '../../dialogs/grade-column-dialog.component';
 import { GradeSheet, GradeSheetColumn, GradeSheetEntry } from '../../../core/models';
 import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
@@ -27,7 +29,19 @@ import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
   templateUrl: './grades-page.component.html'
 })
 export class GradesPageComponent implements OnInit {
+  /** Hides the page title and class picker when shown inside a class page. */
+  @Input() embedded = false;
+  /** Loads this class immediately and keeps the sheet on it. */
+  @Input() lockedClass = '';
+  /** Class id used to load this class's students when the sheet is embedded. */
+  @Input() lockedClassId: number | null = null;
+  /** Subject shown on the sheet when the class picker is hidden. */
+  @Input() lockedSubject = '';
+  /** Students of the class, used when the academic lookup is unavailable. */
+  @Input() roster: { id: number; name: string }[] = [];
   private readonly service = inject(TeacherPortalMockService);
+  private readonly attendanceApi = inject(AttendanceApiService);
+  private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
@@ -40,18 +54,57 @@ export class GradesPageComponent implements OnInit {
   loading = false;
   saving = false;
   sheetLoaded = false;
-  displayedColumns: string[] = ['studentName', 'className'];
+  displayedColumns: string[] = ['rowNumber', 'studentName', 'className'];
 
   filters = this.fb.group({
     className: ['', Validators.required]
   });
 
   ngOnInit(): void {
+    const classFromRoute = this.route.snapshot.queryParamMap.get('className') ?? '';
+    const subjectFromRoute = this.route.snapshot.queryParamMap.get('subject') ?? '';
+    const classIdFromRoute = Number(this.route.snapshot.queryParamMap.get('classId')) || this.lockedClassId;
+    const className = this.lockedClass || classFromRoute;
+    const subject = this.lockedSubject || subjectFromRoute;
+
+    if (className) {
+      this.filters.controls.className.setValue(className);
+      this.classSubjects.set(className, subject);
+      this.classNames = [className];
+      if (classIdFromRoute && !this.roster.length) {
+        this.attendanceApi.getStudentAttendance(0, classIdFromRoute, this.isoToday()).subscribe({
+          next: records => {
+            this.roster = records.map(student => ({ id: student.personId, name: student.personName }));
+            this.loadSheet();
+          },
+          error: () => this.loadSheet()
+        });
+      } else {
+        this.loadSheet();
+      }
+      if (!this.embedded) {
+        this.service.getMyClasses().subscribe(classes => {
+          if (!classes.length) return;
+          const names = classes.map(c => c.name);
+          this.classNames = names.includes(className) ? names : [className, ...names];
+          classes.forEach(c => {
+            if (!this.classSubjects.has(c.name)) this.classSubjects.set(c.name, c.subject ?? '');
+          });
+          if (subject) this.classSubjects.set(className, subject);
+        });
+      }
+      return;
+    }
     this.service.getMyClasses().subscribe(classes => {
       this.classNames = classes.map(c => c.name);
       classes.forEach(c => this.classSubjects.set(c.name, c.subject ?? ''));
       if (classes.length) this.filters.controls.className.setValue(classes[0].name);
     });
+  }
+
+  private isoToday(): string {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   }
 
   loadSheet(): void {
@@ -69,6 +122,18 @@ export class GradesPageComponent implements OnInit {
 
     this.service.getGradeSheet(className, subject, term).subscribe({
       next: (data) => {
+        if (!data.entries.length && this.roster.length) {
+          data = {
+            ...data,
+            subject: data.subject || this.lockedSubject,
+            entries: this.roster.map(student => ({
+              studentId: student.id,
+              studentName: student.name,
+              className,
+              scores: {}
+            }))
+          };
+        }
         this.sheet = data;
         this.updateDisplayedColumns();
         this.sheetLoaded = true;
@@ -85,7 +150,7 @@ export class GradesPageComponent implements OnInit {
     });
     this.sheet = null;
     this.sheetLoaded = false;
-    this.displayedColumns = ['studentName', 'className'];
+    this.displayedColumns = this.identityColumns();
   }
 
   addColumn(): void {
@@ -205,13 +270,18 @@ export class GradesPageComponent implements OnInit {
 
   private updateDisplayedColumns(): void {
     if (!this.sheet) {
-      this.displayedColumns = ['studentName', 'className'];
+      this.displayedColumns = this.identityColumns();
       return;
     }
-    this.displayedColumns = ['studentName', 'className', ...this.sheet.columns.map(c => c.id)];
+    this.displayedColumns = [...this.identityColumns(), ...this.sheet.columns.map(c => c.id)];
     if (this.sheet.columns.length) {
       this.displayedColumns.push('total');
     }
+  }
+
+  /** The class column repeats the same value when the sheet is locked to one class. */
+  private identityColumns(): string[] {
+    return this.lockedClass ? ['rowNumber', 'studentName'] : ['rowNumber', 'studentName', 'className'];
   }
 
   private nextColumnId(): string {

@@ -83,6 +83,19 @@ export interface AlertItem {
   status: 'NEW' | 'REVIEWED';
 }
 
+export interface LessonPrep {
+  id?: number;
+  teacherId?: number;
+  teacherName: string;
+  stageName: string;
+  className: string;
+  subject: string;
+  title: string;
+  lessonDate: string;
+  fileName?: string;
+  description?: string;
+}
+
 export interface LessonPlan {
   id?: number;
   subject: string;
@@ -101,7 +114,9 @@ export interface ResourceFile {
   fileType: string;
   subject: string;
   stageName: string;
-  teacherName: string;
+  teacherName?: string;
+  departmentId?: number;
+  departmentName?: string;
   description: string;
   uploadedAt: string;
   fileName?: string;
@@ -305,6 +320,8 @@ export interface ClassScheduleEntry {
   id?: number;
   classId?: number;
   className: string;
+  stageId?: number;
+  stageName?: string;
   dayOfWeek: ScheduleDay;
   period: number;
   subjectId?: number;

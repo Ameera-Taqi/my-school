@@ -15,7 +15,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
-    <h2 mat-dialog-title>{{ data ? 'تعديل ملاحظة' : 'ملاحظة جديدة' }}</h2>
+    <h2 mat-dialog-title>{{ data?.id ? 'تعديل ملاحظة' : 'ملاحظة جديدة' }}</h2>
     <mat-dialog-content class="max-h-[70vh]">
       <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
@@ -75,7 +75,15 @@ export class TeacherNoteFormDialogComponent {
   });
 
   constructor() {
-    if (this.data) this.form.patchValue({ ...this.data, noteDate: new Date(this.data.noteDate) });
+    if (this.data) {
+      this.form.patchValue({
+        studentName: this.data.studentName ?? '',
+        className: this.data.className ?? '',
+        noteType: this.data.noteType ?? 'BEHAVIOR',
+        content: this.data.content ?? '',
+        ...(this.data.noteDate ? { noteDate: new Date(this.data.noteDate) } : {})
+      });
+    }
   }
 
   save(): void {

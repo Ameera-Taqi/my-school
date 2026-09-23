@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -30,6 +30,10 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   templateUrl: './behavior-page.component.html'
 })
 export class BehaviorPageComponent implements OnInit, AfterViewInit {
+  /** Hides the page title when shown inside a class page. */
+  @Input() embedded = false;
+  /** When set, only notes for these students are shown. */
+  @Input() studentNames: string[] | null = null;
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;
 
   private readonly service = inject(BehaviorMockService);
@@ -67,9 +71,27 @@ export class BehaviorPageComponent implements OnInit, AfterViewInit {
   load(): void {
     this.loading = true;
     this.service.getAll().subscribe({
-      next: (data) => { this.dataSource.data = data; this.loading = false; setTimeout(() => this.attachTableControls()); },
+      next: (data) => {
+        const names = this.studentNames;
+        this.dataSource.data = names ? data.filter(note => this.belongsToClass(note.studentName, names)) : data;
+        this.loading = false;
+        setTimeout(() => this.attachTableControls());
+      },
       error: (e) => { this.loading = false; this.toast.fromError(e); }
     });
+  }
+
+  /** Matches a note to a class roster even when the stored name is a shorter form. */
+  private belongsToClass(noteName: string, names: string[]): boolean {
+    const note = this.normalizeName(noteName);
+    return names.some(name => {
+      const student = this.normalizeName(name);
+      return student === note || student.includes(note) || note.includes(student);
+    });
+  }
+
+  private normalizeName(value: string): string {
+    return value.trim().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/\s+/g, ' ');
   }
 
   onSearch(query: string): void {

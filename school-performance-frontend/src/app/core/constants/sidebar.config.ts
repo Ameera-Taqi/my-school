@@ -62,12 +62,9 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     titleKey: 'section.teachers',
     items: [
-      { labelKey: 'nav.myClasses', icon: 'class', route: '/my-classes', permission: 'my_classes.view' },
-      { labelKey: 'nav.myStudents', icon: 'groups', route: '/my-students', permission: 'my_students.view' },
-      { labelKey: 'nav.attendanceRecord', icon: 'how_to_reg', route: '/attendance-record', permission: 'attendance_record.view' },
+      { labelKey: 'nav.myLessons', icon: 'calendar_view_day', route: '/my-lessons', permission: 'my_classes.view' },
+      { labelKey: 'nav.lessonPrep', icon: 'edit_note', route: '/lesson-prep', permission: 'my_classes.view' },
       { labelKey: 'nav.assignments', icon: 'assignment', route: '/assignments', permission: 'assignments.view' },
-      { labelKey: 'nav.grades', icon: 'grade', route: '/grades', permission: 'grades.view' },
-      { labelKey: 'nav.notes', icon: 'comment', route: '/notes', permission: 'notes.view' },
       { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.view' }
     ]
   },

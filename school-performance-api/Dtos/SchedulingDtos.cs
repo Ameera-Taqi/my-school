@@ -49,6 +49,8 @@ public class ScheduleEntryDto
     public long? Id { get; set; }
     public long ClassId { get; set; }
     public string ClassName { get; set; } = string.Empty;
+    public long StageId { get; set; }
+    public string StageName { get; set; } = string.Empty;
     public string DayOfWeek { get; set; } = string.Empty;
     public int Period { get; set; }
     public long SubjectId { get; set; }

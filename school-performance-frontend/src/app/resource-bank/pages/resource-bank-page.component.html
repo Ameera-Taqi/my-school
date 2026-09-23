@@ -6,9 +6,25 @@
   }
 </app-page-header>
 
+@if (!loading && stages.length) {
+  <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    @for (stage of stages; track stage.name) {
+      <button
+        type="button"
+        class="stage-card"
+        [class.stage-card--active]="selectedStage === stage.name"
+        [attr.aria-pressed]="selectedStage === stage.name"
+        (click)="selectStage(stage.name)">
+        <span class="stage-card__name">{{ stage.name }}</span>
+        <span class="stage-card__count">{{ stage.count }} ملف</span>
+      </button>
+    }
+  </div>
+}
+
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالعنوان أو المادة أو المعلم أو نوع الملف" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
+    <app-search-field placeholder="ابحث بالعنوان أو المادة أو نوع الملف" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
     @if (!loading) {
       <span class="toolbar-count">
         @if (query) { {{ filteredCount }} من {{ total }} ملف } @else { {{ total }} ملف }
@@ -17,8 +33,8 @@
   </div>
 
   @if (loading) {
-    <app-table-skeleton [rows]="5" [columns]="7"></app-table-skeleton>
-  } @else if (total === 0) {
+    <app-table-skeleton [rows]="5" [columns]="5"></app-table-skeleton>
+  } @else if (!stages.length) {
     <app-empty-state
       icon="folder_open"
       title="لا توجد ملفات بعد"
@@ -27,6 +43,8 @@
         <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="upload"></app-ui-icon> رفع ملف</button>
       }
     </app-empty-state>
+  } @else if (total === 0) {
+    <app-empty-state icon="folder_open" [title]="'لا توجد ملفات لمرحلة ' + selectedStage" description="الملفات المرفوعة لهذه المرحلة تظهر هنا."></app-empty-state>
   } @else if (filteredCount === 0) {
     <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد ملفاً يطابق «' + query + '».'" [compact]="true"></app-empty-state>
   } @else {
@@ -52,14 +70,6 @@
         <ng-container matColumnDef="subject">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>المادة</th>
           <td mat-cell *matCellDef="let r">{{ r.subject }}</td>
-        </ng-container>
-        <ng-container matColumnDef="stageName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>المرحلة</th>
-          <td mat-cell *matCellDef="let r">{{ r.stageName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="teacherName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>المعلم</th>
-          <td mat-cell *matCellDef="let r">{{ r.teacherName }}</td>
         </ng-container>
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef>الوصف</th>

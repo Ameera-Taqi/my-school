@@ -12,7 +12,10 @@ const DEMO_SUBJECTS_BY_CODE: Record<string, string[]> = {
 export class DepartmentScopeService {
   private readonly auth = inject(AuthService);
 
-  readonly isScoped = computed(() => this.auth.user()?.departmentId != null);
+  readonly isScoped = computed(() => {
+    const user = this.auth.user();
+    return user?.departmentId != null && (user.roles ?? []).some(role => role.startsWith('DEPARTMENT_HEAD'));
+  });
   readonly departmentId = computed(() => this.auth.user()?.departmentId ?? null);
   readonly departmentName = computed(() => this.auth.user()?.departmentName ?? '');
   readonly departmentCode = computed(() => this.auth.user()?.departmentCode ?? null);

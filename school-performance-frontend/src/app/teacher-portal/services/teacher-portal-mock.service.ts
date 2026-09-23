@@ -23,6 +23,8 @@ interface TeacherPortalState {
   gradeSheets: GradeSheet[];
   noteId: number;
   notes: TeacherNote[];
+  /** Stops demo notes from returning after the user deletes them. */
+  notesSeeded?: boolean;
   attendance: ClassAttendanceRow[];
   classMeta: TeacherClassMeta[];
 }
@@ -32,6 +34,15 @@ const DEFAULT_CLASS_META: Record<string, { subject: string; schedule?: string }>
   '10-ب': { subject: 'رياضيات', schedule: 'الإثنين - الأربعاء' },
   '11-أ': { subject: 'إحصاء', schedule: 'الأحد - الخميس' }
 };
+
+const DEFAULT_NOTES: TeacherNote[] = [
+  { id: 1, studentName: 'أحمد محمد السعيدي', className: '10-أ', noteType: 'BEHAVIOR', content: 'مشاركة متميزة في الحصة وتفاعل إيجابي مع الزملاء.', noteDate: '2026-09-21', teacherName: 'أ. مريم' },
+  { id: 2, studentName: 'خالد سعيد البلوشي', className: '10-أ', noteType: 'BEHAVIOR', content: 'تأخر متكرر عن بداية الحصة هذا الأسبوع.', noteDate: '2026-09-20', teacherName: 'أ. مريم' },
+  { id: 3, studentName: 'فاطمة علي الحارثي', className: '10-أ', noteType: 'ACADEMIC', content: 'تحسّن واضح في حل المعادلات الخطية.', noteDate: '2026-09-18', teacherName: 'أ. مريم' },
+  { id: 4, studentName: 'سعود فهد', className: '10-أ', noteType: 'ACADEMIC', content: 'يحتاج متابعة في تمارين الكسور والنسب.', noteDate: '2026-09-17', teacherName: 'أ. مريم' },
+  { id: 5, studentName: 'هدى ناصر الريامي', className: '10-أ', noteType: 'BEHAVIOR', content: 'ساعدت زميلاتها في تنظيم مجموعة العمل.', noteDate: '2026-09-16', teacherName: 'أ. مريم' },
+  { id: 6, studentName: 'مريم سالم', className: '10-ب', noteType: 'ACADEMIC', content: 'لم تسلّم واجب المعادلات في الموعد المحدد.', noteDate: '2026-09-15', teacherName: 'أ. مريم' }
+];
 
 const INITIAL_STATE: TeacherPortalState = {
   assignmentId: 10,
@@ -43,7 +54,8 @@ const INITIAL_STATE: TeacherPortalState = {
   grades: [],
   gradeSheets: [],
   noteId: 10,
-  notes: [],
+  notes: DEFAULT_NOTES,
+  notesSeeded: true,
   attendance: [],
   classMeta: []
 };
@@ -274,7 +286,12 @@ export class TeacherPortalMockService {
         };
 
         if (!schoolClass?.id) {
-          return of(buildSheet([]));
+          if (!existing) return of(buildSheet([]));
+          return of({
+            ...existing,
+            columns: existing.columns.map(c => ({ ...c })),
+            entries: existing.entries.map(e => ({ ...e, scores: { ...e.scores } }))
+          });
         }
 
         return this.lookup.getStudentsByClassId(schoolClass.id).pipe(
@@ -361,6 +378,13 @@ export class TeacherPortalMockService {
   }
 
   getNotes(): Observable<TeacherNote[]> {
+    const state = this.s();
+    if (!state.notesSeeded && !state.notes.length) {
+      state.notes = DEFAULT_NOTES.map(note => ({ ...note }));
+      state.noteId = Math.max(state.noteId, 10);
+      state.notesSeeded = true;
+      this.save(state);
+    }
     return of([...this.s().notes]).pipe(delay(200));
   }
 

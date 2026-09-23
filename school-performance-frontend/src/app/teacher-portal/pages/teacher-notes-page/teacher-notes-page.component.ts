@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
@@ -20,11 +20,15 @@ import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 @Component({
   selector: 'app-teacher-notes-page',
   standalone: true,
-  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatTooltipModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
+  imports: [UiIconComponent, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule, MatDialogModule, PageHeaderComponent, SearchFieldComponent, EmptyStateComponent, TableSkeletonComponent, AppDatePipe],
   templateUrl: './teacher-notes-page.component.html'
 })
 export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
+  /** Limits the list to this class when the page is shown under a class tab. */
+  @Input() lockedClass = '';
+
   private readonly service = inject(TeacherPortalMockService);
+  private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
@@ -35,15 +39,19 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) set sortRef(s: MatSort | undefined) { this.sort = s; this.attachTableControls(); }
   sort?: MatSort;
 
+  /** When opened from a class, only that class's notes are shown. */
+  className = '';
   readonly dataSource = new MatTableDataSource<TeacherNote>([]);
   loading = true;
   query = '';
-  cols = ['studentName', 'className', 'noteType', 'content', 'noteDate', 'actions'];
+  cols = ['studentName', 'className', 'noteType', 'noteDate', 'actions'];
 
   get total(): number { return this.dataSource.data.length; }
   get filteredCount(): number { return this.dataSource.filteredData.length; }
 
   ngOnInit(): void {
+    this.className = this.lockedClass || (this.route.snapshot.queryParamMap.get('className') ?? '');
+    if (this.className) this.cols = ['studentName', 'noteType', 'noteDate', 'actions'];
     this.dataSource.filterPredicate = (n, filter) =>
       [n.studentName, n.className, n.content, this.typeLabel(n.noteType)].join(' ').toLowerCase().includes(filter);
     this.load();
@@ -54,7 +62,11 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   load(): void {
     this.loading = true;
     this.service.getNotes().subscribe({
-      next: (data) => { this.dataSource.data = data; this.loading = false; setTimeout(() => this.attachTableControls()); },
+      next: (data) => {
+        this.dataSource.data = this.className ? data.filter(note => note.className === this.className) : data;
+        this.loading = false;
+        setTimeout(() => this.attachTableControls());
+      },
       error: (e) => { this.loading = false; this.toast.fromError(e); }
     });
   }
@@ -74,7 +86,10 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(item?: TeacherNote): void {
-    const ref = this.dialog.open(TeacherNoteFormDialogComponent, { width: '560px', maxWidth: '95vw', data: item ?? null });
+    const draft: TeacherNote | null = item ?? (this.className
+      ? { studentName: '', className: this.className, noteType: 'BEHAVIOR', content: '', noteDate: '' }
+      : null);
+    const ref = this.dialog.open(TeacherNoteFormDialogComponent, { width: '560px', maxWidth: '95vw', data: draft });
     ref.afterClosed().subscribe((result: TeacherNote | undefined) => {
       if (!result) return;
       this.service.saveNote(result).subscribe({

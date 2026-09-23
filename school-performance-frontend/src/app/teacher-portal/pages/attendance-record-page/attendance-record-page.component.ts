@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -8,6 +8,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
@@ -26,10 +27,17 @@ type AttendanceRecordStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 @Component({
   selector: 'app-attendance-record-page',
   standalone: true,
-  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatButtonToggleModule, MatTableModule, MatDatepickerModule, MatInputModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatButtonModule, MatButtonToggleModule, MatTableModule, MatDatepickerModule, MatInputModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent],
   templateUrl: './attendance-record-page.component.html'
 })
 export class AttendanceRecordPageComponent implements OnInit {
+  /** Hides the page title and class picker when shown inside a class page. */
+  @Input() embedded = false;
+  @Input() lockedClass = '';
+  @Input() lockedClassId: number | null = null;
+  @Input() lockedStageName = '';
+  @Input() lockedStageId: number | null = null;
+
   private readonly service = inject(TeacherPortalMockService);
   private readonly attendanceApi = inject(AttendanceApiService);
   private readonly lookup = inject(AcademicLookupService);
@@ -42,7 +50,7 @@ export class AttendanceRecordPageComponent implements OnInit {
   classNames: string[] = [];
   rows: ClassAttendanceRow[] = [];
   loading = false;
-  cols = ['studentName', 'status'];
+  cols = ['rowNumber', 'studentName', 'status'];
 
   form = this.fb.group({
     date: [new Date()],
@@ -50,6 +58,19 @@ export class AttendanceRecordPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (this.embedded && this.lockedClassId) {
+      this.form.controls.className.setValue(this.lockedClass);
+      this.currentClass = {
+        id: this.lockedClassId,
+        name: this.lockedClass,
+        capacity: 0,
+        academicStageId: this.lockedStageId ?? undefined,
+        academicStageName: this.lockedStageName
+      };
+      this.load();
+      this.form.controls.date.valueChanges.subscribe(() => this.load());
+      return;
+    }
     this.service.getClassNames().subscribe(names => {
       this.classNames = names;
       if (names.length) {
@@ -62,6 +83,10 @@ export class AttendanceRecordPageComponent implements OnInit {
   }
 
   resetFilters(): void {
+    if (this.embedded) {
+      this.form.controls.date.setValue(new Date());
+      return;
+    }
     const defaultClass = this.classNames[0] ?? '';
     this.form.reset({ date: new Date(), className: defaultClass });
     this.rows = [];
@@ -69,9 +94,20 @@ export class AttendanceRecordPageComponent implements OnInit {
   }
 
   load(): void {
-    const className = this.form.controls.className.value;
+    const className = this.form.controls.className.value ?? '';
     const date = this.form.controls.date.value;
-    if (!className || !date) return;
+    if (!date || (!className && !this.lockedClassId)) return;
+    if (this.lockedClassId) {
+      this.loading = true;
+      this.attendanceApi.getStudentAttendance(this.lockedStageId ?? 0, this.lockedClassId, this.isoDate(date)).subscribe({
+        next: (data) => {
+          this.rows = data.map(r => ({ id: r.personId, studentName: r.personName, status: this.normalizeStatus(r.status) }));
+          this.loading = false;
+        },
+        error: (e) => { this.loading = false; this.toast.fromError(e); }
+      });
+      return;
+    }
     this.loading = true;
     this.lookup.findClassByName(className).pipe(
       switchMap(schoolClass => {

@@ -15,11 +15,17 @@ export class ResourceBankMockService {
   private readonly departmentScope = inject(DepartmentScopeService);
 
   getAll(): Observable<ResourceFile[]> {
-    return of(this.departmentScope.filterByDepartmentScope([...store.getItems()])).pipe(delay(200));
+    return of(this.visibleToDepartment([...store.getItems()])).pipe(delay(200));
   }
 
   create(f: ResourceFile): Observable<ResourceFile> {
-    const created = { ...f, id: store.nextId(), uploadedAt: new Date().toISOString().slice(0, 10) };
+    const created: ResourceFile = {
+      ...f,
+      id: store.nextId(),
+      uploadedAt: new Date().toISOString().slice(0, 10),
+      departmentId: f.departmentId ?? this.departmentScope.departmentId() ?? undefined,
+      departmentName: f.departmentName || this.departmentScope.departmentName() || undefined
+    };
     store.setItems([created, ...store.getItems()]);
     return of(created).pipe(delay(200));
   }
@@ -39,6 +45,20 @@ export class ResourceBankMockService {
     link.download = name;
     link.click();
     URL.revokeObjectURL(url);
+  }
+
+  /** Department heads and their teachers share the same files. Accounts without a department see every file. */
+  private visibleToDepartment(items: ResourceFile[]): ResourceFile[] {
+    const departmentId = this.departmentScope.departmentId();
+    const departmentName = this.departmentScope.departmentName();
+    if (departmentId == null && !departmentName) return items;
+
+    const subjects = this.departmentScope.subjects();
+    return items.filter(item =>
+      (item.departmentId != null && item.departmentId === departmentId) ||
+      (!!departmentName && item.departmentName === departmentName) ||
+      (!item.departmentId && !item.departmentName && !!item.subject && subjects.includes(item.subject))
+    );
   }
 
   private extensionFor(file: ResourceFile): string {
@@ -66,7 +86,7 @@ export class ResourceBankMockService {
       file.title,
       `المادة: ${file.subject}`,
       `المرحلة: ${file.stageName}`,
-      `المعلم: ${file.teacherName}`,
+      file.departmentName ? `الشعبة: ${file.departmentName}` : '',
       file.description || ''
     ].filter(Boolean).join('\n');
   }

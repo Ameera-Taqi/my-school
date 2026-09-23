@@ -6,32 +6,38 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { ResourceFile } from '../../core/models';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { LessonPrep } from '../../core/models';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
-const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 'avi', 'mkv'];
+const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx'];
+
+export interface LessonPrepStageOption {
+  stageName: string;
+  subject: string;
+}
+
+export interface LessonPrepDialogData {
+  stageName: string;
+  stages: LessonPrepStageOption[];
+}
 
 @Component({
-  selector: 'app-resource-file-form-dialog',
+  selector: 'app-lesson-prep-form-dialog',
   standalone: true,
-  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
   template: `
-    <h2 mat-dialog-title>رفع ملف تعليمي</h2>
+    <h2 mat-dialog-title>رفع تحضير يومي</h2>
     <mat-dialog-content class="max-h-[70vh]">
       <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
         <div
           class="mb-3 flex flex-col gap-3 rounded-sp-sm border border-dashed border-[#c5cae9] bg-primary-bg p-4"
           [ngClass]="fileError ? 'border-danger bg-danger-bg' : ''">
-          <input
-            #fileInput
-            type="file"
-            hidden
-            accept=".pdf,.ppt,.pptx,.doc,.docx,.mp4,.mov,.avi,.mkv"
-            (change)="onFileSelected($event)">
+          <input #fileInput type="file" hidden accept=".pdf,.ppt,.pptx,.doc,.docx" (change)="onFileSelected($event)">
           <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">
             <app-ui-icon name="upload_file"></app-ui-icon>
-            {{ selectedFile ? 'تغيير الملف' : 'اختيار ملف' }}
+            {{ selectedFile ? 'تغيير الملف' : 'اختيار ملف التحضير' }}
           </button>
           @if (selectedFile) {
             <div class="flex items-center gap-3 rounded-sp-sm border border-border bg-surface p-3">
@@ -45,44 +51,47 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
               </button>
             </div>
           } @else {
-            <p class="m-0 text-[0.85rem] text-muted">الصيغ المدعومة: PDF, PPTX, DOCX, فيديو — بحد أقصى 50 ميجابايت</p>
+            <p class="m-0 text-[0.85rem] text-muted">الصيغ المدعومة: PDF, PPTX, DOCX — بحد أقصى 50 ميجابايت</p>
           }
           @if (fileError) {
-            <p class="m-0 flex items-center gap-[0.3rem] text-[0.85rem] text-danger">
-              <app-ui-icon name="error_outline" class="size-[18px] text-lg"></app-ui-icon> {{ fileError }}
-            </p>
+            <p class="m-0 text-[0.85rem] text-danger">{{ fileError }}</p>
           }
         </div>
 
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>عنوان الملف</mat-label>
+          <mat-label>عنوان التحضير</mat-label>
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
-          <mat-error>عنوان الملف مطلوب</mat-error>
+          <mat-error>عنوان التحضير مطلوب</mat-error>
         </mat-form-field>
         <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
           <mat-form-field appearance="outline">
-            <mat-label>نوع الملف</mat-label>
-            <mat-select formControlName="fileType">
-              <mat-option value="PDF">PDF</mat-option>
-              <mat-option value="PPTX">PPTX</mat-option>
-              <mat-option value="DOCX">DOCX</mat-option>
-              <mat-option value="VIDEO">فيديو</mat-option>
-            </mat-select>
-            <mat-error>نوع الملف مطلوب</mat-error>
+            <mat-label>تاريخ الحصة</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="lessonDate">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error>التاريخ مطلوب</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>المادة</mat-label>
-            <input matInput formControlName="subject" autocomplete="off">
-            <mat-error>المادة مطلوبة</mat-error>
+            <mat-label>المرحلة</mat-label>
+            <mat-select formControlName="stageName" (selectionChange)="onStageChange($event.value)">
+              @for (stage of stageNames; track stage) {
+                <mat-option [value]="stage">{{ stage }}</mat-option>
+              }
+            </mat-select>
+            <mat-error>المرحلة مطلوبة</mat-error>
           </mat-form-field>
         </div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>المرحلة</mat-label>
-          <input matInput formControlName="stageName" autocomplete="off">
-          <mat-error>المرحلة مطلوبة</mat-error>
+          <mat-label>المادة</mat-label>
+          <mat-select formControlName="subject">
+            @for (subject of subjects; track subject) {
+              <mat-option [value]="subject">{{ subject }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>المادة مطلوبة</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>وصف مختصر</mat-label>
+          <mat-label>ملاحظات التحضير</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
         </mat-form-field>
       </form>
@@ -99,22 +108,37 @@ const ACCEPTED_EXTENSIONS = ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'mp4', 'mov', 
     </mat-dialog-actions>
   `
 })
-export class ResourceFileFormDialogComponent {
-  readonly data: ResourceFile | null = inject(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject(MatDialogRef<ResourceFileFormDialogComponent>);
+export class LessonPrepFormDialogComponent {
+  readonly data: LessonPrepDialogData = inject(MAT_DIALOG_DATA);
+  private readonly dialogRef = inject(MatDialogRef<LessonPrepFormDialogComponent, Omit<LessonPrep, 'id' | 'teacherName'> | undefined>);
   private readonly fb = inject(FormBuilder);
 
   selectedFile: File | null = null;
   fileError = '';
   uploading = false;
 
+  readonly stageNames = [...new Set(this.data.stages.map(stage => stage.stageName))];
+
   form = this.fb.nonNullable.group({
     title: ['', Validators.required],
-    fileType: ['PDF', Validators.required],
-    subject: ['', Validators.required],
-    stageName: ['', Validators.required],
+    lessonDate: [new Date(), Validators.required],
+    stageName: [this.initialStage(), Validators.required],
+    subject: [this.subjectFor(this.initialStage()), Validators.required],
     description: ['']
   });
+
+  get subjects(): string[] {
+    const forStage = this.data.stages
+      .filter(stage => stage.stageName === this.form.controls.stageName.value && stage.subject)
+      .map(stage => stage.subject);
+    const unique = [...new Set(forStage)];
+    return unique.length ? unique : [...new Set(this.data.stages.map(stage => stage.subject).filter(Boolean))];
+  }
+
+  onStageChange(stageName: string): void {
+    const subject = this.subjectFor(stageName);
+    if (subject) this.form.controls.subject.setValue(subject);
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -123,12 +147,11 @@ export class ResourceFileFormDialogComponent {
 
     const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
     if (!ACCEPTED_EXTENSIONS.includes(extension)) {
-      this.fileError = 'نوع الملف غير مدعوم. اختر PDF أو PPTX أو DOCX أو فيديو.';
+      this.fileError = 'نوع الملف غير مدعوم. اختر PDF أو PPTX أو DOCX.';
       this.selectedFile = null;
       input.value = '';
       return;
     }
-
     if (file.size > MAX_FILE_SIZE_BYTES) {
       this.fileError = 'حجم الملف يتجاوز الحد المسموح (50 ميجابايت).';
       this.selectedFile = null;
@@ -138,15 +161,8 @@ export class ResourceFileFormDialogComponent {
 
     this.fileError = '';
     this.selectedFile = file;
-
-    const detectedType = this.detectFileType(extension);
-    if (detectedType) {
-      this.form.controls.fileType.setValue(detectedType);
-    }
-
     if (!this.form.controls.title.value.trim()) {
-      const title = file.name.replace(/\.[^/.]+$/, '').trim();
-      this.form.controls.title.setValue(title);
+      this.form.controls.title.setValue(file.name.replace(/\.[^/.]+$/, '').trim());
     }
   }
 
@@ -164,38 +180,37 @@ export class ResourceFileFormDialogComponent {
 
   save(): void {
     if (this.uploading) return;
-    if (!this.selectedFile) {
-      this.fileError = 'يرجى اختيار ملف أولاً.';
-    }
+    if (!this.selectedFile) this.fileError = 'يرجى اختيار ملف التحضير أولاً.';
     if (this.form.invalid || !this.selectedFile) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.uploading = true;
-    // محاكاة رفع الملف — يمكن ربطها بـ API لاحقاً
+    const value = this.form.getRawValue();
+    const date = value.lessonDate;
+    const lessonDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     setTimeout(() => {
-      const v = this.form.getRawValue();
       this.dialogRef.close({
-        ...v,
+        stageName: value.stageName,
+        className: '',
+        subject: value.subject,
+        title: value.title.trim(),
+        lessonDate,
         fileName: this.selectedFile!.name,
-        fileSize: this.selectedFile!.size
-      } satisfies Omit<ResourceFile, 'id' | 'uploadedAt'>);
-    }, 400);
+        description: value.description.trim()
+      });
+    }, 300);
   }
 
-  private detectFileType(extension: string): ResourceFile['fileType'] | null {
-    const map: Record<string, ResourceFile['fileType']> = {
-      pdf: 'PDF',
-      ppt: 'PPTX',
-      pptx: 'PPTX',
-      doc: 'DOCX',
-      docx: 'DOCX',
-      mp4: 'VIDEO',
-      mov: 'VIDEO',
-      avi: 'VIDEO',
-      mkv: 'VIDEO'
-    };
-    return map[extension] ?? null;
+  private initialStage(): string {
+    if (this.stageNames.includes(this.data.stageName)) return this.data.stageName;
+    return this.stageNames[0] ?? '';
+  }
+
+  private subjectFor(stageName: string): string {
+    return this.data.stages.find(stage => stage.stageName === stageName)?.subject
+      ?? this.data.stages.find(stage => stage.subject)?.subject
+      ?? '';
   }
 }

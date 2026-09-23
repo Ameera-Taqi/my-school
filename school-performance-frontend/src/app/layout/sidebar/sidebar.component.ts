@@ -1,9 +1,7 @@
 import { NgClass } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, Input, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { filter } from 'rxjs';
 import { SidebarSection } from '../../core/models';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { LayoutService } from '../../shared/services/layout.service';
@@ -17,24 +15,13 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
   host: { class: 'block h-full' },
   templateUrl: './sidebar.component.html'
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
   @Input() sections: SidebarSection[] = [];
   @Input() mini = false;
 
   readonly layout = inject(LayoutService);
   readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
-
-  constructor() {
-    this.router.events.pipe(
-      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-      takeUntilDestroyed()
-    ).subscribe(() => this.revealActiveSection());
-  }
-
-  ngOnInit(): void {
-    this.revealActiveSection();
-  }
 
   isOpen(section: SidebarSection): boolean {
     if (section.titleKey === 'section.home') return true;
@@ -54,15 +41,6 @@ export class SidebarComponent implements OnInit {
 
   tooltipPosition(): 'left' | 'right' {
     return this.lang.direction() === 'rtl' ? 'left' : 'right';
-  }
-
-  /** After navigation, expand the section that contains the current page. */
-  private revealActiveSection(): void {
-    for (const section of this.sections) {
-      if (section.titleKey !== 'section.home' && this.containsActive(section)) {
-        this.layout.ensureSectionOpen(section.titleKey);
-      }
-    }
   }
 
   private routeMatches(url: string, route: string): boolean {

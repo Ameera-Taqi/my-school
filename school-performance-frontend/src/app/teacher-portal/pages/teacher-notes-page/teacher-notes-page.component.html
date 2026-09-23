@@ -13,7 +13,7 @@
   </div>
 
   @if (loading) {
-    <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
+    <app-table-skeleton [rows]="5" [columns]="cols.length"></app-table-skeleton>
   } @else if (total === 0) {
     <app-empty-state icon="sticky_note_2" title="لا توجد ملاحظات بعد" description="سجّل أول ملاحظة سلوكية أو أكاديمية على متعلميك.">
       <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> ملاحظة جديدة</button>
@@ -37,14 +37,10 @@
           <td mat-cell *matCellDef="let r">{{ r.className }}</td>
         </ng-container>
         <ng-container matColumnDef="noteType">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>النوع</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>نوع الملاحظة</th>
           <td mat-cell *matCellDef="let r">
             <span class="chip" [class]="'chip ' + typeChip(r.noteType)">{{ typeLabel(r.noteType) }}</span>
           </td>
-        </ng-container>
-        <ng-container matColumnDef="content">
-          <th mat-header-cell *matHeaderCellDef>الملاحظة</th>
-          <td mat-cell *matCellDef="let r" class="max-w-[320px] truncate" [matTooltip]="r.content">{{ r.content }}</td>
         </ng-container>
         <ng-container matColumnDef="noteDate">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>التاريخ</th>

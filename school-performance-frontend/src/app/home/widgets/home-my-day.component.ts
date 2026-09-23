@@ -29,7 +29,7 @@ const DAY_KEYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDA
         <mat-card class="px-5 py-4">
           <div class="mb-2 flex items-center justify-between">
             <h3 class="m-0 flex items-center gap-1.5 text-base text-primary"><app-ui-icon name="calendar_view_day" class="size-5 text-[20px]"></app-ui-icon> حصصي اليوم</h3>
-            <a mat-button routerLink="/class-schedule">الجدول</a>
+            <a mat-button [routerLink]="scheduleLink">الجدول</a>
           </div>
           @if (loading) {
             <div class="flex flex-col gap-2"><span class="skeleton block h-3.5 w-[70%]"></span><span class="skeleton block h-3.5 w-[70%]"></span></div>
@@ -95,6 +95,7 @@ export class HomeMyDayComponent implements OnInit {
   mine: AttendanceRecord | null = null;
 
   get teacherId(): number | null { return this.auth.user()?.teacherId ?? null; }
+  get scheduleLink(): string { return this.auth.hasPermission('my_classes.view') ? '/my-lessons' : '/class-schedule'; }
   get canSchedule(): boolean { return !!this.teacherId && ['my_classes.view', 'class_schedule.view', 'class_schedule.manage'].some(p => this.auth.hasPermission(p)); }
   get canAttendance(): boolean { return this.auth.hasPermission('teacher_attendance.view') && !this.auth.hasPermission('attendance.view'); }
   get isWeekend(): boolean { const d = new Date().getDay(); return d === 5 || d === 6; }
