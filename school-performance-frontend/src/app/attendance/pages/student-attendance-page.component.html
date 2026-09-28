@@ -14,6 +14,22 @@
   </button>
 </app-page-header>
 
+@if (isWingSupervisor) {
+  <section class="mt-5">
+    <p class="mx-1 mt-0 mb-3 text-[0.85rem] text-muted">اسم الفصل يسجّل الحضور اليومي. طابور الصباح يسجّل المخالفات. الحصة تفتح حضور المعلم لنفس السجل.</p>
+    <app-home-class-schedule
+      mode="school"
+      [assembly]="true"
+      [activeClassId]="activeClassId"
+      [activeKind]="sheetMode"
+      [activePeriod]="activePeriod"
+      [dateControl]="studentFilters.controls.date"
+      (slotOpen)="openSlot($event)">
+    </app-home-class-schedule>
+  </section>
+}
+
+@if (!isWingSupervisor) {
 <mat-card class="my-5 px-5 py-3">
   <div class="student-att-filters">
     <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
@@ -43,25 +59,38 @@
         <app-ui-icon name="restart_alt"></app-ui-icon>
         إعادة ضبط
       </button>
-      <button mat-flat-button color="primary" (click)="loadStudents()">
+      <button mat-flat-button color="primary" (click)="showFromFilters()">
         <app-ui-icon name="search"></app-ui-icon>
         عرض
       </button>
     </div>
   </div>
 </mat-card>
+}
 
-<div class="data-card">
+<div id="student-attendance-sheet" class="data-card">
   @if (loadingStudents) {
     <app-table-skeleton [rows]="6" [columns]="3"></app-table-skeleton>
   } @else if (!studentRecords.length) {
-    <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" description="اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور المتعلمين."></app-empty-state>
+    <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" [description]="isWingSupervisor ? 'اضغط اسم الفصل أو طابور الصباح أو الحصة في الجدول.' : 'اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور المتعلمين.'"></app-empty-state>
   } @else {
+    <div class="border-b border-border px-4 pt-3 pb-2">
+      <h3 class="m-0 text-[0.95rem] font-bold text-text">{{ sheetTitle }}</h3>
+      @if (sheetMode === 'period') {
+        <p class="mt-1 mb-0 text-[0.8rem] text-muted">هذا حضور الحصة الذي يسجله المعلم. الحفظ يحدّث السجل نفسه ولا يغيّر الحضور اليومي.</p>
+      } @else if (sheetMode === 'assembly') {
+        <p class="mt-1 mb-0 text-[0.8rem] text-muted">اختر المخالفة إن وجدت. المتعلم بلا مخالفة لا يحتاج أي إجراء.</p>
+      } @else if (isWingSupervisor) {
+        <p class="mt-1 mb-0 text-[0.8rem] text-muted">حضور اليوم مرة واحدة. غياب الحصة أو التأخر يظهر عند فتح الحصة من الجدول.</p>
+      }
+    </div>
     <div class="list-toolbar">
       <div class="flex flex-wrap gap-1.5">
         <span class="chip neutral">{{ studentRecords.length }} متعلم</span>
-        @for (s of statusOptions; track s) {
-          <span class="chip" [class]="'chip ' + statusChip(s)">{{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
+        @if (sheetMode !== 'assembly') {
+          @for (s of statusOptions; track s) {
+            <span class="chip" [class]="'chip ' + statusChip(s)">{{ statusLabels[s] }}: {{ countByStatus(studentRecords, s) }}</span>
+          }
         }
       </div>
     </div>
@@ -70,10 +99,6 @@
         <ng-container matColumnDef="personName">
           <th mat-header-cell *matHeaderCellDef>اسم المتعلم</th>
           <td mat-cell *matCellDef="let row" class="font-semibold">{{ row.personName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="className">
-          <th mat-header-cell *matHeaderCellDef>الفصل</th>
-          <td mat-cell *matCellDef="let row">{{ row.className || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef class="w-px whitespace-nowrap">الحالة</th>
@@ -99,22 +124,38 @@
             </mat-button-toggle-group>
           </td>
         </ng-container>
+        <ng-container matColumnDef="wingSupervisor">
+          <th mat-header-cell *matHeaderCellDef>مشرف الجناح</th>
+          <td mat-cell *matCellDef="let row">{{ row.wingSupervisorName || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="violations">
+          <th mat-header-cell *matHeaderCellDef>مخالفات الطابور</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex flex-wrap gap-[3px] rounded-2xl bg-[#f3f4f6] p-[3px]" role="group" [attr.aria-label]="'مخالفات ' + row.personName">
+              @for (item of violations; track item.code) {
+                <button
+                  type="button"
+                  class="violation-pill"
+                  [attr.data-tone]="violationTone(row.personId, item.code)"
+                  [attr.title]="item.label"
+                  [attr.aria-pressed]="hasViolation(row.personId, item.code)"
+                  (click)="toggleViolation(row.personId, item.code)">
+                  <app-ui-icon [name]="item.icon" class="size-4 text-[15px]"></app-ui-icon>
+                  {{ item.shortLabel }}
+                </button>
+              }
+            </div>
+          </td>
+        </ng-container>
         <tr mat-header-row *matHeaderRowDef="studentCols"></tr>
         <tr mat-row *matRowDef="let row; columns: studentCols;"></tr>
       </table>
     </div>
     <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
-      <button mat-stroked-button color="primary" type="button" matTooltip="تصدير سجل حضور المتعلمين كملف PDF" (click)="exportStudentsPdf()" [disabled]="exportingStudentsPdf">
-        @if (exportingStudentsPdf) {
-          <mat-spinner diameter="20" class="me-1.5 inline-block"></mat-spinner> جاري التصدير...
-        } @else {
-          <ng-container><app-ui-icon name="picture_as_pdf"></app-ui-icon> تصدير PDF</ng-container>
-        }
-      </button>
       @if (('attendance.manage' | hasPermission) || ('wing_supervisor.view' | hasPermission)) {
         <button mat-flat-button color="primary" (click)="saveStudents()">
           <app-ui-icon name="save"></app-ui-icon>
-          حفظ الحضور
+          {{ saveLabel }}
         </button>
       }
     </div>

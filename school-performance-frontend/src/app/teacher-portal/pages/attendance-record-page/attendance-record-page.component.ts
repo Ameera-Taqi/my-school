@@ -21,6 +21,7 @@ import { switchMap, of } from 'rxjs';
 import { ATTENDANCE_STATUS_LABELS } from '../../../shared/constants/labels';
 import { ClassAttendanceRow } from '../../../core/models';
 import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
+import { currentPeriod, periodRange } from '../../../core/constants/bell-schedule';
 
 type AttendanceRecordStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 
@@ -37,6 +38,8 @@ export class AttendanceRecordPageComponent implements OnInit {
   @Input() lockedClassId: number | null = null;
   @Input() lockedStageName = '';
   @Input() lockedStageId: number | null = null;
+  /** Teaching period for this session. Null lets the teacher choose the period. */
+  @Input() lockedPeriod: number | null = null;
 
   private readonly service = inject(TeacherPortalMockService);
   private readonly attendanceApi = inject(AttendanceApiService);
@@ -47,6 +50,7 @@ export class AttendanceRecordPageComponent implements OnInit {
 
   readonly statusLabels = ATTENDANCE_STATUS_LABELS;
   readonly statusOptions: AttendanceRecordStatus[] = ['PRESENT', 'ABSENT', 'LATE'];
+  readonly periodOptions = [1, 2, 3, 4, 5, 6, 7];
   classNames: string[] = [];
   rows: ClassAttendanceRow[] = [];
   loading = false;
@@ -54,10 +58,23 @@ export class AttendanceRecordPageComponent implements OnInit {
 
   form = this.fb.group({
     date: [new Date()],
-    className: ['']
+    className: [''],
+    period: [currentPeriod() ?? 1]
   });
 
+  get activePeriod(): number {
+    return this.lockedPeriod && this.lockedPeriod > 0 ? this.lockedPeriod : (this.form.controls.period.value ?? 1);
+  }
+
+  get periodSubtitle(): string {
+    const range = periodRange(this.activePeriod);
+    return `حضور الحصة ${this.activePeriod}${range ? ' (' + range + ')' : ''} — مستقل عن الحضور اليومي`;
+  }
+
   ngOnInit(): void {
+    if (this.lockedPeriod && this.lockedPeriod > 0) {
+      this.form.controls.period.setValue(this.lockedPeriod);
+    }
     if (this.embedded && this.lockedClassId) {
       this.form.controls.className.setValue(this.lockedClass);
       this.currentClass = {
@@ -69,6 +86,7 @@ export class AttendanceRecordPageComponent implements OnInit {
       };
       this.load();
       this.form.controls.date.valueChanges.subscribe(() => this.load());
+      this.form.controls.period.valueChanges.subscribe(() => this.load());
       return;
     }
     this.service.getClassNames().subscribe(names => {
@@ -80,6 +98,7 @@ export class AttendanceRecordPageComponent implements OnInit {
     });
     this.form.controls.className.valueChanges.subscribe(() => this.load());
     this.form.controls.date.valueChanges.subscribe(() => this.load());
+    this.form.controls.period.valueChanges.subscribe(() => this.load());
   }
 
   resetFilters(): void {
@@ -99,7 +118,7 @@ export class AttendanceRecordPageComponent implements OnInit {
     if (!date || (!className && !this.lockedClassId)) return;
     if (this.lockedClassId) {
       this.loading = true;
-      this.attendanceApi.getStudentAttendance(this.lockedStageId ?? 0, this.lockedClassId, this.isoDate(date)).subscribe({
+      this.attendanceApi.getStudentAttendance(this.lockedStageId ?? 0, this.lockedClassId, this.isoDate(date), this.activePeriod).subscribe({
         next: (data) => {
           this.rows = data.map(r => ({ id: r.personId, studentName: r.personName, status: this.normalizeStatus(r.status) }));
           this.loading = false;
@@ -113,7 +132,7 @@ export class AttendanceRecordPageComponent implements OnInit {
       switchMap(schoolClass => {
         this.currentClass = schoolClass ?? null;
         if (!schoolClass?.id) return of([] as AttendanceRecord[]);
-        return this.attendanceApi.getStudentAttendance(schoolClass.academicStageId ?? 0, schoolClass.id, this.isoDate(date));
+        return this.attendanceApi.getStudentAttendance(schoolClass.academicStageId ?? 0, schoolClass.id, this.isoDate(date), this.activePeriod);
       })
     ).subscribe({
       next: (data) => {
@@ -148,6 +167,7 @@ export class AttendanceRecordPageComponent implements OnInit {
       stageName: this.currentClass?.academicStageName,
       className: this.currentClass?.name,
       date: this.isoDate(date),
+      period: this.activePeriod,
       status: r.status
     }));
     this.attendanceApi.saveStudentAttendance(records).subscribe({

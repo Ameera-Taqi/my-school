@@ -30,4 +30,18 @@ public class AuthController : ControllerBase
         var user = await _currentUser.RequireUserAsync();
         return Ok(await _authService.BuildLoginResponseAsync(user, null));
     }
+
+    [HttpGet("profile")]
+    public async Task<ActionResult<ProfileDto>> Profile()
+    {
+        var user = await _currentUser.RequireUserAsync();
+        return Ok(await _authService.GetProfileAsync(user));
+    }
+
+    [HttpPut("profile")]
+    public async Task<ActionResult<ProfileDto>> UpdateProfile([FromBody] UpdateProfileRequest request)
+    {
+        var user = await _currentUser.RequireUserAsync();
+        return Ok(await _authService.UpdateProfileAsync(user, request));
+    }
 }

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -6,11 +7,14 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { SearchFieldComponent } from '../../../shared/components/search-field/search-field.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { TableSkeletonComponent } from '../../../shared/components/table-skeleton/table-skeleton.component';
-import { AppDatePipe } from '../../../shared/pipes/app-date.pipe';
 import { ToastService } from '../../../shared/services/toast.service';
 import { ConfirmService } from '../../../shared/services/confirm.service';
 import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
@@ -18,28 +22,40 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ClassScheduleEntry, LessonPrep } from '../../../core/models';
 import { ScheduleApiService } from '../../../class-schedule/services/schedule-api.service';
 import { LessonPrepMockService } from '../../services/lesson-prep-mock.service';
-import { LessonPrepFormDialogComponent, LessonPrepStageOption } from '../../dialogs/lesson-prep-form-dialog.component';
+import { LessonPrepFormDialogComponent } from '../../dialogs/lesson-prep-form-dialog.component';
 
 interface StageCard {
   name: string;
-  count: number;
+  countLabel: string;
+}
+
+interface LessonSlot {
+  lessonNumber: number;
+  title: string;
+  subject: string;
+  fileName: string;
+  prep?: LessonPrep;
 }
 
 @Component({
   selector: 'app-lesson-prep-page',
   standalone: true,
   imports: [
+    FormsModule,
     UiIconComponent,
     MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
     MatPaginatorModule,
     MatSortModule,
     MatButtonModule,
+    MatTooltipModule,
     MatDialogModule,
     PageHeaderComponent,
     SearchFieldComponent,
     EmptyStateComponent,
-    TableSkeletonComponent,
-    AppDatePipe
+    TableSkeletonComponent
   ],
   templateUrl: './lesson-prep-page.component.html',
   styles: `
@@ -70,6 +86,10 @@ interface StageCard {
     }
     .stage-card__name { font-size: 1.05rem; font-weight: 800; }
     .stage-card__count { font-size: 0.85rem; font-weight: 700; color: var(--color-muted); }
+    .icon-view:not(:disabled) { color: #2563eb; --mdc-icon-button-icon-color: #2563eb; }
+    .icon-upload:not(:disabled) { color: var(--color-success); --mdc-icon-button-icon-color: var(--color-success); }
+    .icon-edit:not(:disabled) { color: var(--color-warning); --mdc-icon-button-icon-color: var(--color-warning); }
+    .icon-delete:not(:disabled) { color: var(--color-danger); --mdc-icon-button-icon-color: var(--color-danger); }
   `
 })
 export class LessonPrepPageComponent implements OnInit, AfterViewInit {
@@ -91,12 +111,15 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
   }
   sort?: MatSort;
 
-  readonly dataSource = new MatTableDataSource<LessonPrep>([]);
-  cols = ['lessonDate', 'title', 'subject', 'actions'];
+  readonly dataSource = new MatTableDataSource<LessonSlot>([]);
+  cols = ['lesson', 'subject', 'file', 'actions'];
   loading = true;
   query = '';
   stages: StageCard[] = [];
+  stageSubjects: string[] = [];
   selectedStage = '';
+  selectedSubject = '';
+  plannedCount = 24;
   private entries: ClassScheduleEntry[] = [];
   private preps: LessonPrep[] = [];
 
@@ -113,8 +136,8 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.dataSource.filterPredicate = (prep, filter) =>
-      [prep.title, prep.className, prep.subject, prep.fileName ?? '', prep.lessonDate]
+    this.dataSource.filterPredicate = (row, filter) =>
+      [String(row.lessonNumber), row.title, row.subject, row.fileName]
         .join(' ')
         .toLowerCase()
         .includes(filter);
@@ -130,6 +153,19 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
 
   selectStage(name: string): void {
     this.selectedStage = name;
+    this.syncSubject();
+    this.applyStage();
+  }
+
+  onSubjectChange(): void {
+    this.plannedCount = this.service.plannedCount(this.selectedSubject, this.selectedStage);
+    this.applyStage();
+  }
+
+  saveCount(): void {
+    if (!this.selectedSubject || !this.selectedStage) return;
+    this.plannedCount = this.service.setPlannedCount(this.selectedSubject, this.selectedStage, this.plannedCount);
+    this.stages = this.buildStages(this.entries, this.preps);
     this.applyStage();
   }
 
@@ -139,19 +175,26 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
     this.paginator?.firstPage();
   }
 
-  openDialog(): void {
-    if (!this.selectedStage) return;
+  openUpload(row: LessonSlot): void {
+    if (!this.selectedStage || !this.selectedSubject) return;
     const ref = this.dialog.open(LessonPrepFormDialogComponent, {
       width: '640px',
       maxWidth: '95vw',
-      data: { stageName: this.selectedStage, stages: this.stageOptions() }
+      data: {
+        stageName: this.selectedStage,
+        lockedSubject: this.selectedSubject,
+        lessonNumber: row.lessonNumber,
+        stages: [{ stageName: this.selectedStage, subject: this.selectedSubject }],
+        initialTitle: row.prep?.title || `الدرس ${row.lessonNumber}`,
+        initialDescription: row.prep?.description,
+        existingFileName: row.prep?.fileName
+      }
     });
     ref.afterClosed().subscribe((result: Omit<LessonPrep, 'id' | 'teacherName'> | undefined) => {
       if (!result) return;
       this.service.create({ ...result, teacherName: this.auth.fullName() }).subscribe({
-        next: created => {
-          this.toast.success('تم رفع التحضير');
-          this.selectedStage = created.stageName;
+        next: () => {
+          this.toast.success(row.prep ? 'تم تحديث التحضير' : 'تم رفع التحضير');
           this.load();
         },
         error: error => this.toast.fromError(error)
@@ -159,12 +202,13 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
     });
   }
 
-  download(prep: LessonPrep): void {
-    this.service.download(prep);
+  download(prep: LessonPrep | undefined): void {
+    if (prep) this.service.download(prep);
   }
 
-  remove(prep: LessonPrep): void {
-    if (!prep.id) return;
+  remove(row: LessonSlot): void {
+    const prep = row.prep;
+    if (!prep?.id) return;
     this.confirm.deleteConfirmed(prep.title, 'التحضير').subscribe(() => {
       this.service.delete(prep.id!).subscribe({
         next: () => {
@@ -192,6 +236,7 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
         if (!this.stages.some(stage => stage.name === this.selectedStage)) {
           this.selectedStage = this.stages[0]?.name ?? '';
         }
+        this.syncSubject();
         this.applyStage();
         this.loading = false;
         setTimeout(() => this.attachTableControls());
@@ -218,31 +263,60 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
       seen.add(prep.stageName);
       order.push(prep.stageName);
     }
-    return order.map(name => ({
-      name,
-      count: preps.filter(prep => prep.stageName === name).length
-    }));
+    return order.map(name => ({ name, countLabel: this.stageCountLabel(name, preps) }));
   }
 
-  private stageOptions(): LessonPrepStageOption[] {
-    const options: LessonPrepStageOption[] = [];
-    for (const stage of this.stages) {
-      const subjects = [...new Set(
-        this.entries
-          .filter(entry => entry.stageName === stage.name && entry.subject)
-          .map(entry => entry.subject as string)
-      )];
-      if (!subjects.length) {
-        options.push({ stageName: stage.name, subject: '' });
-        continue;
-      }
-      for (const subject of subjects) options.push({ stageName: stage.name, subject });
+  private subjectsFor(stageName: string): string[] {
+    const fromSchedule = this.entries
+      .filter(entry => entry.stageName === stageName && entry.subject)
+      .map(entry => entry.subject as string);
+    const fromPreps = this.preps
+      .filter(prep => prep.stageName === stageName && prep.subject)
+      .map(prep => prep.subject);
+    return [...new Set([...fromSchedule, ...fromPreps])];
+  }
+
+  private syncSubject(): void {
+    this.stageSubjects = this.subjectsFor(this.selectedStage);
+    if (!this.stageSubjects.includes(this.selectedSubject)) {
+      this.selectedSubject = this.stageSubjects[0] ?? '';
     }
-    return options;
+    this.plannedCount = this.selectedSubject
+      ? this.service.plannedCount(this.selectedSubject, this.selectedStage)
+      : 1;
+  }
+
+  private stageCountLabel(stageName: string, preps: LessonPrep[]): string {
+    const subjects = this.subjectsFor(stageName);
+    const uploaded = preps.filter(prep => prep.stageName === stageName && prep.lessonNumber && prep.fileName).length;
+    if (subjects.length === 1) {
+      const planned = this.service.plannedCount(subjects[0], stageName);
+      return `${uploaded} من ${planned}`;
+    }
+    return `${uploaded} تحضير`;
   }
 
   private applyStage(): void {
-    this.dataSource.data = this.preps.filter(prep => prep.stageName === this.selectedStage);
+    if (!this.selectedStage || !this.selectedSubject) {
+      this.dataSource.data = [];
+      return;
+    }
+    const matching = this.preps.filter(prep =>
+      prep.stageName === this.selectedStage
+      && prep.subject === this.selectedSubject
+      && prep.lessonNumber);
+    const rows: LessonSlot[] = [];
+    for (let lessonNumber = 1; lessonNumber <= this.plannedCount; lessonNumber++) {
+      const prep = matching.find(item => item.lessonNumber === lessonNumber);
+      rows.push({
+        lessonNumber,
+        title: prep?.title || `الدرس ${lessonNumber}`,
+        subject: this.selectedSubject,
+        fileName: prep?.fileName || '',
+        prep
+      });
+    }
+    this.dataSource.data = rows;
     this.dataSource.filter = this.query.toLowerCase();
     this.paginator?.firstPage();
   }

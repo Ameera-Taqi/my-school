@@ -41,6 +41,25 @@ export interface User {
   permissions?: string[];
 }
 
+export interface UserProfile {
+  userId: number;
+  username: string;
+  fullName: string;
+  email?: string | null;
+  phone?: string | null;
+  roles: string[];
+  roleNames?: string[];
+  departmentName?: string | null;
+}
+
+export interface UpdateProfileRequest {
+  fullName: string;
+  email?: string | null;
+  phone?: string | null;
+  currentPassword?: string | null;
+  newPassword?: string | null;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;

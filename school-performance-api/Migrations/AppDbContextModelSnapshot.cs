@@ -79,6 +79,9 @@ namespace SchoolPerformance.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("Period")
+                        .HasColumnType("int");
+
                     b.Property<long?>("RecordedById")
                         .HasColumnType("bigint");
 
@@ -93,14 +96,19 @@ namespace SchoolPerformance.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("WingEditedById")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AttendanceDate");
 
                     b.HasIndex("RecordedById");
 
-                    b.HasIndex("StudentId", "AttendanceDate")
+                    b.HasIndex("StudentId", "AttendanceDate", "Period")
                         .IsUnique();
+
+                    b.HasIndex("WingEditedById");
 
                     b.ToTable("Attendance", (string)null);
                 });
@@ -1004,6 +1012,11 @@ namespace SchoolPerformance.Api.Migrations
                         .HasForeignKey("RecordedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "WingEditedBy")
+                        .WithMany()
+                        .HasForeignKey("WingEditedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("SchoolPerformance.Api.Entities.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
@@ -1013,6 +1026,8 @@ namespace SchoolPerformance.Api.Migrations
                     b.Navigation("RecordedBy");
 
                     b.Navigation("Student");
+
+                    b.Navigation("WingEditedBy");
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.CalendarEvent", b =>

@@ -85,4 +85,77 @@ public class AuthService
         }
         return response;
     }
+
+    public async Task<ProfileDto> GetProfileAsync(User user)
+    {
+        var login = await BuildLoginResponseAsync(user, null);
+        var teacher = await _db.Teachers.FirstOrDefaultAsync(t => t.UserId == user.Id);
+        return new ProfileDto
+        {
+            UserId = user.Id,
+            Username = user.Username,
+            FullName = user.FullName,
+            Email = string.IsNullOrWhiteSpace(user.Email) ? teacher?.Email : user.Email,
+            Phone = string.IsNullOrWhiteSpace(user.Phone) ? teacher?.Phone : user.Phone,
+            Roles = login.Roles.ToList(),
+            RoleNames = login.RoleNames,
+            DepartmentName = login.DepartmentName
+        };
+    }
+
+    public async Task<ProfileDto> UpdateProfileAsync(User user, UpdateProfileRequest request)
+    {
+        var fullName = request.FullName.Trim();
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            throw new AppException("الاسم مطلوب");
+        }
+
+        var email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim();
+        if (email != null && !email.Contains('@'))
+        {
+            throw new AppException("البريد الإلكتروني غير صحيح");
+        }
+        if (email != null && await _db.Users.AnyAsync(u => u.Id != user.Id && u.Email == email))
+        {
+            throw new AppException("البريد الإلكتروني مستخدم لحساب آخر");
+        }
+
+        var newPassword = request.NewPassword?.Trim();
+        if (!string.IsNullOrEmpty(newPassword))
+        {
+            if (newPassword.Length < 6)
+            {
+                throw new AppException("كلمة المرور الجديدة يجب ألا تقل عن 6 أحرف");
+            }
+            if (string.IsNullOrEmpty(request.CurrentPassword) || !BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+            {
+                throw new AppException("كلمة المرور الحالية غير صحيحة");
+            }
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        }
+
+        var previousName = user.FullName;
+        user.FullName = fullName;
+        user.Email = email;
+        user.Phone = string.IsNullOrWhiteSpace(request.Phone) ? null : request.Phone.Trim();
+
+        var teacher = await _db.Teachers.FirstOrDefaultAsync(t => t.UserId == user.Id);
+        if (teacher != null)
+        {
+            if (teacher.FullName == previousName)
+            {
+                teacher.FullName = user.FullName;
+            }
+            else if (teacher.FullName == "أ. " + previousName)
+            {
+                teacher.FullName = "أ. " + user.FullName;
+            }
+            teacher.Email = user.Email;
+            teacher.Phone = user.Phone;
+        }
+
+        await _db.SaveChangesAsync();
+        return await GetProfileAsync(user);
+    }
 }

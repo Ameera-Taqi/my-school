@@ -11,6 +11,7 @@ import { ScheduleApiService } from '../../class-schedule/services/schedule-api.s
 import { AttendanceRecord, ClassScheduleEntry } from '../../core/models';
 import { ATTENDANCE_STATUS_LABELS } from '../../shared/constants/labels';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
+import { periodRange } from '../../core/constants/bell-schedule';
 
 const DAY_KEYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 
@@ -44,7 +45,7 @@ const DAY_KEYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDA
                   <span class="inline-flex size-[26px] shrink-0 items-center justify-center rounded-full text-[0.8rem] font-bold text-white" [style.background]="l.subjectColor || '#5c6bc0'">{{ l.period }}</span>
                   <span class="flex flex-col leading-tight">
                     <strong class="text-[0.9rem]">{{ l.subject }}</strong>
-                    <small class="text-xs text-muted">فصل {{ l.className }}@if (l.room) { · {{ l.room }} }</small>
+                    <small class="text-xs text-muted">فصل {{ l.className }}@if (l.room) { · {{ l.room }} } · <span dir="ltr">{{ range(l.period) }}</span></small>
                   </span>
                 </li>
               }
@@ -96,7 +97,10 @@ export class HomeMyDayComponent implements OnInit {
 
   get teacherId(): number | null { return this.auth.user()?.teacherId ?? null; }
   get scheduleLink(): string { return this.auth.hasPermission('my_classes.view') ? '/my-lessons' : '/class-schedule'; }
-  get canSchedule(): boolean { return !!this.teacherId && ['my_classes.view', 'class_schedule.view', 'class_schedule.manage'].some(p => this.auth.hasPermission(p)); }
+  get canSchedule(): boolean {
+    if (this.auth.hasAnyRole(['SCHOOL_MANAGER', 'ASSISTANT_MANAGER'])) return false;
+    return !!this.teacherId && ['my_classes.view', 'class_schedule.view', 'class_schedule.manage'].some(p => this.auth.hasPermission(p));
+  }
   get canAttendance(): boolean { return this.auth.hasPermission('teacher_attendance.view') && !this.auth.hasPermission('attendance.view'); }
   get isWeekend(): boolean { const d = new Date().getDay(); return d === 5 || d === 6; }
 
@@ -117,6 +121,7 @@ export class HomeMyDayComponent implements OnInit {
     });
   }
 
+  range(period: number): string { return periodRange(period); }
   count(status: string): number { return this.records.filter(r => r.status === status).length; }
   chip(status: string): string { return status === 'PRESENT' ? 'success' : status === 'LATE' ? 'warning' : status === 'ABSENT' ? 'danger' : status === 'NOT_RECORDED' ? 'neutral' : 'info'; }
 }

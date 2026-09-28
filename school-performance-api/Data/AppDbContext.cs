@@ -207,10 +207,11 @@ public class AppDbContext : DbContext
             e.ToTable("Attendance");
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
             e.Property(x => x.Notes).HasMaxLength(500);
-            e.HasIndex(x => new { x.StudentId, x.AttendanceDate }).IsUnique();
+            e.HasIndex(x => new { x.StudentId, x.AttendanceDate, x.Period }).IsUnique();
             e.HasIndex(x => x.AttendanceDate);
             e.HasOne(x => x.Student).WithMany().HasForeignKey(x => x.StudentId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(x => x.RecordedBy).WithMany().HasForeignKey(x => x.RecordedById).OnDelete(DeleteBehavior.NoAction);
+            e.HasOne(x => x.WingEditedBy).WithMany().HasForeignKey(x => x.WingEditedById).OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<TeacherAttendance>(e =>

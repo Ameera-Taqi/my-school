@@ -21,10 +21,10 @@ public class AttendanceController : ControllerBase
 
     [HttpGet("students")]
     [RequirePermission(Perms.AttendanceView, Perms.AttendanceManage, Perms.AttendanceRecordView, Perms.MyClassesView, Perms.WingSupervisorView)]
-    public async Task<ActionResult<List<AttendanceRecordDto>>> Students([FromQuery] long classId, [FromQuery] string date)
+    public async Task<ActionResult<List<AttendanceRecordDto>>> Students([FromQuery] long classId, [FromQuery] string date, [FromQuery] int period = 0)
     {
         if (classId <= 0 || string.IsNullOrWhiteSpace(date)) throw new AppException("الفصل والتاريخ مطلوبان");
-        return Ok(await _service.GetStudentAttendanceAsync(classId, date));
+        return Ok(await _service.GetStudentAttendanceAsync(classId, date, period));
     }
 
     [HttpPut("students")]

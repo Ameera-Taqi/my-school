@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { LessonPrep } from '../../core/models';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
 
@@ -21,16 +20,26 @@ export interface LessonPrepStageOption {
 export interface LessonPrepDialogData {
   stageName: string;
   stages: LessonPrepStageOption[];
+  /** Set when the upload belongs to a numbered course lesson. */
+  lessonNumber?: number;
+  lockedSubject?: string;
+  /** Prefills an existing lesson so update keeps its title and file. */
+  initialTitle?: string;
+  initialDescription?: string;
+  existingFileName?: string;
 }
 
 @Component({
   selector: 'app-lesson-prep-form-dialog',
   standalone: true,
-  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule, MatDatepickerModule],
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDialogModule],
   template: `
-    <h2 mat-dialog-title>رفع تحضير يومي</h2>
+    <h2 mat-dialog-title>{{ data.existingFileName ? 'تحديث التحضير' : 'رفع تحضير يومي' }}</h2>
     <mat-dialog-content class="max-h-[70vh]">
       <form [formGroup]="form" class="flex min-w-0 flex-col gap-[0.35rem] pt-2" (ngSubmit)="save()">
+        @if (data.lessonNumber) {
+          <p class="m-0 mb-2 text-[0.9rem] font-semibold text-primary">التحضير {{ data.lessonNumber }} — {{ data.lockedSubject }} — {{ data.stageName }}</p>
+        }
         <div
           class="mb-3 flex flex-col gap-3 rounded-sp-sm border border-dashed border-[#c5cae9] bg-primary-bg p-4"
           [ngClass]="fileError ? 'border-danger bg-danger-bg' : ''">
@@ -50,6 +59,8 @@ export interface LessonPrepDialogData {
                 <app-ui-icon name="close"></app-ui-icon>
               </button>
             </div>
+          } @else if (data.existingFileName) {
+            <p class="m-0 text-[0.85rem] text-muted">الملف الحالي: <span dir="ltr">{{ data.existingFileName }}</span>. اختر ملفاً آخر لاستبداله.</p>
           } @else {
             <p class="m-0 text-[0.85rem] text-muted">الصيغ المدعومة: PDF, PPTX, DOCX — بحد أقصى 50 ميجابايت</p>
           }
@@ -63,24 +74,18 @@ export interface LessonPrepDialogData {
           <input matInput formControlName="title" cdkFocusInitial autocomplete="off">
           <mat-error>عنوان التحضير مطلوب</mat-error>
         </mat-form-field>
-        <div class="grid grid-cols-2 gap-x-3 max-[599px]:grid-cols-1">
-          <mat-form-field appearance="outline">
-            <mat-label>تاريخ الحصة</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="lessonDate">
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            <mat-error>التاريخ مطلوب</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>المرحلة</mat-label>
-            <mat-select formControlName="stageName" (selectionChange)="onStageChange($event.value)">
-              @for (stage of stageNames; track stage) {
-                <mat-option [value]="stage">{{ stage }}</mat-option>
-              }
-            </mat-select>
-            <mat-error>المرحلة مطلوبة</mat-error>
-          </mat-form-field>
-        </div>
+        @if (!data.lessonNumber) {
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>المرحلة</mat-label>
+          <mat-select formControlName="stageName" (selectionChange)="onStageChange($event.value)">
+            @for (stage of stageNames; track stage) {
+              <mat-option [value]="stage">{{ stage }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>المرحلة مطلوبة</mat-error>
+        </mat-form-field>
+        }
+        @if (!data.lessonNumber) {
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>المادة</mat-label>
           <mat-select formControlName="subject">
@@ -90,6 +95,7 @@ export interface LessonPrepDialogData {
           </mat-select>
           <mat-error>المادة مطلوبة</mat-error>
         </mat-form-field>
+        }
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>ملاحظات التحضير</mat-label>
           <textarea matInput formControlName="description" rows="2"></textarea>
@@ -120,11 +126,10 @@ export class LessonPrepFormDialogComponent {
   readonly stageNames = [...new Set(this.data.stages.map(stage => stage.stageName))];
 
   form = this.fb.nonNullable.group({
-    title: ['', Validators.required],
-    lessonDate: [new Date(), Validators.required],
+    title: [this.data.initialTitle ?? '', Validators.required],
     stageName: [this.initialStage(), Validators.required],
-    subject: [this.subjectFor(this.initialStage()), Validators.required],
-    description: ['']
+    subject: [this.data.lockedSubject || this.subjectFor(this.initialStage()), Validators.required],
+    description: [this.data.initialDescription ?? '']
   });
 
   get subjects(): string[] {
@@ -180,24 +185,24 @@ export class LessonPrepFormDialogComponent {
 
   save(): void {
     if (this.uploading) return;
-    if (!this.selectedFile) this.fileError = 'يرجى اختيار ملف التحضير أولاً.';
-    if (this.form.invalid || !this.selectedFile) {
+    const fileName = this.selectedFile?.name || this.data.existingFileName;
+    this.fileError = fileName ? '' : 'يرجى اختيار ملف التحضير أولاً.';
+    if (this.form.invalid || !fileName) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.uploading = true;
     const value = this.form.getRawValue();
-    const date = value.lessonDate;
-    const lessonDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     setTimeout(() => {
       this.dialogRef.close({
-        stageName: value.stageName,
+        stageName: this.data.lessonNumber ? this.data.stageName : value.stageName,
         className: '',
-        subject: value.subject,
+        subject: this.data.lockedSubject || value.subject,
+        lessonNumber: this.data.lessonNumber,
         title: value.title.trim(),
-        lessonDate,
-        fileName: this.selectedFile!.name,
+        lessonDate: '',
+        fileName,
         description: value.description.trim()
       });
     }, 300);

@@ -58,6 +58,7 @@ export class HomePageComponent implements OnInit {
   }
   get showLists(): boolean { return ['meetings.view', 'tasks.view', 'alerts.view'].some(p => this.auth.hasPermission(p)); }
   get showMyDay(): boolean {
+    if (this.auth.hasAnyRole(['SCHOOL_MANAGER', 'ASSISTANT_MANAGER'])) return false;
     const u = this.auth.user();
     return !!u?.teacherId && ['my_classes.view', 'class_schedule.view', 'teacher_attendance.view'].some(p => this.auth.hasPermission(p));
   }

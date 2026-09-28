@@ -112,22 +112,33 @@ public class AttendanceService
         }).ToList();
     }
 
-    /// <summary>Every student in the class with the saved status for the day, or PRESENT by default.</summary>
-    public async Task<List<AttendanceRecordDto>> GetStudentAttendanceAsync(long classId, string dateValue)
+    /// <summary>
+    /// Every student in the class with the saved status for one slot, or PRESENT by default.
+    /// Period 0 is the daily record. Periods 1–7 are teaching periods and do not replace the daily record.
+    /// The daily read also returns teacher absences and lateness for the same day.
+    /// </summary>
+    public async Task<List<AttendanceRecordDto>> GetStudentAttendanceAsync(long classId, string dateValue, int period = 0)
     {
         var date = ParseDate(dateValue);
+        period = NormalizePeriod(period);
         var schoolClass = await _db.SchoolClasses.Include(c => c.AcademicStage).FirstOrDefaultAsync(c => c.Id == classId)
             ?? throw new NotFoundException("الفصل غير موجود");
 
         var students = await _db.Students.Where(s => s.SchoolClassId == classId).OrderBy(s => s.FullName).ToListAsync();
         var studentIds = students.Select(s => s.Id).ToList();
-        var saved = await _db.Attendances
-            .Where(a => a.AttendanceDate == date && studentIds.Contains(a.StudentId))
-            .ToDictionaryAsync(a => a.StudentId);
+        var savedQuery = _db.Attendances
+            .Where(a => a.AttendanceDate == date && a.Period == period && studentIds.Contains(a.StudentId));
+        if (period >= 1) savedQuery = savedQuery.Include(a => a.WingEditedBy);
+        var saved = await savedQuery.ToDictionaryAsync(a => a.StudentId);
+
+        var periodMarks = period == 0
+            ? await PeriodMarksAsync(classId, date, studentIds)
+            : new Dictionary<long, List<PeriodAttendanceMarkDto>>();
 
         return students.Select(s =>
         {
             saved.TryGetValue(s.Id, out var record);
+            periodMarks.TryGetValue(s.Id, out var marks);
             return new AttendanceRecordDto
             {
                 Id = record?.Id,
@@ -137,36 +148,80 @@ public class AttendanceService
                 StageName = schoolClass.AcademicStage.Name,
                 ClassName = schoolClass.Name,
                 Date = dateValue[..10],
+                Period = period,
                 Status = (record?.Status ?? AttendanceStatus.PRESENT).ToString(),
-                Notes = record?.Notes
+                PeriodMarks = marks ?? new List<PeriodAttendanceMarkDto>(),
+                Notes = record?.Notes,
+                WingSupervisorName = record?.WingEditedBy?.FullName
             };
         }).ToList();
+    }
+
+    /// <summary>Absent or late marks teachers recorded in periods 1–7, with the subject of that slot.</summary>
+    private async Task<Dictionary<long, List<PeriodAttendanceMarkDto>>> PeriodMarksAsync(long classId, DateOnly date, List<long> studentIds)
+    {
+        var rows = await _db.Attendances
+            .Where(a => a.AttendanceDate == date && studentIds.Contains(a.StudentId) && a.Period >= 1 && a.Period <= 7
+                && (a.Status == AttendanceStatus.ABSENT || a.Status == AttendanceStatus.LATE))
+            .ToListAsync();
+        if (rows.Count == 0) return new Dictionary<long, List<PeriodAttendanceMarkDto>>();
+
+        var day = (int)date.DayOfWeek;
+        var subjects = await _db.ScheduleEntries
+            .Where(e => e.SchoolClassId == classId && e.Day == day)
+            .Include(e => e.Subject)
+            .ToDictionaryAsync(e => e.Period, e => e.Subject.Name);
+
+        return rows.GroupBy(a => a.StudentId).ToDictionary(
+            g => g.Key,
+            g => g.OrderBy(a => a.Period).Select(a => new PeriodAttendanceMarkDto
+            {
+                Period = a.Period,
+                Status = a.Status.ToString(),
+                Subject = subjects.GetValueOrDefault(a.Period)
+            }).ToList());
     }
 
 
     public async Task SaveStudentAttendanceAsync(User user, List<AttendanceRecordDto> records)
     {
         if (records.Count == 0) return;
-        var byDate = records.GroupBy(r => ParseDate(r.Date));
-        foreach (var group in byDate)
+        var isWingSupervisor = user.Roles.Any(r => r.RoleKey == "WING_SUPERVISOR");
+        var parsed = records.Select(r => (Record: r, Date: ParseDate(r.Date), Period: NormalizePeriod(r.Period))).ToList();
+        foreach (var group in parsed.GroupBy(x => (x.Date, x.Period)))
         {
-            var ids = group.Select(r => r.PersonId).Distinct().ToList();
-            var existing = await _db.Attendances.Where(a => a.AttendanceDate == group.Key && ids.Contains(a.StudentId)).ToDictionaryAsync(a => a.StudentId);
+            var ids = group.Select(x => x.Record.PersonId).Distinct().ToList();
+            var existing = await _db.Attendances
+                .Where(a => a.AttendanceDate == group.Key.Date && a.Period == group.Key.Period && ids.Contains(a.StudentId))
+                .ToDictionaryAsync(a => a.StudentId);
             var validIds = (await _db.Students.Where(s => ids.Contains(s.Id)).Select(s => s.Id).ToListAsync()).ToHashSet();
 
-            foreach (var r in group)
+            foreach (var item in group)
             {
+                var r = item.Record;
                 if (!validIds.Contains(r.PersonId)) continue;
                 var status = ParseStatus(r.Status);
                 if (existing.TryGetValue(r.PersonId, out var row))
                 {
+                    var changed = row.Status != status;
                     row.Status = status;
                     row.Notes = r.Notes;
                     row.RecordedById = user.Id;
+                    if (isWingSupervisor && group.Key.Period >= 1 && changed)
+                        row.WingEditedById = user.Id;
                 }
                 else
                 {
-                    _db.Attendances.Add(new Attendance { StudentId = r.PersonId, AttendanceDate = group.Key, Status = status, Notes = r.Notes, RecordedById = user.Id });
+                    _db.Attendances.Add(new Attendance
+                    {
+                        StudentId = r.PersonId,
+                        AttendanceDate = group.Key.Date,
+                        Period = group.Key.Period,
+                        Status = status,
+                        Notes = r.Notes,
+                        RecordedById = user.Id,
+                        WingEditedById = isWingSupervisor && group.Key.Period >= 1 && status != AttendanceStatus.PRESENT ? user.Id : null
+                    });
                 }
             }
         }
@@ -226,7 +281,7 @@ public class AttendanceService
     {
         var date = string.IsNullOrWhiteSpace(dateValue) ? DateOnly.FromDateTime(DateTime.Today) : ParseDate(dateValue);
         var total = await _db.Students.CountAsync(s => s.Status == StudentStatus.ACTIVE);
-        var rows = await _db.Attendances.Where(a => a.AttendanceDate == date).GroupBy(a => a.Status)
+        var rows = await _db.Attendances.Where(a => a.AttendanceDate == date && a.Period == 0).GroupBy(a => a.Status)
             .Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
         int Count(AttendanceStatus s) => rows.FirstOrDefault(r => r.Status == s)?.Count ?? 0;
 
@@ -289,4 +344,8 @@ public class AttendanceService
 
     private static AttendanceStatus ParseStatus(string value) =>
         Enum.TryParse<AttendanceStatus>(value, true, out var status) ? status : throw new AppException("حالة الحضور غير صحيحة");
+
+    /// <summary>0 is the daily record. 1–7 are teaching periods.</summary>
+    private static int NormalizePeriod(int period) =>
+        period is >= 0 and <= 7 ? period : throw new AppException("رقم الحصة غير صحيح");
 }

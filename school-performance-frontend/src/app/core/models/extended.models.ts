@@ -18,6 +18,12 @@ export interface AttendanceRecord {
   className?: string;
   date: string;
   status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED' | 'NOT_RECORDED';
+  /** 0 = daily attendance. 1–7 = a teaching period. */
+  period?: number;
+  /** Teacher absences and lateness on the same day. Present on the daily read. */
+  periodMarks?: { period: number; status: string; subject?: string | null }[];
+  /** Wing supervisor who last changed this period's status. */
+  wingSupervisorName?: string | null;
   notes?: string | null;
   /** "HH:mm", teachers only */
   checkInTime?: string | null;
@@ -37,6 +43,9 @@ export interface BehaviorNote {
   description: string;
   noteDate: string;
   recordedBy: string;
+  /** Stable key for a morning-assembly violation, when source is ASSEMBLY. */
+  code?: string;
+  source?: 'ASSEMBLY';
 }
 
 export interface InternalRequest {
@@ -90,6 +99,8 @@ export interface LessonPrep {
   stageName: string;
   className: string;
   subject: string;
+  /** Position in the subject course, shared by every section of that stage. */
+  lessonNumber?: number;
   title: string;
   lessonDate: string;
   fileName?: string;
@@ -179,6 +190,8 @@ export interface TeacherAssignment {
   title: string;
   className: string;
   subject: string;
+  /** Stage this assignment belongs to. Older rows are matched by class name. */
+  stageName?: string;
   dueDate: string;
   status: 'OPEN' | 'CLOSED';
   description?: string;

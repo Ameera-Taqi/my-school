@@ -1,11 +1,4 @@
-<app-page-header title="تحضيري" subtitle="تحضيرات الدروس اليومية الخاصة بك">
-  @if (!loading && selectedStage) {
-    <button mat-flat-button color="primary" (click)="openDialog()">
-      <app-ui-icon name="upload"></app-ui-icon>
-      رفع تحضير
-    </button>
-  }
-</app-page-header>
+<app-page-header title="تحضيري" subtitle="تحضيرات الدروس اليومية الخاصة بك"></app-page-header>
 
 @if (!loading && stages.length) {
   <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -17,7 +10,7 @@
         [attr.aria-pressed]="selectedStage === stage.name"
         (click)="selectStage(stage.name)">
         <span class="stage-card__name">{{ stage.name }}</span>
-        <span class="stage-card__count">{{ stage.count }} تحضير</span>
+        <span class="stage-card__count">{{ stage.countLabel }}</span>
       </button>
     }
   </div>
@@ -25,65 +18,73 @@
 
 <div class="data-card">
   <div class="list-toolbar">
-    <app-search-field placeholder="ابحث بالعنوان أو المادة" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
-    @if (!loading && selectedStage) {
+    <app-search-field placeholder="ابحث برقم الدرس أو العنوان أو الملف" (search)="onSearch($event)" class="min-w-0 flex-1 max-w-[440px]"></app-search-field>
+    @if (!loading && selectedSubject) {
+      @if (stageSubjects.length > 1) {
+        <mat-form-field appearance="outline" class="w-44">
+          <mat-label>المادة</mat-label>
+          <mat-select [(ngModel)]="selectedSubject" (selectionChange)="onSubjectChange()">
+            @for (subject of stageSubjects; track subject) {
+              <mat-option [value]="subject">{{ subject }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline" class="w-40">
+        <mat-label>عدد حصص المنهج</mat-label>
+        <input matInput type="number" min="1" max="200" [(ngModel)]="plannedCount" (change)="saveCount()">
+      </mat-form-field>
       <span class="toolbar-count">
-        @if (query) { {{ filteredCount }} من {{ total }} تحضير } @else { {{ total }} تحضير }
+        @if (query) { {{ filteredCount }} من {{ total }} درس } @else { {{ total }} درس }
       </span>
     }
   </div>
 
   @if (loading) {
-    <app-table-skeleton [rows]="4" [columns]="4"></app-table-skeleton>
+    <app-table-skeleton [rows]="4" [columns]="5"></app-table-skeleton>
   } @else if (!teacherId) {
     <app-empty-state icon="person_off" title="لا يوجد سجل معلم مرتبط بهذا الحساب"></app-empty-state>
   } @else if (!stages.length) {
     <app-empty-state icon="edit_note" title="لا توجد مراحل في جدولك" description="تظهر هنا المراحل التي تدرّسها فقط."></app-empty-state>
-  } @else if (total === 0) {
-    <app-empty-state
-      icon="edit_note"
-      [title]="'لا توجد تحضيرات لمرحلة ' + selectedStage"
-      description="ارفع تحضير الدرس اليومي لهذه المرحلة ليظهر هنا.">
-      <button mat-flat-button color="primary" (click)="openDialog()">
-        <app-ui-icon name="upload"></app-ui-icon>
-        رفع تحضير
-      </button>
-    </app-empty-state>
+  } @else if (!selectedSubject) {
+    <app-empty-state icon="edit_note" title="لا توجد مادة مسندة لهذه المرحلة"></app-empty-state>
   } @else if (filteredCount === 0) {
-    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد تحضيراً يطابق «' + query + '».'" [compact]="true"></app-empty-state>
+    <app-empty-state icon="search_off" title="لا توجد نتائج مطابقة" [description]="'لم نجد درساً يطابق «' + query + '».'" [compact]="true"></app-empty-state>
   } @else {
     <div class="table-scroll">
-      <table mat-table [dataSource]="dataSource" matSort matSortActive="lessonDate" matSortDirection="desc">
-        <ng-container matColumnDef="lessonDate">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>التاريخ</th>
-          <td mat-cell *matCellDef="let row">{{ row.lessonDate | appDate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>التحضير</th>
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="lessonNumber" matSortDirection="asc">
+        <ng-container matColumnDef="lesson">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="lessonNumber">الدرس</th>
           <td mat-cell *matCellDef="let row">
-            <div class="flex min-w-0 flex-col leading-snug">
-              <span class="font-semibold">{{ row.title }}</span>
-              @if (row.fileName) {
-                <span class="break-all text-[0.78rem] text-muted" dir="ltr">{{ row.fileName }}</span>
-              }
-            </div>
+            <span class="font-semibold">{{ row.lessonNumber }} — {{ row.title }}</span>
           </td>
         </ng-container>
         <ng-container matColumnDef="subject">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>المادة</th>
           <td mat-cell *matCellDef="let row">{{ row.subject }}</td>
         </ng-container>
+        <ng-container matColumnDef="file">
+          <th mat-header-cell *matHeaderCellDef>الملف</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.fileName) {
+              <span class="break-all" dir="ltr">{{ row.fileName }}</span>
+            } @else {
+              <span class="text-faint">—</span>
+            }
+          </td>
+        </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let row" class="whitespace-nowrap">
-            <span class="inline-flex items-center gap-2">
-              <button type="button" class="btn-action btn-action--view" (click)="download(row)">
-                <app-ui-icon name="download"></app-ui-icon>
-                تحميل
+            <span class="inline-flex items-center">
+              <button mat-icon-button type="button" class="icon-view" matTooltip="عرض" aria-label="عرض" [disabled]="!row.fileName" (click)="download(row.prep)">
+                <app-ui-icon name="visibility"></app-ui-icon>
               </button>
-              <button type="button" class="btn-action btn-action--delete" (click)="remove(row)">
+              <button mat-icon-button type="button" [class.icon-edit]="!!row.prep" [class.icon-upload]="!row.prep" [matTooltip]="row.prep ? 'تحديث' : 'رفع'" [attr.aria-label]="row.prep ? 'تحديث' : 'رفع'" (click)="openUpload(row)">
+                <app-ui-icon [name]="row.prep ? 'edit' : 'upload'"></app-ui-icon>
+              </button>
+              <button mat-icon-button type="button" class="icon-delete" matTooltip="حذف" aria-label="حذف" [disabled]="!row.prep" (click)="remove(row)">
                 <app-ui-icon name="delete"></app-ui-icon>
-                حذف
               </button>
             </span>
           </td>
@@ -92,6 +93,6 @@
         <tr mat-row *matRowDef="let row; columns: cols"></tr>
       </table>
     </div>
-    <mat-paginator [pageSize]="8" [pageSizeOptions]="[8, 16]"></mat-paginator>
+    <mat-paginator [pageSize]="12" [pageSizeOptions]="[12, 24]"></mat-paginator>
   }
 </div>

@@ -41,8 +41,9 @@ export class AttendanceApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/attendance`;
 
-  getStudentAttendance(_stageId: number, classId: number, date: string): Observable<AttendanceRecord[]> {
-    const params = new HttpParams().set('classId', classId).set('date', date);
+  getStudentAttendance(_stageId: number, classId: number, date: string, period = 0): Observable<AttendanceRecord[]> {
+    let params = new HttpParams().set('classId', classId).set('date', date);
+    if (period > 0) params = params.set('period', period);
     return this.http.get<AttendanceRecord[]>(`${this.baseUrl}/students`, { params });
   }
 

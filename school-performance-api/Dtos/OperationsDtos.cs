@@ -74,7 +74,13 @@ public class AttendanceRecordDto
     public string? ClassName { get; set; }
     public string Date { get; set; } = string.Empty;
     public string Status { get; set; } = "PRESENT";
+    /// <summary>0 = daily attendance. 1–7 = a teaching period. Omitted values stay daily.</summary>
+    public int Period { get; set; }
+    /// <summary>Teacher period marks (absent or late) for the same day. Filled on the daily read only.</summary>
+    public List<PeriodAttendanceMarkDto>? PeriodMarks { get; set; }
     public string? Notes { get; set; }
+    /// <summary>Wing supervisor who last changed this period's status. Empty when only the teacher recorded it.</summary>
+    public string? WingSupervisorName { get; set; }
     /// <summary>"HH:mm" — teachers only.</summary>
     public string? CheckInTime { get; set; }
     /// <summary>"HH:mm" — mid-day presence check, teachers only.</summary>
@@ -83,6 +89,14 @@ public class AttendanceRecordDto
     public string? CheckOutTime { get; set; }
     /// <summary>Computed work minutes between check-in and check-out (teachers only).</summary>
     public int? PresenceMinutes { get; set; }
+}
+
+/// <summary>A teaching-period absence or lateness, shown beside the daily record.</summary>
+public class PeriodAttendanceMarkDto
+{
+    public int Period { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string? Subject { get; set; }
 }
 
 /// <summary>Who the caller may see on the teacher-attendance page.</summary>

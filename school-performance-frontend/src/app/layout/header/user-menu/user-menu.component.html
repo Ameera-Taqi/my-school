@@ -33,14 +33,22 @@
     </div>
 
     <div class="border-t border-slate-100">
+      <a
+        class="um-item"
+        role="menuitem"
+        routerLink="/profile"
+        (click)="close()">
+        <app-ui-icon name="person" class="text-[1.15rem] text-slate-500"></app-ui-icon>
+        <span>{{ 'menu.profile' | translate }}</span>
+      </a>
       @if (canOpenSettings()) {
         <a
           class="um-item"
           role="menuitem"
           routerLink="/settings"
           (click)="close()">
-          <app-ui-icon name="person" class="text-[1.15rem] text-slate-500"></app-ui-icon>
-          <span>{{ 'menu.profile' | translate }}</span>
+          <app-ui-icon name="settings" class="text-[1.15rem] text-slate-500"></app-ui-icon>
+          <span>{{ 'menu.settings' | translate }}</span>
         </a>
       } @else {
         <button type="button" class="um-item" role="menuitem" (click)="goToDashboard()">

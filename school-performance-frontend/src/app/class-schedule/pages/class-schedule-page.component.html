@@ -106,8 +106,9 @@
             <tbody>
               @for (period of periods; track period) {
                 <tr>
-                  <td class="w-16 border-b border-border bg-[#fafbfe] text-center align-middle">
+                  <td class="min-w-[5.4rem] border-b border-border bg-[#fafbfe] px-1 py-1.5 text-center align-middle">
                     <span class="inline-flex size-[30px] items-center justify-center rounded-full bg-primary-light text-[0.85rem] font-bold text-primary">{{ period }}</span>
+                    <span class="mt-1 block text-[0.62rem] font-semibold text-muted" dir="ltr">{{ bellRange(period) }}</span>
                   </td>
                   @for (day of days; track day.key) {
                     @let entry = entryAt(day.key, period);

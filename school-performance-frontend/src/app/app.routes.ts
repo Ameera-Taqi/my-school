@@ -39,6 +39,7 @@ import { SubjectResultsPageComponent } from './subject-results/pages/subject-res
 import { AcademicNotesPageComponent } from './academic-notes/pages/academic-notes-page.component';
 import { ClassSchedulePageComponent } from './class-schedule/pages/class-schedule-page.component';
 import { SettingsPageComponent } from './settings/pages/settings-page.component';
+import { ProfilePageComponent } from './profile/pages/profile-page.component';
 import { OrgStructurePageComponent } from './org-structure/pages/org-structure-page.component';
 
 export const routes: Routes = [
@@ -96,7 +97,8 @@ export const routes: Routes = [
       { path: 'roles', component: RoleListComponent, canActivate: [permissionGuard], data: { permission: 'roles.view' } },
       { path: 'permissions', component: PermissionListComponent, canActivate: [permissionGuard], data: { permission: 'permissions.view' } },
       { path: 'role-permissions', component: RolePermissionsComponent, canActivate: [permissionGuard], data: { permission: 'role_permissions.manage' } },
-      { path: 'settings', component: SettingsPageComponent, canActivate: [permissionGuard], data: { permission: 'settings.view' } }
+      { path: 'settings', component: SettingsPageComponent, canActivate: [permissionGuard], data: { permission: 'settings.view' } },
+      { path: 'profile', component: ProfilePageComponent }
     ]
   },
   { path: '**', redirectTo: 'home' }

@@ -24,11 +24,16 @@ import { SchoolClassApiService } from '../../school-classes/services/school-clas
 import { ATTENDANCE_STATUS_LABELS } from '../../shared/constants/labels';
 import { AcademicStage, AttendanceRecord, SchoolClass } from '../../core/models';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
+import { AuthService } from '../../core/services/auth.service';
+import { HomeClassScheduleComponent, TimetableSlotKind, TimetableSlotPick } from '../../home/widgets/home-class-schedule.component';
+import { ASSEMBLY_VIOLATIONS, BehaviorMockService } from '../../behavior/services/behavior-mock.service';
+import { periodRange } from '../../core/constants/bell-schedule';
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-student-attendance-page',
   standalone: true,
-  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe],
+  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatTableModule, MatProgressSpinnerModule, MatDatepickerModule, MatCardModule, PageHeaderComponent, EmptyStateComponent, TableSkeletonComponent, HasPermissionPipe, HomeClassScheduleComponent],
   templateUrl: './student-attendance-page.component.html',
   styles: [`
     .student-att-filters {
@@ -50,6 +55,34 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
       gap: 0.5rem;
       margin-inline-start: auto;
     }
+    .violation-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      padding: 0.28rem 0.75rem;
+      color: var(--color-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .violation-pill:hover { background: #e9ebf3; }
+    .violation-pill[data-tone="late"],
+    .violation-pill[data-tone="late"]:hover { background: var(--color-warning); color: #fff; }
+    .violation-pill[data-tone="hair"],
+    .violation-pill[data-tone="hair"]:hover { background: #7c3aed; color: #fff; }
+    .violation-pill[data-tone="uniform"],
+    .violation-pill[data-tone="uniform"]:hover { background: #2563eb; color: #fff; }
+    .violation-pill[data-tone="talk"],
+    .violation-pill[data-tone="talk"]:hover { background: #0891b2; color: #fff; }
+    .violation-pill[data-tone="flag"],
+    .violation-pill[data-tone="flag"]:hover { background: var(--color-success); color: #fff; }
+    .violation-pill[data-tone="assembly"],
+    .violation-pill[data-tone="assembly"]:hover { background: var(--color-danger); color: #fff; }
   `]
 })
 export class StudentAttendancePageComponent implements OnInit {
@@ -61,10 +94,21 @@ export class StudentAttendancePageComponent implements OnInit {
   private readonly stageService = inject(AcademicStageApiService);
   private readonly classService = inject(SchoolClassApiService);
   private readonly toast = inject(ToastService);
+  private readonly auth = inject(AuthService);
+  private readonly behavior = inject(BehaviorMockService);
   private readonly datePipe = new AppDatePipe();
+  private pendingClassId: number | null = null;
+  private readonly selectedViolations = new Map<number, string[]>();
 
+  readonly isWingSupervisor = this.auth.hasAnyRole(['WING_SUPERVISOR']);
+  readonly violations = ASSEMBLY_VIOLATIONS;
   readonly statusLabels = ATTENDANCE_STATUS_LABELS;
   readonly statusOptions = ['PRESENT', 'ABSENT', 'LATE'] as const;
+  activeClassId: number | null = null;
+  sheetMode: TimetableSlotKind = 'daily';
+  activePeriod: number | null = null;
+  activeSubject = '';
+  activeTeacher = '';
 
   stages: AcademicStage[] = [];
   classes: SchoolClass[] = [];
@@ -72,7 +116,32 @@ export class StudentAttendancePageComponent implements OnInit {
   loadingStudents = false;
   exportingStudentsPdf = false;
 
-  studentCols = ['personName', 'className', 'status'];
+  studentCols = ['personName', 'status'];
+
+  get sheetTitle(): string {
+    const className = this.classes.find(c => c.id === this.studentFilters.controls.classId.value)?.name ?? '';
+    const suffix = className ? ` — ${className}` : '';
+    if (this.sheetMode === 'assembly') return `مخالفات طابور الصباح${suffix}`;
+    if (this.sheetMode === 'period' && this.activePeriod) {
+      const range = periodRange(this.activePeriod);
+      const subject = this.activeSubject ? ` · ${this.activeSubject}` : '';
+      const teacher = this.activeTeacher ? ` · ${this.activeTeacher}` : '';
+      return `حضور الحصة ${this.activePeriod}${range ? ' (' + range + ')' : ''}${subject}${teacher}${suffix}`;
+    }
+    return `الحضور اليومي${suffix}`;
+  }
+
+  private applyColumns(): void {
+    if (this.sheetMode === 'assembly') this.studentCols = ['personName', 'violations'];
+    else if (this.sheetMode === 'period') this.studentCols = ['personName', 'status', 'wingSupervisor'];
+    else this.studentCols = ['personName', 'status'];
+  }
+
+  get saveLabel(): string {
+    if (this.sheetMode === 'assembly') return 'حفظ المخالفات';
+    if (this.sheetMode === 'period') return 'حفظ حضور الحصة';
+    return 'حفظ الحضور';
+  }
 
   studentFilters = this.fb.group({
     date: [new Date()],
@@ -83,13 +152,56 @@ export class StudentAttendancePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.stageService.getAll().subscribe(s => this.stages = s);
+    this.studentFilters.controls.date.valueChanges.subscribe(() => {
+      const { stageId, classId } = this.studentFilters.getRawValue();
+      if (stageId && classId && this.studentRecords.length) this.loadStudents();
+    });
     this.studentFilters.controls.stageId.valueChanges.subscribe(stageId => {
-      this.studentFilters.controls.classId.setValue(null);
+      this.studentFilters.controls.classId.setValue(null, { emitEvent: false });
       this.classes = [];
+      const wanted = this.pendingClassId;
+      this.pendingClassId = null;
       if (stageId) {
-        this.classService.getByStage(stageId).subscribe(c => this.classes = c);
+        this.classService.getByStage(stageId).subscribe(c => {
+          this.classes = c;
+          if (wanted && c.some(item => item.id === wanted)) {
+            this.studentFilters.controls.classId.setValue(wanted, { emitEvent: false });
+            this.loadStudents();
+          }
+        });
       }
     });
+  }
+
+  openSlot(pick: TimetableSlotPick): void {
+    if (!pick.stageId) {
+      this.toast.info('تعذر تحديد مرحلة هذا الفصل');
+      return;
+    }
+    this.sheetMode = pick.kind;
+    this.applyColumns();
+    this.activePeriod = pick.kind === 'period' ? (pick.period ?? null) : null;
+    this.activeSubject = pick.subject ?? '';
+    this.activeTeacher = pick.teacher ?? '';
+    this.activeClassId = pick.classId;
+    const sameStage = this.studentFilters.controls.stageId.value === pick.stageId
+      && this.classes.some(item => item.id === pick.classId);
+    if (sameStage) {
+      this.studentFilters.controls.classId.setValue(pick.classId, { emitEvent: false });
+      this.loadStudents();
+    } else {
+      this.pendingClassId = pick.classId;
+      this.studentFilters.controls.stageId.setValue(pick.stageId);
+    }
+  }
+
+  showFromFilters(): void {
+    this.sheetMode = 'daily';
+    this.applyColumns();
+    this.activePeriod = null;
+    this.activeSubject = '';
+    this.activeTeacher = '';
+    this.loadStudents();
   }
 
   private formatDate(d: Date | null): string {
@@ -107,16 +219,35 @@ export class StudentAttendancePageComponent implements OnInit {
       this.toast.info('اختر المرحلة والفصل');
       return;
     }
+    const period = this.sheetMode === 'period' ? (this.activePeriod ?? 0) : 0;
     this.loadingStudents = true;
-    this.attendanceService.getStudentAttendance(stageId, classId, this.formatDate(date)).subscribe({
+    this.attendanceService.getStudentAttendance(stageId, classId, this.formatDate(date), period).subscribe({
       next: (data) => {
-        this.studentRecords = data.map(r => ({ ...r, status: this.normalizeStatus(r.status) }));
+        this.studentRecords = data.map(r => ({ ...r, status: this.normalizeStatus(r.status), period }));
+        if (this.sheetMode === 'assembly') this.captureViolations();
         this.loadingStudents = false;
+        queueMicrotask(() => document.getElementById('student-attendance-sheet')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
       },
       error: (e) => { this.loadingStudents = false; this.toast.fromError(e); }
     });
   }
 
+
+  hasViolation(studentId: number, code: string): boolean {
+    return (this.selectedViolations.get(studentId) ?? []).includes(code);
+  }
+
+  violationTone(studentId: number, code: string): string | null {
+    if (!this.hasViolation(studentId, code)) return null;
+    return this.violations.find(item => item.code === code)?.tone ?? null;
+  }
+
+  toggleViolation(studentId: number, code: string): void {
+    const next = new Set(this.selectedViolations.get(studentId) ?? []);
+    if (next.has(code)) next.delete(code);
+    else next.add(code);
+    this.selectedViolations.set(studentId, [...next]);
+  }
 
   setStatus(record: AttendanceRecord, status: string): void {
     record.status = this.normalizeStatus(status);
@@ -143,17 +274,84 @@ export class StudentAttendancePageComponent implements OnInit {
   }
 
   saveStudents(): void {
-    this.attendanceService.saveStudentAttendance(this.studentRecords).subscribe({
-      next: () => this.toast.success('تم حفظ حضور المتعلمين'),
+    if (this.sheetMode === 'assembly') {
+      this.saveViolations();
+      return;
+    }
+    const period = this.sheetMode === 'period' ? (this.activePeriod ?? 0) : 0;
+    if (this.sheetMode === 'period' && !period) return;
+    const records = this.studentRecords.map(r => ({ ...r, period, periodMarks: undefined }));
+    this.attendanceService.saveStudentAttendance(records).subscribe({
+      next: () => {
+        this.toast.success(period > 0 ? 'تم حفظ حضور الحصة' : 'تم حفظ الحضور اليومي');
+        if (period > 0) this.loadStudents();
+      },
       error: (e) => this.toast.fromError(e)
+    });
+  }
+
+  private captureViolations(): void {
+    const date = this.formatDate(this.studentFilters.controls.date.value);
+    this.behavior.getAll().subscribe(notes => {
+      this.selectedViolations.clear();
+      for (const row of this.studentRecords) {
+        const codes = notes
+          .filter(n => n.source === 'ASSEMBLY' && n.studentId === row.personId && n.noteDate === date && !!n.code)
+          .map(n => n.code!);
+        this.selectedViolations.set(row.personId, codes);
+      }
+    });
+  }
+
+  private saveViolations(): void {
+    const date = this.formatDate(this.studentFilters.controls.date.value);
+    const recordedBy = this.auth.user()?.fullName || this.auth.user()?.username || '';
+    this.behavior.getAll().subscribe(notes => {
+      const ops: Observable<unknown>[] = [];
+      for (const row of this.studentRecords) {
+        const wanted = new Set(this.selectedViolations.get(row.personId) ?? []);
+        const existing = notes.filter(n => n.source === 'ASSEMBLY' && n.studentId === row.personId && n.noteDate === date);
+        for (const note of existing) {
+          if (note.id != null && (!note.code || !wanted.has(note.code))) ops.push(this.behavior.delete(note.id));
+        }
+        const have = new Set(existing.map(n => n.code).filter((code): code is string => !!code));
+        for (const code of wanted) {
+          if (have.has(code)) continue;
+          const label = this.violations.find(item => item.code === code)?.label ?? code;
+          ops.push(this.behavior.create({
+            studentId: row.personId,
+            studentName: row.personName,
+            type: 'WARNING',
+            description: label,
+            noteDate: date,
+            recordedBy,
+            code,
+            source: 'ASSEMBLY'
+          }));
+        }
+      }
+      if (!ops.length) {
+        this.toast.success('تم حفظ مخالفات الطابور');
+        return;
+      }
+      forkJoin(ops).subscribe({
+        next: () => this.toast.success('تم حفظ مخالفات الطابور'),
+        error: (e: unknown) => this.toast.fromError(e)
+      });
     });
   }
 
 
   resetStudentFilters(): void {
+    this.studentRecords = [];
     this.studentFilters.reset({ date: new Date(), stageId: null, classId: null });
     this.classes = [];
-    this.studentRecords = [];
+    this.sheetMode = 'daily';
+    this.applyColumns();
+    this.activeClassId = null;
+    this.activePeriod = null;
+    this.activeSubject = '';
+    this.activeTeacher = '';
   }
 
 

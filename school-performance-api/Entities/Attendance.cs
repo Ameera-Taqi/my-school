@@ -2,16 +2,25 @@ namespace SchoolPerformance.Api.Entities;
 
 public enum AttendanceStatus { PRESENT, ABSENT, LATE, EXCUSED }
 
-/// <summary>One student's attendance for one day.</summary>
+/// <summary>
+/// One student's attendance for one day and one slot.
+/// Period 0 is the daily record (wing supervisor / morning assembly).
+/// Periods 1–7 are the teaching periods recorded by the teacher.
+/// </summary>
 public class Attendance : BaseEntity
 {
     public long StudentId { get; set; }
     public Student Student { get; set; } = null!;
     public DateOnly AttendanceDate { get; set; }
+    /// <summary>0 = daily attendance. 1–7 = a teaching period.</summary>
+    public int Period { get; set; }
     public AttendanceStatus Status { get; set; }
     public string? Notes { get; set; }
     public long? RecordedById { get; set; }
     public User? RecordedBy { get; set; }
+    /// <summary>Set only when a wing supervisor changes this period's status. A teacher save leaves it in place.</summary>
+    public long? WingEditedById { get; set; }
+    public User? WingEditedBy { get; set; }
 }
 
 /// <summary>One teacher's attendance for one day.</summary>

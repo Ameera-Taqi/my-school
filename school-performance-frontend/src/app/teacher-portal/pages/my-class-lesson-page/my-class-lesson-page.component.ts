@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { periodRange } from '../../../core/constants/bell-schedule';
 import { ScheduleApiService } from '../../../class-schedule/services/schedule-api.service';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
@@ -10,8 +11,9 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { AttendanceRecordPageComponent } from '../attendance-record-page/attendance-record-page.component';
 import { GradesPageComponent } from '../grades-page/grades-page.component';
 import { TeacherNotesPageComponent } from '../teacher-notes-page/teacher-notes-page.component';
+import { ClassSessionPrepComponent } from './class-session-prep.component';
 
-type ClassTab = 'attendance' | 'grades' | 'behavior';
+type ClassTab = 'preparation' | 'attendance' | 'grades' | 'behavior';
 
 /** One of the signed-in teacher's classes, with attendance, grades, and behavior. */
 @Component({
@@ -19,7 +21,7 @@ type ClassTab = 'attendance' | 'grades' | 'behavior';
   standalone: true,
   imports: [
     RouterLink, PageHeaderComponent, BreadcrumbComponent, EmptyStateComponent, TranslatePipe,
-    AttendanceRecordPageComponent, GradesPageComponent, TeacherNotesPageComponent
+    AttendanceRecordPageComponent, GradesPageComponent, TeacherNotesPageComponent, ClassSessionPrepComponent
   ],
   template: `
     <app-breadcrumb [items]="crumbs"></app-breadcrumb>
@@ -34,7 +36,7 @@ type ClassTab = 'attendance' | 'grades' | 'behavior';
         </app-empty-state>
       </div>
     } @else {
-      <app-page-header [title]="className" [subtitle]="stageName"></app-page-header>
+      <app-page-header [title]="className" [subtitle]="sessionSubtitle"></app-page-header>
 
       <div class="pills" role="tablist" [attr.aria-label]="className">
         @for (item of tabs; track item.id) {
@@ -51,14 +53,23 @@ type ClassTab = 'attendance' | 'grades' | 'behavior';
         }
       </div>
 
-      @if (tab === 'attendance') {
+      @if (tab === 'preparation') {
+        <div role="tabpanel" id="class-panel-preparation">
+          <app-class-session-prep
+            [className]="className"
+            [stageName]="stageName"
+            [subject]="subject">
+          </app-class-session-prep>
+        </div>
+      } @else if (tab === 'attendance') {
         <div role="tabpanel" id="class-panel-attendance">
           <app-attendance-record-page
             [embedded]="true"
             [lockedClass]="className"
             [lockedClassId]="classId"
             [lockedStageName]="stageName"
-            [lockedStageId]="stageId">
+            [lockedStageId]="stageId"
+            [lockedPeriod]="period">
           </app-attendance-record-page>
         </div>
       } @else if (tab === 'grades') {
@@ -108,6 +119,7 @@ export class MyClassLessonPageComponent implements OnInit {
   private readonly lang = inject(LanguageService);
 
   readonly tabs: { id: ClassTab; label: string }[] = [
+    { id: 'preparation', label: 'classTab.preparation' },
     { id: 'attendance', label: 'classTab.attendance' },
     { id: 'grades', label: 'classTab.grades' },
     { id: 'behavior', label: 'classTab.behavior' }
@@ -115,12 +127,18 @@ export class MyClassLessonPageComponent implements OnInit {
 
   loading = true;
   found = false;
-  tab: ClassTab = 'attendance';
+  tab: ClassTab = 'preparation';
   classId: number | null = null;
   className = '';
   stageName = '';
   stageId: number | null = null;
   subject = '';
+  period: number | null = null;
+
+  get sessionSubtitle(): string {
+    const period = this.period ? `${this.lang.translate('home.schedule.period').replace('{n}', String(this.period))} (${periodRange(this.period)}) · ` : '';
+    return `${period}${this.subject}${this.stageName ? ' · ' + this.stageName : ''}`;
+  }
 
   get crumbs() {
     return [
@@ -134,6 +152,8 @@ export class MyClassLessonPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const period = Number(this.route.snapshot.queryParamMap.get('period'));
+    this.period = period > 0 ? period : null;
     const classId = Number(this.route.snapshot.paramMap.get('classId'));
     const teacherId = this.auth.user()?.teacherId;
     if (!teacherId || !classId) {

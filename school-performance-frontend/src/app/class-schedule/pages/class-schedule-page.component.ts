@@ -29,6 +29,7 @@ import {
   AssignmentDialogComponent, ConstraintDialogComponent, DAY_OPTIONS, GenerateResultDialogComponent,
   ScheduleSlotDialogComponent, SubjectDialogComponent
 } from '../dialogs/schedule-dialogs.component';
+import { periodRange } from '../../core/constants/bell-schedule';
 
 @Component({
   selector: 'app-class-schedule-page',
@@ -49,6 +50,7 @@ export class ClassSchedulePageComponent implements OnInit {
   readonly canManage = () => this.authService.hasPermission('class_schedule.manage');
   readonly days = DAY_OPTIONS;
   readonly periods = [1, 2, 3, 4, 5, 6, 7];
+  readonly bellRange = periodRange;
   readonly constraintLabels: Record<string, string> = CONSTRAINT_TYPE_LABELS;
 
   classes: SchoolClass[] = [];

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoginRequest, LoginResponse } from '../models';
+import { LoginRequest, LoginResponse, UpdateProfileRequest, UserProfile } from '../models';
 
 const TOKEN_KEY = 'sp_token';
 const USER_KEY = 'sp_user';
@@ -26,6 +26,14 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap(response => this.setSession(response))
     );
+  }
+
+  getProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${environment.apiUrl}/auth/profile`);
+  }
+
+  updateProfile(request: UpdateProfileRequest): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${environment.apiUrl}/auth/profile`, request);
   }
 
   refreshCurrentUser(): Observable<LoginResponse> {

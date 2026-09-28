@@ -9,6 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ClassScheduleEntry, Department, ScheduleDay, Teacher } from '../../core/models';
 import { CONSTRAINT_TYPE_LABELS, GenerateResult, Subject, SubjectAssignment, TeacherConstraint, TeacherConstraintType } from '../services/schedule-api.service';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
+import { periodRange } from '../../core/constants/bell-schedule';
 
 export const DAY_OPTIONS: { key: ScheduleDay; label: string }[] = [
   { key: 'SUNDAY', label: 'الأحد' }, { key: 'MONDAY', label: 'الإثنين' }, { key: 'TUESDAY', label: 'الثلاثاء' },
@@ -30,7 +31,7 @@ export interface SlotDialogData { classId: number; className: string; dayOfWeek:
       <div class="my-1 mb-3 flex flex-wrap gap-x-4 gap-y-2 rounded-sp-sm border border-border bg-primary-bg px-[0.85rem] py-[0.6rem] text-[0.88rem] font-semibold text-primary">
         <span class="inline-flex items-center gap-[0.3rem]"><app-ui-icon name="class" class="text-base"></app-ui-icon> فصل {{ data.className }}</span>
         <span class="inline-flex items-center gap-[0.3rem]"><app-ui-icon name="today" class="text-base"></app-ui-icon> {{ dayLabel }}</span>
-        <span class="inline-flex items-center gap-[0.3rem]"><app-ui-icon name="schedule" class="text-base"></app-ui-icon> الحصة {{ data.period }}</span>
+        <span class="inline-flex items-center gap-[0.3rem]"><app-ui-icon name="schedule" class="text-base"></app-ui-icon> الحصة {{ data.period }} <span dir="ltr">({{ bellRange }})</span></span>
       </div>
       @if (!data.assignments.length) {
         <p class="mb-2 mt-0 text-[0.82rem] text-muted">لا توجد تكليفات (مواد ومعلمون) لهذا الفصل بعد. أضفها من تبويب «المواد والتكليفات».</p>
@@ -71,6 +72,7 @@ export class ScheduleSlotDialogComponent {
   readonly ref = inject(MatDialogRef<ScheduleSlotDialogComponent>);
   private readonly fb = inject(FormBuilder);
   readonly dayLabel = DAY_OPTIONS.find(d => d.key === this.data.dayOfWeek)?.label ?? '';
+  readonly bellRange = periodRange(this.data.period);
 
   form = this.fb.group({
     assignmentId: [this.currentAssignmentId(), Validators.required],

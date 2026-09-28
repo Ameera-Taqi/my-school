@@ -4,6 +4,16 @@ import { delay } from 'rxjs/operators';
 import { BehaviorNote } from '../../core/models';
 import { createListStore } from '../../core/utils/mock-persistence';
 
+/** Morning-assembly violations the wing supervisor can tap without opening a form. */
+export const ASSEMBLY_VIOLATIONS: readonly { code: string; label: string; shortLabel: string; icon: string; tone: string }[] = [
+  { code: 'LATE_LINE', label: 'التأخر على الطابور', shortLabel: 'التأخر', icon: 'schedule', tone: 'late' },
+  { code: 'HAIR_NAILS', label: 'الشعر أو الأظافر', shortLabel: 'الشعر', icon: 'person', tone: 'hair' },
+  { code: 'UNIFORM', label: 'عدم الالتزام بالزي المدرسي', shortLabel: 'الزي', icon: 'badge', tone: 'uniform' },
+  { code: 'TALKING', label: 'الحديث أثناء الطابور', shortLabel: 'الحديث', icon: 'comment', tone: 'talk' },
+  { code: 'FLAG', label: 'عدم المشاركة في تحية العلم', shortLabel: 'العلم', icon: 'flag', tone: 'flag' },
+  { code: 'NO_ASSEMBLY', label: 'عدم المشاركة في الطابور الصباحي', shortLabel: 'الطابور', icon: 'groups', tone: 'assembly' }
+];
+
 const store = createListStore<BehaviorNote>('demo_behavior_notes', [
   { id: 1, studentId: 1, studentName: 'أحمد محمد', type: 'POSITIVE', description: 'مشاركة متميزة في الحصة', noteDate: '2026-06-15', recordedBy: 'أ. سالم' },
   { id: 2, studentId: 3, studentName: 'خالد سعيد', type: 'WARNING', description: 'تأخر متكرر عن الحصة', noteDate: '2026-06-14', recordedBy: 'أ. مريم' }

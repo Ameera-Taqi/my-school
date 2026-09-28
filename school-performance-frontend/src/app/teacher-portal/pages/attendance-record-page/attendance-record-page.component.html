@@ -1,6 +1,6 @@
 <app-page-header
   [title]="embedded ? 'الحضور والغياب' : 'تسجيل الحضور'"
-  subtitle="تسجيل حضور متعلمي فصلك">
+  [subtitle]="periodSubtitle">
   @if (!loading) {
     <span class="inline-flex items-baseline gap-1.5 rounded-xl bg-primary-bg px-3 py-2 text-primary">
       <span class="text-xl font-extrabold leading-none">{{ rows.length }}</span>
@@ -17,6 +17,16 @@
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+    @if (!lockedPeriod) {
+      <mat-form-field appearance="outline" class="filter-field mb-0 w-36 max-w-[180px] shrink-0 grow-0 text-[0.875rem]" subscriptSizing="dynamic">
+        <mat-label>الحصة</mat-label>
+        <mat-select [formControl]="form.controls.period">
+          @for (p of periodOptions; track p) {
+            <mat-option [value]="p">الحصة {{ p }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
     @if (!embedded) {
       <mat-form-field appearance="outline" class="filter-field mb-0 w-40 max-w-[200px] shrink-0 grow-0 text-[0.875rem]" subscriptSizing="dynamic">
         <mat-label>الفصل</mat-label>

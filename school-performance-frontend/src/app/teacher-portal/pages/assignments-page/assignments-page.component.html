@@ -1,6 +1,24 @@
 <app-page-header title="الواجبات" subtitle="إدارة واجبات المتعلمين">
-  <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> واجب جديد</button>
+  @if (!loading && selectedStage) {
+    <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> واجب جديد</button>
+  }
 </app-page-header>
+
+@if (!loading && stages.length) {
+  <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    @for (stage of stages; track stage.name) {
+      <button
+        type="button"
+        class="stage-card"
+        [class.stage-card--active]="selectedStage === stage.name"
+        [attr.aria-pressed]="selectedStage === stage.name"
+        (click)="selectStage(stage.name)">
+        <span class="stage-card__name">{{ stage.name }}</span>
+        <span class="stage-card__count">{{ stage.count }} واجب</span>
+      </button>
+    }
+  </div>
+}
 
 <div class="data-card">
   <div class="list-toolbar">
@@ -14,8 +32,12 @@
 
   @if (loading) {
     <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
+  } @else if (!teacherId) {
+    <app-empty-state icon="person_off" title="لا يوجد سجل معلم مرتبط بهذا الحساب"></app-empty-state>
+  } @else if (!stages.length) {
+    <app-empty-state icon="assignment" title="لا توجد مراحل في جدولك" description="تظهر هنا المراحل التي تدرّسها فقط."></app-empty-state>
   } @else if (total === 0) {
-    <app-empty-state icon="assignment" title="لا توجد واجبات بعد" description="أضف أول واجب لمتعلميك لبدء متابعة التسليم.">
+    <app-empty-state icon="assignment" [title]="'لا توجد واجبات لمرحلة ' + selectedStage" description="أضف واجباً لهذه المرحلة ليظهر هنا.">
       <button mat-flat-button color="primary" (click)="openDialog()"><app-ui-icon name="add"></app-ui-icon> واجب جديد</button>
     </app-empty-state>
   } @else if (filteredCount === 0) {
