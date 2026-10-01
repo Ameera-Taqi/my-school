@@ -17,6 +17,8 @@ const SYSTEM_PERMISSIONS = [
 
 export { HEADS_PERMISSIONS, TEACHERS_PERMISSIONS, SYSTEM_PERMISSIONS };
 
+const LEADERSHIP_ROLES = ['SCHOOL_MANAGER', 'ASSISTANT_MANAGER'];
+
 export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     titleKey: 'section.home',
@@ -27,15 +29,20 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     titleKey: 'section.school',
     items: [
+      { labelKey: 'nav.studentFile', icon: 'folder', route: '/student-file', permission: ['students.view', 'wing_supervisor.view'], roles: LEADERSHIP_ROLES.concat('WING_SUPERVISOR', 'ADMIN') },
+      { labelKey: 'nav.teacherFile', icon: 'badge', route: '/teacher-file', permission: 'teachers.view', roles: LEADERSHIP_ROLES },
       { labelKey: 'nav.kpi', icon: 'bar_chart', route: '/kpi', permission: 'kpi.view' },
       { labelKey: 'nav.reports', icon: 'description', route: '/reports', permission: 'reports.view' },
       { labelKey: 'nav.meetings', icon: 'groups', route: '/meetings', permission: 'meetings.view' },
-      { labelKey: 'nav.tasks', icon: 'check_box', route: '/tasks', permission: 'tasks.view' },
+      { labelKey: 'nav.prepApproval', icon: 'fact_check', route: '/lesson-prep-approvals/administration', permission: 'meetings.view', roles: LEADERSHIP_ROLES.concat('ADMIN') },
+      { labelKey: 'nav.tasks', icon: 'check_box', route: '/tasks', permission: 'tasks.view', roles: LEADERSHIP_ROLES.concat('ADMIN') },
       { labelKey: 'nav.orgStructure', icon: 'hub', route: '/org-structure', permission: 'org_structure.view' },
       { labelKey: 'nav.students', icon: 'school', route: '/students', permission: 'students.view' },
       { labelKey: 'nav.teachers', icon: 'how_to_reg', route: '/teachers', permission: 'teachers.view' },
       { labelKey: 'nav.departments', icon: 'domain', route: '/departments', permission: 'departments.view' },
       { labelKey: 'nav.classSchedule', icon: 'menu_book', route: '/class-schedule', permission: 'class_schedule.view' },
+      { labelKey: 'nav.classSwap', icon: 'swap_horiz', route: '/class-swaps', permission: 'class_swap.execute' },
+      { labelKey: 'nav.records', icon: 'folder', route: '/records', permission: 'records.view', roles: LEADERSHIP_ROLES.concat('ADMIN') },
       { labelKey: 'nav.attendanceStudents', icon: 'event_available', route: '/attendance/students', permission: 'attendance.view' },
       { labelKey: 'nav.attendanceTeachers', icon: 'schedule', route: '/attendance/teachers', permission: 'teacher_attendance.view' },
       { labelKey: 'nav.behavior', icon: 'shield', route: '/behavior', permission: 'behavior.view' },
@@ -54,9 +61,13 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     items: [
       { labelKey: 'nav.teacherMonitoring', icon: 'supervisor_account', route: '/teacher-monitoring', permission: 'teacher_monitoring.view' },
       { labelKey: 'nav.lessonPlans', icon: 'menu_book', route: '/lesson-plans', permission: 'lesson_plans.view' },
+      { labelKey: 'nav.prepApproval', icon: 'fact_check', route: '/lesson-prep-approvals/department', permission: 'lesson_plans.view' },
       { labelKey: 'nav.subjectResults', icon: 'bar_chart', route: '/subject-results', permission: 'subject_results.view' },
       { labelKey: 'nav.academicNotes', icon: 'sticky_note_2', route: '/academic-notes', permission: 'academic_notes.view' },
-      { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.manage' }
+      { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.manage' },
+      { labelKey: 'nav.classSwap', icon: 'swap_horiz', route: '/class-swaps', permission: 'class_swap.approve' },
+      { labelKey: 'nav.records', icon: 'folder', route: '/records', permission: 'records.approve' },
+      { labelKey: 'nav.tasks', icon: 'check_box', route: '/tasks', permission: 'tasks.create' }
     ]
   },
   {
@@ -68,6 +79,9 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { labelKey: 'nav.assignments', icon: 'assignment', route: '/assignments', permission: 'assignments.view' },
       { labelKey: 'nav.grades', icon: 'grade', route: '/grades', permission: 'grades.view' },
       { labelKey: 'nav.notes', icon: 'comment', route: '/notes', permission: 'notes.view' },
+      { labelKey: 'nav.classSwap', icon: 'swap_horiz', route: '/class-swaps', permission: 'class_swap.request' },
+      { labelKey: 'nav.records', icon: 'folder', route: '/records', permission: 'records.manage' },
+      { labelKey: 'nav.tasks', icon: 'check_box', route: '/tasks', permission: 'tasks.view' },
       { labelKey: 'nav.resourceBank', icon: 'folder_open', route: '/resource-bank', permission: 'resource_bank.view' }
     ]
   },

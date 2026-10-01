@@ -31,6 +31,7 @@ public class StudentDto
     public string? GuardianPhone { get; set; }
     public string? Status { get; set; }
     public string? Notes { get; set; }
+    public string? PhotoUrl { get; set; }
     public long? ClassId { get; set; }
     public string? ClassName { get; set; }
     public long? AcademicStageId { get; set; }

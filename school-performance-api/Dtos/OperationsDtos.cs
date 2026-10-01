@@ -35,34 +35,134 @@ public class MeetingRequest
 }
 
 // ---- Tasks ----
+public class AssignableUserDto
+{
+    public long Id { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string RoleLabel { get; set; } = string.Empty;
+}
+
+public class TaskAssigneeDto
+{
+    public long UserId { get; set; }
+    public string FullName { get; set; } = string.Empty;
+    public string Status { get; set; } = "NEW";
+    public string StatusLabel { get; set; } = string.Empty;
+    public DateTime? CompletedAt { get; set; }
+    public string? CompletionComment { get; set; }
+}
+
+public class TaskActivityDto
+{
+    public string Action { get; set; } = string.Empty;
+    public string ActionLabel { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public string RoleLabel { get; set; } = string.Empty;
+    public DateTime At { get; set; }
+    public string? Comment { get; set; }
+}
+
 public class TaskDto
 {
     public long? Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? Assignee { get; set; }
+    public string? AssignedByName { get; set; }
+    public long? AssignedById { get; set; }
     /// <summary>"yyyy-MM-dd"</summary>
     public string? DueDate { get; set; }
     public string Priority { get; set; } = "MEDIUM";
+    public string PriorityLabel { get; set; } = string.Empty;
     public string Status { get; set; } = "NEW";
+    public string StatusLabel { get; set; } = string.Empty;
+    public string? Notes { get; set; }
     public long? MeetingId { get; set; }
     public string? MeetingTitle { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public int CompletedCount { get; set; }
+    public int AssigneeCount { get; set; }
+    public bool CanEdit { get; set; }
+    public bool CanCancel { get; set; }
+    public bool CanStart { get; set; }
+    public bool CanComplete { get; set; }
+    public bool CanComment { get; set; }
+    public List<TaskAssigneeDto> Assignees { get; set; } = [];
+    public List<TaskActivityDto>? Activities { get; set; }
+}
+
+public class TaskListResponse
+{
+    public List<TaskDto> Items { get; set; } = [];
+    public TaskSummaryDto Summary { get; set; } = new();
+}
+
+public class TaskSummaryDto
+{
+    public int Total { get; set; }
+    public int NewCount { get; set; }
+    public int InProgress { get; set; }
+    public int Overdue { get; set; }
+    public int Completed { get; set; }
 }
 
 public class TaskRequest
 {
     [Required(ErrorMessage = "عنوان المهمة مطلوب")]
     public string Title { get; set; } = string.Empty;
-    public string? Description { get; set; }
+    [Required(ErrorMessage = "وصف المهمة مطلوب")]
+    public string Description { get; set; } = string.Empty;
     public string? Assignee { get; set; }
+    public List<long>? AssigneeIds { get; set; }
     public string? DueDate { get; set; }
     public string? Priority { get; set; }
     public string? Status { get; set; }
+    public string? Notes { get; set; }
     public long? MeetingId { get; set; }
     public string? MeetingTitle { get; set; }
 }
 
+public class TaskCommentRequest
+{
+    public string? Comment { get; set; }
+}
+
+public class TaskNoticeDto
+{
+    public long Id { get; set; }
+    public long TaskId { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+
 // ---- Attendance ----
+/// <summary>A teaching period whose attendance the teacher has already saved.</summary>
+public class AttendanceSlotDto
+{
+    public long ClassId { get; set; }
+    public int Period { get; set; }
+}
+
+public class SendAttendanceReminderRequest
+{
+    public long ClassId { get; set; }
+    [Range(1, 7)] public int Period { get; set; }
+    public string Date { get; set; } = string.Empty;
+}
+
+public class AttendanceReminderDto
+{
+    public long Id { get; set; }
+    public long ClassId { get; set; }
+    public string ClassName { get; set; } = string.Empty;
+    public int Period { get; set; }
+    public string Subject { get; set; } = string.Empty;
+    public string Date { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public string TeacherName { get; set; } = string.Empty;
+    public string Source { get; set; } = string.Empty;
+}
+
 /// <summary>Mirrors the frontend AttendanceRecord shape.</summary>
 public class AttendanceRecordDto
 {
@@ -81,6 +181,8 @@ public class AttendanceRecordDto
     public string? Notes { get; set; }
     /// <summary>Wing supervisor who last changed this period's status. Empty when only the teacher recorded it.</summary>
     public string? WingSupervisorName { get; set; }
+    /// <summary>"HH:mm" when a student was marked late.</summary>
+    public string? LateTime { get; set; }
     /// <summary>"HH:mm" — teachers only.</summary>
     public string? CheckInTime { get; set; }
     /// <summary>"HH:mm" — mid-day presence check, teachers only.</summary>

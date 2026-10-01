@@ -6,7 +6,7 @@ export interface DashboardStats {
   openRequestsCount: number;
   alertsCount: number;
   recentMeetings: { id: number; title: string; date: string }[];
-  recentTasks: { id: number; title: string; dueDate: string; status: string }[];
+  recentTasks: { id: number; title: string; dueDate: string; status: string; assignedByName?: string }[];
 }
 
 export interface AttendanceRecord {
@@ -24,6 +24,8 @@ export interface AttendanceRecord {
   periodMarks?: { period: number; status: string; subject?: string | null }[];
   /** Wing supervisor who last changed this period's status. */
   wingSupervisorName?: string | null;
+  /** "HH:mm" when the student was marked late. */
+  lateTime?: string | null;
   notes?: string | null;
   /** "HH:mm", teachers only */
   checkInTime?: string | null;
@@ -76,11 +78,63 @@ export interface SchoolTask {
   title: string;
   description: string;
   assignee: string;
+  assignedByName?: string;
+  assignedById?: number;
   dueDate: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  status: 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'OVERDUE';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  priorityLabel?: string;
+  status: 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'OVERDUE' | 'CANCELLED';
+  statusLabel?: string;
+  notes?: string;
   meetingId?: number;
   meetingTitle?: string;
+  createdAt?: string;
+  completedCount?: number;
+  assigneeCount?: number;
+  canEdit?: boolean;
+  canCancel?: boolean;
+  canStart?: boolean;
+  canComplete?: boolean;
+  canComment?: boolean;
+  assignees?: TaskAssigneeRow[];
+  activities?: TaskActivityRow[];
+  /** Used only when creating/updating from the form. */
+  assigneeIds?: number[];
+}
+
+export interface TaskAssigneeRow {
+  userId: number;
+  fullName: string;
+  status: string;
+  statusLabel: string;
+  completedAt?: string;
+  completionComment?: string;
+}
+
+export interface TaskActivityRow {
+  action: string;
+  actionLabel: string;
+  userName: string;
+  roleLabel: string;
+  at: string;
+  comment?: string;
+}
+
+export interface TaskListResponse {
+  items: SchoolTask[];
+  summary: { total: number; newCount: number; inProgress: number; overdue: number; completed: number };
+}
+
+export interface AssignableUser {
+  id: number;
+  fullName: string;
+  roleLabel: string;
+}
+
+export interface TaskNotice {
+  id: number;
+  taskId: number;
+  message: string;
 }
 
 export interface AlertItem {
@@ -104,7 +158,45 @@ export interface LessonPrep {
   title: string;
   lessonDate: string;
   fileName?: string;
+  /** App path of a bundled PDF. */
+  previewUrl?: string;
+  /** Rendered pages of that PDF, shown on the class page. */
+  previewImage?: string;
+  /** Data URL for an uploaded PDF, so the class page can show it inline. */
+  fileData?: string;
   description?: string;
+}
+
+/** Optional approval of an existing preparation. The preparation itself stays usable without one. */
+export type PrepApprovalAuthority = 'DEPARTMENT' | 'ADMINISTRATION';
+export type PrepApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'RETURNED';
+
+export interface PrepApprovalEvent {
+  action: 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'RETURNED';
+  actionLabel: string;
+  userName: string;
+  roleLabel: string;
+  at: string;
+  comment?: string;
+}
+
+export interface PrepApprovalRequest {
+  id?: number;
+  prepId: number;
+  authority: PrepApprovalAuthority;
+  status: PrepApprovalStatus;
+  teacherId?: number | null;
+  teacherName: string;
+  departmentId?: number | null;
+  departmentName?: string;
+  subject: string;
+  stageName: string;
+  lessonNumber?: number;
+  title: string;
+  fileName?: string;
+  note?: string;
+  submittedAt: string;
+  events: PrepApprovalEvent[];
 }
 
 export interface LessonPlan {
@@ -272,12 +364,40 @@ export interface TeacherNote {
   content: string;
   noteDate: string;
   teacherName?: string;
+  /** Disciplinary action taken by wing supervisor / senior leadership. */
+  action?: ReportActionKind | null;
+  actionBy?: string | null;
+  actionAt?: string | null;
+}
+
+/** Actions available on teacher discipline reports. */
+export type ReportActionKind =
+  | 'PLEDGE'
+  | 'PARENT_SUMMON'
+  | 'SUSPEND_1'
+  | 'SUSPEND_2'
+  | 'SUSPEND_3'
+  | 'DISCIPLINE_BOARD';
+
+export const REPORT_ACTION_OPTIONS: { id: ReportActionKind; label: string }[] = [
+  { id: 'PLEDGE', label: 'تعهد' },
+  { id: 'PARENT_SUMMON', label: 'استدعاء ولي الأمر' },
+  { id: 'SUSPEND_1', label: 'فصل يوم واحد' },
+  { id: 'SUSPEND_2', label: 'فصل يومين' },
+  { id: 'SUSPEND_3', label: 'فصل ثلاثة أيام' },
+  { id: 'DISCIPLINE_BOARD', label: 'مجلس نظام' }
+];
+
+export function reportActionLabel(action?: ReportActionKind | null): string {
+  return REPORT_ACTION_OPTIONS.find(option => option.id === action)?.label ?? '—';
 }
 
 export interface ClassAttendanceRow {
   id: number;
   studentName: string;
   status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED';
+  /** "HH:mm" captured when the student was marked late. */
+  lateTime?: string | null;
 }
 
 export interface TeacherMonitoringRecord {

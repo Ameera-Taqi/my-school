@@ -11,8 +11,9 @@ export class DetailDialogService {
   open(data: DetailDialogData): void {
     this.dialog.open(DetailDialogComponent, {
       data,
-      width: '480px',
+      width: '560px',
       maxWidth: '95vw',
+      panelClass: 'sp-detail-dialog',
       direction: this.lang.direction(),
       autoFocus: false
     });

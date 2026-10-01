@@ -101,6 +101,7 @@ export const MATERIAL_TO_UICON: Record<string, string> = {
   person_add: 'user-add',
   person_off: 'user-slash',
   phone: 'phone-call',
+  photo_camera: 'camera',
   picture_as_pdf: 'file-pdf',
   priority_high: 'exclamation',
   public: 'globe',

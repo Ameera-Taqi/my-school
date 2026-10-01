@@ -18,6 +18,7 @@ import { HasPermissionPipe } from '../../shared/pipes/has-permission.pipe';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 import { ToastService } from '../../shared/services/toast.service';
 import { AttendanceApiService } from '../services/attendance-api.service';
+import { AttendanceReminderService } from '../services/attendance-reminder.service';
 import { AttendancePdfData, AttendancePdfService } from '../services/attendance-pdf.service';
 import { AcademicStageApiService } from '../../academic-stages/services/academic-stage-api.service';
 import { SchoolClassApiService } from '../../school-classes/services/school-class-api.service';
@@ -83,13 +84,36 @@ import { forkJoin, Observable } from 'rxjs';
     .violation-pill[data-tone="flag"]:hover { background: var(--color-success); color: #fff; }
     .violation-pill[data-tone="assembly"],
     .violation-pill[data-tone="assembly"]:hover { background: var(--color-danger); color: #fff; }
+    .attendance-send {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: #e11d48;
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .attendance-send.is-sent { color: #059669; }
+    .attendance-send .attendance-lamp {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 999px;
+      background: #e11d48;
+      box-shadow: 0 0 0 2px #fff, 0 0 6px #e11d48;
+    }
+    .attendance-send .attendance-lamp.is-sent {
+      background: #059669;
+      box-shadow: 0 0 0 2px #fff, 0 0 6px #059669;
+    }
   `]
 })
 export class StudentAttendancePageComponent implements OnInit {
   @ViewChild('pdfExportRoot') pdfExportRoot?: ElementRef<HTMLElement>;
+  @ViewChild(HomeClassScheduleComponent) timetable?: HomeClassScheduleComponent;
 
   private readonly fb = inject(FormBuilder);
   private readonly attendanceService = inject(AttendanceApiService);
+  private readonly reminders = inject(AttendanceReminderService);
   private readonly pdfService = inject(AttendancePdfService);
   private readonly stageService = inject(AcademicStageApiService);
   private readonly classService = inject(SchoolClassApiService);
@@ -136,6 +160,30 @@ export class StudentAttendancePageComponent implements OnInit {
     else if (this.sheetMode === 'period') this.studentCols = ['personName', 'status', 'wingSupervisor'];
     else this.studentCols = ['personName', 'status'];
   }
+
+  /** Same green/red state as the lamp on the open subject card. */
+  get periodSubmitted(): boolean {
+    const classId = this.activeClassId;
+    const period = this.activePeriod;
+    if (!classId || !period) return false;
+    return this.timetable?.isSubmitted(classId, period) ?? false;
+  }
+
+  get periodLampLabel(): string {
+    const classId = this.activeClassId;
+    const period = this.activePeriod;
+    if (!classId || !period) return 'لم يحن موعد الحصة';
+    return this.timetable?.lampTitle(classId, period) ?? 'لم يحن موعد الحصة';
+  }
+
+  get periodAttendanceSaved(): boolean {
+    const classId = this.activeClassId;
+    const period = this.activePeriod;
+    if (!classId || !period) return false;
+    return this.timetable?.hasSavedAttendance(classId, period) ?? false;
+  }
+
+  reminding = false;
 
   get saveLabel(): string {
     if (this.sheetMode === 'assembly') return 'حفظ المخالفات';
@@ -273,6 +321,25 @@ export class StudentAttendancePageComponent implements OnInit {
     return records.filter(r => r.status === status).length;
   }
 
+  remindTeacher(): void {
+    const classId = this.activeClassId;
+    const period = this.activePeriod;
+    if (!classId || !period || this.periodAttendanceSaved || this.reminding) return;
+    this.reminding = true;
+    this.attendanceService.sendReminder({
+      classId,
+      period,
+      date: this.formatDate(this.studentFilters.controls.date.value)
+    }).subscribe({
+      next: (res) => {
+        this.reminding = false;
+        this.toast.success(res.message);
+        this.reminders.refresh();
+      },
+      error: (e) => { this.reminding = false; this.toast.fromError(e); }
+    });
+  }
+
   saveStudents(): void {
     if (this.sheetMode === 'assembly') {
       this.saveViolations();
@@ -284,7 +351,10 @@ export class StudentAttendancePageComponent implements OnInit {
     this.attendanceService.saveStudentAttendance(records).subscribe({
       next: () => {
         this.toast.success(period > 0 ? 'تم حفظ حضور الحصة' : 'تم حفظ الحضور اليومي');
-        if (period > 0) this.loadStudents();
+        if (period > 0) {
+          this.loadStudents();
+          this.timetable?.reloadSubmitted();
+        }
       },
       error: (e) => this.toast.fromError(e)
     });

@@ -15,12 +15,30 @@ public class Attendance : BaseEntity
     /// <summary>0 = daily attendance. 1–7 = a teaching period.</summary>
     public int Period { get; set; }
     public AttendanceStatus Status { get; set; }
+    /// <summary>Clock time when this student was marked late. Cleared for any other status.</summary>
+    public TimeOnly? LateTime { get; set; }
     public string? Notes { get; set; }
     public long? RecordedById { get; set; }
     public User? RecordedBy { get; set; }
     /// <summary>Set only when a wing supervisor changes this period's status. A teacher save leaves it in place.</summary>
     public long? WingEditedById { get; set; }
     public User? WingEditedBy { get; set; }
+}
+
+/// <summary>A reminder asking the subject teacher to submit period attendance.</summary>
+public class AttendanceReminder : BaseEntity
+{
+    public long TeacherId { get; set; }
+    public Teacher Teacher { get; set; } = null!;
+    public long SchoolClassId { get; set; }
+    public SchoolClass SchoolClass { get; set; } = null!;
+    public int Period { get; set; }
+    public DateOnly AttendanceDate { get; set; }
+    public string Subject { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    /// <summary>AUTO when half the period has passed. SUPERVISOR when the wing supervisor presses the button.</summary>
+    public string Source { get; set; } = "AUTO";
+    public DateTime? ReadAt { get; set; }
 }
 
 /// <summary>One teacher's attendance for one day.</summary>

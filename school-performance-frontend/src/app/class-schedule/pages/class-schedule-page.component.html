@@ -66,8 +66,20 @@
             </mat-select>
           </mat-form-field>
         }
+        <mat-form-field appearance="outline" class="filter-field w-[180px] text-[0.875rem]" subscriptSizing="dynamic">
+          <mat-label>التاريخ</mat-label>
+          <input matInput [matDatepicker]="scheduleDate" [matDatepickerFilter]="schoolDay" formControlName="date" readonly>
+          <mat-datepicker-toggle matIconSuffix [for]="scheduleDate"></mat-datepicker-toggle>
+          <mat-datepicker #scheduleDate></mat-datepicker>
+        </mat-form-field>
+        @if (filter.controls.date.value) {
+          <button mat-icon-button type="button" matTooltip="إلغاء فلتر التاريخ" (click)="clearDate()" aria-label="إلغاء فلتر التاريخ">
+            <app-ui-icon name="close"></app-ui-icon>
+          </button>
+        }
         @if (!gridLoading) {
           <span class="inline-flex items-center gap-[0.35rem] text-[0.85rem] text-muted"><app-ui-icon name="event_note" class="size-[18px] text-lg"></app-ui-icon>
+            @if (focusedDayLabel) { <span class="font-bold text-primary-mid">{{ focusedDayLabel }} ·</span> }
             @if (mode === 'class') { {{ filledCount }} من {{ classRequired }} حصة مطلوبة · {{ totalSlots - filledCount }} خانة فارغة } @else { {{ filledCount }} حصة أسبوعياً }
           </span>
         }
@@ -99,7 +111,12 @@
               <tr>
                 <th class="sticky top-0 z-[1] w-16 border-b border-border bg-[#f8f9fc] px-[0.4rem] py-[0.6rem] text-center align-middle text-[0.82rem] font-bold text-muted">الحصة</th>
                 @for (day of days; track day.key) {
-                  <th class="sticky top-0 z-[1] border-b border-s border-border bg-[#f8f9fc] px-[0.4rem] py-[0.6rem] text-center align-middle text-[0.82rem] font-bold text-muted">{{ day.label }}</th>
+                  <th
+                    class="sticky top-0 z-[1] border-b border-s border-border bg-[#f8f9fc] px-[0.4rem] py-[0.55rem] text-center align-middle text-[0.82rem] font-bold text-muted"
+                    [class.day-col--focus]="isFocusedDay(day.key)">
+                    <span class="block leading-tight">{{ day.label }}</span>
+                    <span class="mt-0.5 block text-[0.7rem] font-semibold text-faint">{{ dayDateLabel(day.key) }}</span>
+                  </th>
                 }
               </tr>
             </thead>
@@ -116,6 +133,8 @@
                       class="group h-[68px] border-b border-s border-border p-1 text-center align-middle transition-colors duration-100"
                       [class.cursor-pointer]="canManage() && mode === 'class'"
                       [class.hover:bg-primary-bg]="canManage() && mode === 'class'"
+                      [class.day-cell--focus]="isFocusedDay(day.key)"
+                      [class.day-cell--dim]="isDimmedDay(day.key)"
                       (click)="openSlot(day.key, period, entry)">
                       @if (entry) {
                         <div

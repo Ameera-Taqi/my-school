@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { periodRange } from '../../../core/constants/bell-schedule';
+import { ScheduleDay } from '../../../core/models';
 import { ScheduleApiService } from '../../../class-schedule/services/schedule-api.service';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
@@ -58,7 +59,10 @@ type ClassTab = 'preparation' | 'attendance' | 'grades' | 'behavior';
           <app-class-session-prep
             [className]="className"
             [stageName]="stageName"
-            [subject]="subject">
+            [subject]="subject"
+            [classId]="classId"
+            [day]="day"
+            [period]="period">
           </app-class-session-prep>
         </div>
       } @else if (tab === 'attendance') {
@@ -134,6 +138,8 @@ export class MyClassLessonPageComponent implements OnInit {
   stageId: number | null = null;
   subject = '';
   period: number | null = null;
+  day: ScheduleDay | null = null;
+  private loadedClassId: number | null = null;
 
   get sessionSubtitle(): string {
     const period = this.period ? `${this.lang.translate('home.schedule.period').replace('{n}', String(this.period))} (${periodRange(this.period)}) · ` : '';
@@ -152,16 +158,29 @@ export class MyClassLessonPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const period = Number(this.route.snapshot.queryParamMap.get('period'));
-    this.period = period > 0 ? period : null;
-    const classId = Number(this.route.snapshot.paramMap.get('classId'));
+    const days: ScheduleDay[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY'];
+    this.route.queryParamMap.subscribe(query => {
+      const period = Number(query.get('period'));
+      this.period = period > 0 ? period : null;
+      const day = query.get('day') ?? '';
+      this.day = days.includes(day as ScheduleDay) ? day as ScheduleDay : null;
+    });
+    this.route.paramMap.subscribe(params => this.loadClass(Number(params.get('classId'))));
+  }
+
+  private loadClass(classId: number): void {
+    if (classId === this.loadedClassId && this.found) return;
+    this.loadedClassId = classId;
     const teacherId = this.auth.user()?.teacherId;
     if (!teacherId || !classId) {
       this.loading = false;
+      this.found = false;
       return;
     }
+    this.loading = true;
     this.api.getEntries({ teacherId, classId }).subscribe({
       next: entries => {
+        if (classId !== this.loadedClassId) return;
         const mine = entries.find(entry => entry.classId === classId);
         this.found = !!mine;
         if (mine) {
@@ -173,7 +192,11 @@ export class MyClassLessonPageComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: () => { this.loading = false; }
+      error: () => {
+        if (classId !== this.loadedClassId) return;
+        this.loading = false;
+        this.found = false;
+      }
     });
   }
 }

@@ -54,7 +54,7 @@ export class GradesPageComponent implements OnInit {
   loading = false;
   saving = false;
   sheetLoaded = false;
-  displayedColumns: string[] = ['rowNumber', 'studentName', 'className'];
+  displayedColumns: string[] = ['rowNumber', 'studentName'];
 
   filters = this.fb.group({
     className: ['', Validators.required]
@@ -279,9 +279,9 @@ export class GradesPageComponent implements OnInit {
     }
   }
 
-  /** The class column repeats the same value when the sheet is locked to one class. */
+  /** Class is chosen in the filter, so it is not repeated as a table column. */
   private identityColumns(): string[] {
-    return this.lockedClass ? ['rowNumber', 'studentName'] : ['rowNumber', 'studentName', 'className'];
+    return ['rowNumber', 'studentName'];
   }
 
   private nextColumnId(): string {

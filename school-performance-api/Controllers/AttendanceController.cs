@@ -19,12 +19,44 @@ public class AttendanceController : ControllerBase
         _currentUser = currentUser;
     }
 
+    [HttpGet("students/slots")]
+    [RequirePermission(Perms.AttendanceView, Perms.AttendanceManage, Perms.AttendanceRecordView, Perms.MyClassesView, Perms.WingSupervisorView)]
+    public async Task<ActionResult<List<AttendanceSlotDto>>> SubmittedSlots([FromQuery] string date)
+    {
+        if (string.IsNullOrWhiteSpace(date)) throw new AppException("التاريخ مطلوب");
+        return Ok(await _service.SubmittedPeriodSlotsAsync(date));
+    }
+
     [HttpGet("students")]
     [RequirePermission(Perms.AttendanceView, Perms.AttendanceManage, Perms.AttendanceRecordView, Perms.MyClassesView, Perms.WingSupervisorView)]
     public async Task<ActionResult<List<AttendanceRecordDto>>> Students([FromQuery] long classId, [FromQuery] string date, [FromQuery] int period = 0)
     {
         if (classId <= 0 || string.IsNullOrWhiteSpace(date)) throw new AppException("الفصل والتاريخ مطلوبان");
         return Ok(await _service.GetStudentAttendanceAsync(classId, date, period));
+    }
+
+    [HttpPost("reminders")]
+    [RequirePermission(Perms.WingSupervisorView)]
+    public async Task<IActionResult> SendReminder([FromBody] SendAttendanceReminderRequest request)
+    {
+        if (request.ClassId <= 0 || string.IsNullOrWhiteSpace(request.Date)) throw new AppException("الفصل والتاريخ مطلوبان");
+        var reminder = await _service.SendReminderAsync(request.ClassId, request.Period, request.Date);
+        return Ok(new { message = $"تم إرسال التذكير إلى {reminder.TeacherName}", teacherName = reminder.TeacherName, reminder });
+    }
+
+    [HttpGet("reminders/mine")]
+    public async Task<ActionResult<List<AttendanceReminderDto>>> MyReminders()
+    {
+        var user = await _currentUser.RequireUserAsync();
+        return Ok(await _service.MyRemindersAsync(user));
+    }
+
+    [HttpPost("reminders/{id:long}/read")]
+    public async Task<IActionResult> ReadReminder(long id)
+    {
+        var user = await _currentUser.RequireUserAsync();
+        await _service.MarkReminderReadAsync(user, id);
+        return Ok(new { message = "تمت قراءة التنبيه" });
     }
 
     [HttpPut("students")]

@@ -90,6 +90,8 @@ export interface Student {
   guardianPhone?: string;
   status?: string;
   notes?: string;
+  /** Compressed data-URL or remote URL for the student portrait. */
+  photoUrl?: string | null;
   classId?: number;
   className?: string;
   academicStageId?: number;
@@ -175,6 +177,8 @@ export interface SidebarItem {
   icon: string;
   route: string;
   permission: string | string[];
+  /** When set, the item is shown only to users who hold one of these roles. */
+  roles?: string[];
 }
 
 export interface SidebarSection {

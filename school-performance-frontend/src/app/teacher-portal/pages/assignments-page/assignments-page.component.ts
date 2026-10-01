@@ -103,7 +103,7 @@ export class AssignmentsPageComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void { this.attachTableControls(); }
 
   selectStage(name: string): void {
-    this.selectedStage = name;
+    this.selectedStage = this.selectedStage === name ? '' : name;
     this.applyStage();
   }
 
@@ -120,8 +120,8 @@ export class AssignmentsPageComponent implements OnInit, AfterViewInit {
         this.entries = entries;
         this.assignments = assignments;
         this.stages = this.buildStages();
-        if (!this.stages.some(stage => stage.name === this.selectedStage)) {
-          this.selectedStage = this.stages[0]?.name ?? '';
+        if (this.selectedStage && !this.stages.some(stage => stage.name === this.selectedStage)) {
+          this.selectedStage = '';
         }
         this.applyStage();
         this.loading = false;
@@ -218,6 +218,10 @@ export class AssignmentsPageComponent implements OnInit, AfterViewInit {
   }
 
   private applyStage(): void {
+    if (!this.selectedStage) {
+      this.dataSource.data = [];
+      return;
+    }
     this.dataSource.data = this.assignments.filter(item => this.stageOf(item) === this.selectedStage);
     this.dataSource.filter = this.query.toLowerCase();
     this.paginator?.firstPage();

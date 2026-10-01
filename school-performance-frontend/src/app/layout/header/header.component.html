@@ -31,17 +31,80 @@
       <span class="max-md:hidden">{{ langService.isEnglish() ? ('menu.lang.ar' | translate) : ('menu.lang.en' | translate) }}</span>
     </button>
 
-    @if (canViewAlerts()) {
-      <a
-        routerLink="/alerts"
-        class="relative inline-flex size-10 cursor-pointer items-center justify-center rounded-sp-sm bg-slate-100 p-[0.55rem] text-[0.78rem] font-semibold text-slate-600 no-underline transition-colors hover:bg-slate-200 hover:text-text"
-        [attr.aria-label]="'nav.alerts' | translate"
-        [matTooltip]="'nav.alerts' | translate">
-        <app-ui-icon name="notifications" class="text-[1.05rem] text-primary-mid"></app-ui-icon>
-        @if (alertsBadge()) {
-          <span class="absolute top-2 end-2 size-2 rounded-full bg-danger shadow-[0_0_0_2px_#fff]" aria-hidden="true"></span>
+    @if (showNotices()) {
+      <div class="relative">
+        <button
+          type="button"
+          class="relative inline-flex size-10 cursor-pointer items-center justify-center rounded-sp-sm bg-slate-100 p-[0.55rem] text-slate-600 transition-colors hover:bg-slate-200 hover:text-text"
+          aria-label="الإشعارات"
+          matTooltip="الإشعارات"
+          (click)="toggleNotices()">
+          <app-ui-icon name="notifications" class="text-[1.05rem] text-primary-mid"></app-ui-icon>
+          @if (noticeCount()) {
+            <span class="absolute top-1 end-1 flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[0.62rem] font-bold leading-4 text-white shadow-[0_0_0_2px_#fff]">
+              {{ noticeCount() > 9 ? '9+' : noticeCount() }}
+            </span>
+          }
+        </button>
+        @if (noticesOpen()) {
+          <button type="button" class="fixed inset-0 z-40 cursor-default border-0 bg-transparent p-0" aria-label="إغلاق" (click)="closeNotices()"></button>
+          <div class="absolute top-[calc(100%+0.45rem)] left-0 z-50 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-border bg-white text-start shadow-lg">
+            <p class="m-0 border-b border-border px-3 py-2 text-[0.82rem] font-bold text-text">الإشعارات</p>
+            <div class="max-h-96 overflow-auto">
+              @if (isTeacher() && reminders.items().length) {
+                <p class="m-0 bg-slate-50 px-3 py-1.5 text-[0.72rem] font-bold text-muted">الحضور</p>
+                <ul class="m-0 list-none p-0">
+                  @for (item of reminders.items(); track item.id) {
+                    <li class="border-b border-border px-3 py-2.5">
+                      <p class="m-0 text-[0.8rem] font-semibold leading-snug text-text">{{ item.message }}</p>
+                      <button type="button" class="mt-1 cursor-pointer border-0 bg-transparent p-0 text-[0.75rem] font-bold text-primary" (click)="reminders.dismiss(item)">تم الاطلاع</button>
+                    </li>
+                  }
+                </ul>
+              }
+              @if (canViewSwaps() && swapNotices.items().length) {
+                <p class="m-0 bg-slate-50 px-3 py-1.5 text-[0.72rem] font-bold text-muted">تبديل الحصص</p>
+                <ul class="m-0 list-none p-0">
+                  @for (item of swapNotices.items(); track item.id) {
+                    <li class="border-b border-border px-3 py-2.5">
+                      <a class="m-0 block text-[0.8rem] font-semibold leading-snug text-text no-underline" [routerLink]="['/class-swaps', item.requestId]" (click)="closeNotices()">{{ item.message }}</a>
+                      <button type="button" class="mt-1 cursor-pointer border-0 bg-transparent p-0 text-[0.75rem] font-bold text-primary" (click)="swapNotices.dismiss(item)">تم الاطلاع</button>
+                    </li>
+                  }
+                </ul>
+              }
+              @if (canViewRecords() && recordNotices.items().length) {
+                <p class="m-0 bg-slate-50 px-3 py-1.5 text-[0.72rem] font-bold text-muted">السجلات</p>
+                <ul class="m-0 list-none p-0">
+                  @for (item of recordNotices.items(); track item.id) {
+                    <li class="border-b border-border px-3 py-2.5">
+                      <a class="m-0 block text-[0.8rem] font-semibold leading-snug text-text no-underline" [routerLink]="['/records', item.recordId]" (click)="closeNotices()">{{ item.message }}</a>
+                      <button type="button" class="mt-1 cursor-pointer border-0 bg-transparent p-0 text-[0.75rem] font-bold text-primary" (click)="recordNotices.dismiss(item)">تم الاطلاع</button>
+                    </li>
+                  }
+                </ul>
+              }
+              @if (canViewTasks() && taskNotices.items().length) {
+                <p class="m-0 bg-slate-50 px-3 py-1.5 text-[0.72rem] font-bold text-muted">المهام</p>
+                <ul class="m-0 list-none p-0">
+                  @for (item of taskNotices.items(); track item.id) {
+                    <li class="border-b border-border px-3 py-2.5">
+                      <a class="m-0 block text-[0.8rem] font-semibold leading-snug text-text no-underline" routerLink="/tasks" (click)="closeNotices()">{{ item.message }}</a>
+                      <button type="button" class="mt-1 cursor-pointer border-0 bg-transparent p-0 text-[0.75rem] font-bold text-primary" (click)="taskNotices.dismiss(item)">تم الاطلاع</button>
+                    </li>
+                  }
+                </ul>
+              }
+              @if (!noticeCount()) {
+                <p class="m-0 px-3 py-4 text-[0.8rem] text-muted">لا توجد إشعارات جديدة.</p>
+              }
+              @if (canViewAlerts()) {
+                <a class="block border-t border-border px-3 py-2.5 text-[0.8rem] font-bold text-primary no-underline" routerLink="/alerts" (click)="closeNotices()">عرض التنبيهات</a>
+              }
+            </div>
+          </div>
         }
-      </a>
+      </div>
     }
 
     <app-user-menu></app-user-menu>

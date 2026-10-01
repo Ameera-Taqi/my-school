@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { KanbanStage } from './kanban.models';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { KanbanStage, KanbanTask } from './kanban.models';
 import { KanbanTaskCardComponent } from './kanban-task-card.component';
 
 /** One workflow column. The stage title always comes from the stage input. */
@@ -15,7 +15,7 @@ import { KanbanTaskCardComponent } from './kanban-task-card.component';
       <div class="column-body" role="list">
         @for (task of stage.tasks; track task.id) {
           <div role="listitem">
-            <app-kanban-task-card [task]="task"></app-kanban-task-card>
+            <app-kanban-task-card [task]="task" (activate)="taskOpen.emit($event)"></app-kanban-task-card>
           </div>
         } @empty {
           @if (emptyLabel) {
@@ -82,6 +82,7 @@ import { KanbanTaskCardComponent } from './kanban-task-card.component';
 export class KanbanColumnComponent {
   @Input({ required: true }) stage!: KanbanStage;
   @Input() emptyLabel = '';
+  @Output() taskOpen = new EventEmitter<KanbanTask>();
 
   get headingId(): string {
     return `kanban-col-${this.stage.id}`;

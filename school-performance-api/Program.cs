@@ -100,9 +100,13 @@ builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<CalendarEventService>();
 builder.Services.AddScoped<MeetingService>();
 builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<TaskAssignmentScopeService>();
 builder.Services.AddScoped<AttendanceService>();
+builder.Services.AddHostedService<AttendanceReminderWorker>();
 builder.Services.AddScoped<OrgStructureService>();
 builder.Services.AddScoped<ScheduleService>();
+builder.Services.AddScoped<ClassSwapService>();
+builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<DataSeeder>();
 
 var app = builder.Build();

@@ -49,6 +49,9 @@ import { UiIconComponent } from '../../shared/icons/ui-icon.component';
               @for (t of stats?.recentTasks; track t.id) {
                 <li class="flex flex-col gap-[0.15rem] border-b border-border py-[0.55rem] last:border-b-0">
                   <span class="text-[0.92rem] font-semibold">{{ t.title }}</span>
+                  @if (t.assignedByName) {
+                    <span class="text-[0.78rem] text-muted">مسندة من: {{ t.assignedByName }}</span>
+                  }
                   <span class="flex items-center gap-1.5 text-[0.8rem] text-muted">
                     <span class="chip" [class]="'chip ' + taskChip(t.status)">{{ taskStatusLabels[t.status] || t.status }}</span>
                     {{ t.dueDate | appDate }}

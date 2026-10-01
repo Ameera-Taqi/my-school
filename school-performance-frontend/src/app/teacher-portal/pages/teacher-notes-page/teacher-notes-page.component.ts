@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -15,6 +17,7 @@ import { ConfirmService } from '../../../shared/services/confirm.service';
 import { TeacherPortalMockService } from '../../services/teacher-portal-mock.service';
 import { TeacherNoteFormDialogComponent } from '../../dialogs/teacher-note-form-dialog.component';
 import { TeacherNote } from '../../../core/models';
+import { AuthService } from '../../../core/services/auth.service';
 import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
 
 @Component({
@@ -32,6 +35,7 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly auth = inject(AuthService);
 
   // Setter form: the table lives inside @if blocks, so attach the moment Angular creates the paginator.
   @ViewChild(MatPaginator) set paginatorRef(p: MatPaginator | undefined) { this.paginator = p; this.attachTableControls(); }
@@ -44,26 +48,30 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   readonly dataSource = new MatTableDataSource<TeacherNote>([]);
   loading = true;
   query = '';
-  cols = ['studentName', 'className', 'noteType', 'noteDate', 'actions'];
+  cols = ['studentName', 'noteType', 'noteDate', 'actions'];
+  private notes: TeacherNote[] = [];
 
   get total(): number { return this.dataSource.data.length; }
   get filteredCount(): number { return this.dataSource.filteredData.length; }
 
   ngOnInit(): void {
     this.className = this.lockedClass || (this.route.snapshot.queryParamMap.get('className') ?? '');
-    if (this.className) this.cols = ['studentName', 'noteType', 'noteDate', 'actions'];
     this.dataSource.filterPredicate = (n, filter) =>
       [n.studentName, n.className, n.content, this.typeLabel(n.noteType)].join(' ').toLowerCase().includes(filter);
-    this.load();
+    this.auth.refreshCurrentUser().subscribe({
+      next: () => this.load(),
+      error: () => this.load()
+    });
   }
 
   ngAfterViewInit(): void { this.attachTableControls(); }
 
   load(): void {
     this.loading = true;
-    this.service.getNotes().subscribe({
-      next: (data) => {
-        this.dataSource.data = this.className ? data.filter(note => note.className === this.className) : data;
+    this.service.getNotes().pipe(catchError(() => of([] as TeacherNote[]))).subscribe({
+      next: notes => {
+        this.notes = notes;
+        this.applyClass();
         this.loading = false;
         setTimeout(() => this.attachTableControls());
       },
@@ -86,10 +94,16 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
   }
 
   openDialog(item?: TeacherNote): void {
+    if (!item && !this.className) return;
     const draft: TeacherNote | null = item ?? (this.className
       ? { studentName: '', className: this.className, noteType: 'BEHAVIOR', content: '', noteDate: '' }
       : null);
-    const ref = this.dialog.open(TeacherNoteFormDialogComponent, { width: '560px', maxWidth: '95vw', data: draft });
+    const ref = this.dialog.open(TeacherNoteFormDialogComponent, {
+      width: '680px',
+      maxWidth: 'calc(100vw - 32px)',
+      panelClass: 'sp-teacher-note-dialog',
+      data: draft
+    });
     ref.afterClosed().subscribe((result: TeacherNote | undefined) => {
       if (!result) return;
       this.service.saveNote(result).subscribe({
@@ -107,6 +121,14 @@ export class TeacherNotesPageComponent implements OnInit, AfterViewInit {
         error: (e) => this.toast.fromError(e)
       });
     });
+  }
+
+  private applyClass(): void {
+    this.dataSource.data = this.className
+      ? this.notes.filter(note => note.className === this.className)
+      : this.notes;
+    this.dataSource.filter = this.query.toLowerCase();
+    this.paginator?.firstPage();
   }
 
   private attachTableControls(): void {

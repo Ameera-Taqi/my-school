@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { DashboardStats } from '../../core/models';
+import { DashboardStats, SchoolTask, TaskListResponse, AlertItem } from '../../core/models';
 import { AcademicStageApiService } from '../../academic-stages/services/academic-stage-api.service';
 import { DepartmentApiService } from '../../departments/services/department-api.service';
 import { MeetingApiService } from '../../meetings/services/meeting-api.service';
@@ -9,7 +9,6 @@ import { TaskApiService } from '../../tasks/services/task-api.service';
 import { AttendanceApiService } from '../../attendance/services/attendance-api.service';
 import { InternalRequestMockService } from '../../internal-requests/services/internal-request-mock.service';
 import { AlertMockService } from '../../alerts/services/alert-mock.service';
-import { AlertItem } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
 
 export interface HomeStats extends Omit<DashboardStats, 'attendanceRate'> {
@@ -52,11 +51,12 @@ export class HomeStatsService {
   getStats(): Observable<HomeStats> {
     // Only call endpoints the user may access, so limited roles never trigger 403 toasts on the home page.
     const can = (...keys: string[]) => keys.some(k => this.auth.hasPermission(k));
+    const emptyTasks: TaskListResponse = { items: [], summary: { total: 0, newCount: 0, inProgress: 0, overdue: 0, completed: 0 } };
     return forkJoin({
       stages: can('students.view', 'dashboard.view', 'kpi.view', 'attendance.view') ? this.stageApi.getAll().pipe(catchError(() => of([]))) : of([]),
       departments: can('teachers.view', 'departments.view', 'dashboard.view', 'teacher_attendance.view') ? this.departmentApi.getAll().pipe(catchError(() => of([]))) : of([]),
       meetings: can('meetings.view', 'meetings.create') ? this.meetings.getAll().pipe(catchError(() => of([]))) : of([]),
-      tasks: can('tasks.view', 'tasks.create') ? this.tasks.getAll().pipe(catchError(() => of([]))) : of([]),
+      tasks: can('tasks.view', 'tasks.create') ? this.tasks.list('mine').pipe(catchError(() => of(emptyTasks))) : of(emptyTasks),
       requests: can('internal_requests.view') ? this.requests.getAll().pipe(catchError(() => of([]))) : of([]),
       alerts: can('alerts.view') ? this.alerts.getAll().pipe(catchError(() => of([]))) : of([]),
       attendance: can('dashboard.view', 'attendance.view', 'attendance.manage', 'teacher_attendance.view') ? this.attendance.getSummary().pipe(catchError(() => of(null))) : of(null)
@@ -68,13 +68,12 @@ export class HomeStatsService {
         const openRequests = requests.filter(r => r.status === 'NEW' || r.status === 'IN_REVIEW');
         const newAlerts = alerts.filter(a => a.status === 'NEW');
         const sortedMeetings = [...meetings].sort((a, b) => (b.meetingDate ?? '').localeCompare(a.meetingDate ?? ''));
-        const sortedTasks = [...tasks].sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''));
+        const assignedTasks = [...tasks.items].sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''));
+        const summary = tasks.summary;
 
         const studentRecorded = (attendance?.recorded ?? 0) > 0;
         const teacherRecorded = (attendance?.teachersRecorded ?? 0) > 0;
-        const tasksOverdueCount = tasks.filter(t => t.status === 'OVERDUE').length;
-        const tasksCompletedCount = tasks.filter(t => t.status === 'COMPLETED').length;
-        const tasksOpenCount = tasks.filter(t => t.status === 'NEW' || t.status === 'IN_PROGRESS').length;
+        const tasksOpenCount = summary.newCount + summary.inProgress;
         return {
           studentsCount: (attendance?.studentsTotal ?? 0) || studentsCount,
           teachersCount: (attendance?.teachersTotal ?? 0) || teachersCount,
@@ -90,14 +89,14 @@ export class HomeStatsService {
           teacherPresentRate: attendance?.teacherRate ?? null,
           teacherAbsentCount: teacherRecorded ? attendance!.teachersAbsent : null,
           teacherAbsentRate: attendance?.teacherAbsentRate ?? null,
-          tasksCount: tasks.length,
+          tasksCount: summary.total,
           tasksOpenCount,
-          tasksOverdueCount,
-          tasksCompletedCount,
+          tasksOverdueCount: summary.overdue,
+          tasksCompletedCount: summary.completed,
           openRequestsCount: openRequests.length,
           alertsCount: newAlerts.length,
           recentMeetings: sortedMeetings.slice(0, 4).map(m => ({ id: m.id!, title: m.title, date: m.meetingDate })),
-          recentTasks: sortedTasks.slice(0, 4).map(t => ({ id: t.id!, title: t.title, dueDate: t.dueDate, status: t.status })),
+          recentTasks: assignedTasks.slice(0, 4).map(t => ({ id: t.id!, title: t.title, dueDate: t.dueDate, status: t.status, assignedByName: t.assignedByName })),
           recentAlerts: [...alerts].sort((a, b) => b.alertDate.localeCompare(a.alertDate)).slice(0, 4),
           live: { students: true, teachers: true, classes: true, attendance: true, meetings: true, tasks: true, requests: false, alerts: false }
         };

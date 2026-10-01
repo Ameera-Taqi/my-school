@@ -27,6 +27,7 @@ import { UsersPageComponent } from './users/pages/users-page.component';
 import { MyClassesPageComponent } from './teacher-portal/pages/my-classes-page/my-classes-page.component';
 import { MyLessonsPageComponent } from './teacher-portal/pages/my-lessons-page/my-lessons-page.component';
 import { LessonPrepPageComponent } from './teacher-portal/pages/lesson-prep-page/lesson-prep-page.component';
+import { PrepApprovalPageComponent } from './teacher-portal/pages/prep-approval-page/prep-approval-page.component';
 import { MyClassLessonPageComponent } from './teacher-portal/pages/my-class-lesson-page/my-class-lesson-page.component';
 import { MyStudentsPageComponent } from './teacher-portal/pages/my-students-page/my-students-page.component';
 import { AttendanceRecordPageComponent } from './teacher-portal/pages/attendance-record-page/attendance-record-page.component';
@@ -41,6 +42,13 @@ import { ClassSchedulePageComponent } from './class-schedule/pages/class-schedul
 import { SettingsPageComponent } from './settings/pages/settings-page.component';
 import { ProfilePageComponent } from './profile/pages/profile-page.component';
 import { OrgStructurePageComponent } from './org-structure/pages/org-structure-page.component';
+import { StudentFilePageComponent } from './files/pages/student-file-page.component';
+import { TeacherFilePageComponent } from './files/pages/teacher-file-page.component';
+import { ClassSwapListPageComponent } from './class-swap/pages/class-swap-list-page.component';
+import { ClassSwapFormPageComponent } from './class-swap/pages/class-swap-form-page.component';
+import { ClassSwapDetailPageComponent } from './class-swap/pages/class-swap-detail-page.component';
+import { RecordsListPageComponent } from './records/pages/records-list-page.component';
+import { RecordDetailPageComponent } from './records/pages/record-detail-page.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -63,6 +71,8 @@ export const routes: Routes = [
       { path: 'tasks', component: TasksPageComponent, canActivate: [permissionGuard], data: { permission: 'tasks.view' } },
       { path: 'org-structure', component: OrgStructurePageComponent, canActivate: [permissionGuard], data: { permission: 'org_structure.view' } },
 
+      { path: 'student-file', component: StudentFilePageComponent, canActivate: [permissionGuard], data: { permission: ['students.view', 'wing_supervisor.view'], roles: ['SCHOOL_MANAGER', 'ASSISTANT_MANAGER', 'WING_SUPERVISOR', 'ADMIN'] } },
+      { path: 'teacher-file', component: TeacherFilePageComponent, canActivate: [permissionGuard], data: { permission: 'teachers.view', roles: ['SCHOOL_MANAGER', 'ASSISTANT_MANAGER'] } },
       { path: 'students', component: StagesListComponent, canActivate: [permissionGuard], data: { permission: 'students.view' } },
       { path: 'students/stages/:stageId', component: StageDetailsComponent, canActivate: [permissionGuard], data: { permission: 'students.view' } },
       { path: 'students/classes/:classId', component: ClassDetailsComponent, canActivate: [permissionGuard], data: { permission: 'students.view' } },
@@ -78,7 +88,14 @@ export const routes: Routes = [
 
       { path: 'teacher-monitoring', component: TeacherMonitoringPageComponent, canActivate: [permissionGuard], data: { permission: 'teacher_monitoring.view' } },
       { path: 'lesson-plans', component: LessonPlansPageComponent, canActivate: [permissionGuard], data: { permission: 'lesson_plans.view' } },
+      { path: 'lesson-prep-approvals/department', component: PrepApprovalPageComponent, canActivate: [permissionGuard], data: { permission: 'lesson_plans.view', audience: 'department' } },
+      { path: 'lesson-prep-approvals/administration', component: PrepApprovalPageComponent, canActivate: [permissionGuard], data: { permission: 'meetings.view', roles: ['ADMIN', 'SCHOOL_MANAGER', 'ASSISTANT_MANAGER'], audience: 'administration' } },
       { path: 'class-schedule', component: ClassSchedulePageComponent, canActivate: [permissionGuard], data: { permission: 'class_schedule.view' } },
+      { path: 'class-swaps', component: ClassSwapListPageComponent, canActivate: [permissionGuard], data: { permission: 'class_swap.view' } },
+      { path: 'class-swaps/new', component: ClassSwapFormPageComponent, canActivate: [permissionGuard], data: { permission: 'class_swap.request' } },
+      { path: 'class-swaps/:id', component: ClassSwapDetailPageComponent, canActivate: [permissionGuard], data: { permission: 'class_swap.view' } },
+      { path: 'records', component: RecordsListPageComponent, canActivate: [permissionGuard], data: { permission: 'records.view' } },
+      { path: 'records/:id', component: RecordDetailPageComponent, canActivate: [permissionGuard], data: { permission: 'records.view' } },
       { path: 'subject-results', component: SubjectResultsPageComponent, canActivate: [permissionGuard], data: { permission: 'subject_results.view' } },
       { path: 'academic-notes', component: AcademicNotesPageComponent, canActivate: [permissionGuard], data: { permission: 'academic_notes.view' } },
       { path: 'resource-bank', component: ResourceBankPageComponent, canActivate: [permissionGuard], data: { permission: 'resource_bank.view' } },

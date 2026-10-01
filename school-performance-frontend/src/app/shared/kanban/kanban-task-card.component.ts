@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { KanbanTask } from './kanban.models';
 import { KanbanProgressComponent } from './kanban-progress.component';
@@ -21,9 +21,9 @@ import { KanbanProgressComponent } from './kanban-progress.component';
         <ng-container [ngTemplateOutlet]="cardBody"></ng-container>
       </a>
     } @else {
-      <article class="task-card" tabindex="0" [attr.data-task-id]="task.id" [attr.data-status]="task.status">
+      <button type="button" class="task-card" [class.task-card--selected]="task.selected" [attr.aria-pressed]="task.selected" [attr.data-task-id]="task.id" [attr.data-status]="task.status" (click)="activate.emit(task)">
         <ng-container [ngTemplateOutlet]="cardBody"></ng-container>
-      </article>
+      </button>
     }
   `,
   styles: [`
@@ -48,6 +48,17 @@ import { KanbanProgressComponent } from './kanban-progress.component';
       color: inherit;
       text-decoration: none;
       cursor: pointer;
+    }
+    button.task-card {
+      width: 100%;
+      color: inherit;
+      font: inherit;
+      text-align: inherit;
+      cursor: pointer;
+    }
+    .task-card--selected {
+      border-color: var(--col, var(--color-primary));
+      box-shadow: var(--shadow-sp-md);
     }
     .task-card:hover {
       transform: translateY(-1px);
@@ -82,4 +93,5 @@ import { KanbanProgressComponent } from './kanban-progress.component';
 })
 export class KanbanTaskCardComponent {
   @Input({ required: true }) task!: KanbanTask;
+  @Output() activate = new EventEmitter<KanbanTask>();
 }

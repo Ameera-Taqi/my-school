@@ -13,6 +13,8 @@ public class Student : BaseEntity
     public string? GuardianPhone { get; set; }
     public StudentStatus Status { get; set; } = StudentStatus.ACTIVE;
     public string? Notes { get; set; }
+    /** Compressed data-URL (JPEG) or remote URL for the student portrait. */
+    public string? PhotoUrl { get; set; }
     public long SchoolClassId { get; set; }
     public SchoolClass SchoolClass { get; set; } = null!;
 }

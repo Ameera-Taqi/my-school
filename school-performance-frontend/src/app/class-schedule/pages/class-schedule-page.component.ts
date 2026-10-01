@@ -6,6 +6,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
@@ -31,11 +33,30 @@ import {
 } from '../dialogs/schedule-dialogs.component';
 import { periodRange } from '../../core/constants/bell-schedule';
 
+const DAY_KEYS: ScheduleDay[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY'];
+
 @Component({
   selector: 'app-class-schedule-page',
   standalone: true,
-  imports: [NgClass, UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatCardModule, MatTabsModule, MatMenuModule, MatButtonToggleModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, EmptyStateComponent],
-  templateUrl: './class-schedule-page.component.html'
+  imports: [
+    NgClass, UiIconComponent, ReactiveFormsModule, MatButtonModule, MatTooltipModule, MatDialogModule,
+    MatFormFieldModule, MatSelectModule, MatInputModule, MatDatepickerModule, MatCardModule, MatTabsModule,
+    MatMenuModule, MatButtonToggleModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, EmptyStateComponent
+  ],
+  templateUrl: './class-schedule-page.component.html',
+  styles: [`
+    .day-col--focus {
+      background: #eef2ff !important;
+      box-shadow: inset 0 -2px 0 #4f46e5;
+      color: #312e81 !important;
+    }
+    .day-cell--focus {
+      background: rgba(238, 242, 255, 0.55);
+    }
+    .day-cell--dim {
+      opacity: 0.42;
+    }
+  `]
 })
 export class ClassSchedulePageComponent implements OnInit {
   private readonly api = inject(ScheduleApiService);
@@ -52,6 +73,11 @@ export class ClassSchedulePageComponent implements OnInit {
   readonly periods = [1, 2, 3, 4, 5, 6, 7];
   readonly bellRange = periodRange;
   readonly constraintLabels: Record<string, string> = CONSTRAINT_TYPE_LABELS;
+  readonly schoolDay = (value: Date | null): boolean => {
+    if (!value) return false;
+    const day = value.getDay();
+    return day !== 5 && day !== 6;
+  };
 
   classes: SchoolClass[] = [];
   teachers: Teacher[] = [];
@@ -70,7 +96,8 @@ export class ClassSchedulePageComponent implements OnInit {
 
   filter = this.fb.group({
     classId: [null as number | null],
-    teacherId: [null as number | null]
+    teacherId: [null as number | null],
+    date: [defaultSchoolDate() as Date | null]
   });
   constraintTeacherId: number | null = null;
   assignmentCols = ['subject', 'teacher', 'periods', 'scheduled', 'actions'];
@@ -85,6 +112,38 @@ export class ClassSchedulePageComponent implements OnInit {
   get totalSlots(): number { return 35; }
   get visibleConstraints(): TeacherConstraint[] { return this.constraintTeacherId ? this.constraints.filter(c => c.teacherId === this.constraintTeacherId) : this.constraints; }
   get classSummary() { return this.overview?.classes.find(c => c.classId === this.filter.controls.classId.value); }
+  get focusedDay(): ScheduleDay | null {
+    const date = this.filter.controls.date.value;
+    if (!date || !this.schoolDay(date)) return null;
+    return DAY_KEYS[date.getDay()] ?? null;
+  }
+  get focusedDayLabel(): string {
+    const key = this.focusedDay;
+    return key ? (DAY_OPTIONS.find(d => d.key === key)?.label ?? '') : '';
+  }
+
+  /** Calendar date under each weekday header, based on the date filter (or current school week). */
+  dayDateLabel(day: ScheduleDay): string {
+    const date = this.weekDateFor(day);
+    if (!date) return '';
+    return new Intl.DateTimeFormat('ar-u-nu-latn', { day: 'numeric', month: 'short' }).format(date);
+  }
+
+  private weekDateFor(day: ScheduleDay): Date | null {
+    const anchor = this.filter.controls.date.value ?? defaultSchoolDate();
+    if (!anchor) return null;
+    const sunday = new Date(anchor);
+    sunday.setHours(0, 0, 0, 0);
+    // Move to Sunday of this school week (Sun=0 … Thu=4). If weekend, jump back to prior Sunday.
+    const weekday = sunday.getDay();
+    const toSunday = weekday === 5 ? -5 : weekday === 6 ? -6 : -weekday;
+    sunday.setDate(sunday.getDate() + toSunday);
+    const offset = DAY_KEYS.indexOf(day);
+    if (offset < 0) return null;
+    const result = new Date(sunday);
+    result.setDate(sunday.getDate() + offset);
+    return result;
+  }
 
   ngOnInit(): void {
     forkJoin({ classes: this.lookup.getAllClasses(), teachers: this.lookup.getAllTeachers(), departments: this.departmentApi.getAll() }).subscribe({
@@ -100,6 +159,18 @@ export class ClassSchedulePageComponent implements OnInit {
     });
     this.filter.controls.classId.valueChanges.subscribe(() => this.loadGrid());
     this.filter.controls.teacherId.valueChanges.subscribe(() => { if (this.mode === 'teacher') this.loadGrid(); });
+  }
+
+  clearDate(): void {
+    this.filter.controls.date.setValue(null);
+  }
+
+  isFocusedDay(day: ScheduleDay): boolean {
+    return this.focusedDay === day;
+  }
+
+  isDimmedDay(day: ScheduleDay): boolean {
+    return !!this.focusedDay && this.focusedDay !== day;
   }
 
   loadAll(): void {
@@ -241,4 +312,13 @@ export class ClassSchedulePageComponent implements OnInit {
   private refreshAfterChange(): void {
     forkJoin({ assignments: this.api.getAssignments(), overview: this.api.getOverview() }).subscribe(r => { this.assignments = r.assignments; this.overview = r.overview; this.loadGrid(); });
   }
+}
+
+function defaultSchoolDate(): Date {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  while (date.getDay() === 5 || date.getDay() === 6) {
+    date.setDate(date.getDate() + 1);
+  }
+  return date;
 }

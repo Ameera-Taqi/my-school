@@ -35,6 +35,7 @@ export class PermissionService {
         ...section,
         items: section.items.filter(item => {
           if (!this.hasAnyPermission(item.permission, perms)) return false;
+          if (item.roles?.length && !this.authService.hasAnyRole(item.roles)) return false;
           if (seenRoutes.has(item.route)) return false;
           seenRoutes.add(item.route);
           return true;

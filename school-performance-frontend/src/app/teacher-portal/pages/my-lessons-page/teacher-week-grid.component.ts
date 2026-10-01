@@ -7,7 +7,7 @@ import { ClassScheduleEntry, ScheduleDay } from '../../../core/models';
 import { ScheduleApiService } from '../../../class-schedule/services/schedule-api.service';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import { LessonPrepMockService } from '../../services/lesson-prep-mock.service';
+import { ClassPeriodSlot, LessonPrepMockService } from '../../services/lesson-prep-mock.service';
 import { isPeriodNow, periodRange } from '../../../core/constants/bell-schedule';
 
 const DAYS: ScheduleDay[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY'];
@@ -110,7 +110,7 @@ interface LessonCell {
                         [style.border-inline-start-color]="day === today && !isCurrent(day, period) ? lesson.color : null">
                         <strong class="block text-[0.82rem] font-bold" [class.text-text]="day === today && !isCurrent(day, period)">{{ lesson.subject }}</strong>
                         <span class="block text-[0.72rem]" [class.text-muted]="day === today && !isCurrent(day, period)">{{ 'home.schedule.class' | translate }} {{ lesson.className }}</span>
-                        <span class="block text-[0.68rem] font-semibold" [class.text-primary]="day === today && !isCurrent(day, period)">التحضير {{ nextLesson(lesson) }}</span>
+                        <span class="block text-[0.68rem] font-semibold" [class.text-primary]="day === today && !isCurrent(day, period)">التحضير {{ lessonNumber(lesson, day, period) }}</span>
                         @if (lesson.room) {
                           <span class="block text-[0.68rem]" [class.text-faint]="!isCurrent(day, period)">{{ lesson.room }}</span>
                         }
@@ -156,7 +156,10 @@ export class TeacherWeekGridComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.clockTimer = window.setInterval(() => this.clock.set(new Date()), 15_000);
+    this.clockTimer = window.setInterval(() => {
+      this.settleLessons();
+      this.clock.set(new Date());
+    }, 15_000);
     const teacherId = this.teacherId ?? this.auth.user()?.teacherId ?? null;
     if (!teacherId) {
       this.loading = false;
@@ -167,6 +170,7 @@ export class TeacherWeekGridComponent implements OnInit, OnDestroy {
         this.cells.clear();
         for (const entry of entries) this.put(entry);
         this.hasLessons = this.cells.size > 0;
+        this.settleLessons();
         this.loading = false;
       },
       error: () => { this.loading = false; }
@@ -189,8 +193,14 @@ export class TeacherWeekGridComponent implements OnInit, OnDestroy {
     return periodRange(period);
   }
 
-  nextLesson(lesson: LessonCell): number {
-    return this.preps.nextLesson(lesson.className, lesson.subject, lesson.stageName);
+  lessonNumber(lesson: LessonCell, day: ScheduleDay, period: number): number {
+    const slots: ClassPeriodSlot[] = [];
+    for (const [key, cell] of this.cells) {
+      if (cell.className !== lesson.className || cell.subject !== lesson.subject || cell.stageName !== lesson.stageName) continue;
+      const split = key.lastIndexOf('-');
+      slots.push({ day: key.slice(0, split) as ScheduleDay, period: Number(key.slice(split + 1)) });
+    }
+    return this.preps.lessonForSlot(lesson.className, lesson.subject, lesson.stageName, slots, day, period, this.clock());
   }
 
   cell(day: ScheduleDay, period: number): LessonCell | undefined {
@@ -203,6 +213,22 @@ export class TeacherWeekGridComponent implements OnInit, OnDestroy {
 
   periodLabel(period: number): string {
     return this.lang.translate('home.schedule.period').replace('{n}', String(period));
+  }
+
+  private settleLessons(): void {
+    const groups = new Map<string, { className: string; subject: string; stageName: string; slots: ClassPeriodSlot[] }>();
+    for (const [key, lesson] of this.cells) {
+      const split = key.lastIndexOf('-');
+      const day = key.slice(0, split) as ScheduleDay;
+      const period = Number(key.slice(split + 1));
+      const id = `${lesson.className}|${lesson.subject}|${lesson.stageName}`;
+      const group = groups.get(id) ?? { className: lesson.className, subject: lesson.subject, stageName: lesson.stageName, slots: [] };
+      group.slots.push({ day, period });
+      groups.set(id, group);
+    }
+    for (const group of groups.values()) {
+      this.preps.resolve(group.className, group.subject, group.stageName, group.slots, this.clock());
+    }
   }
 
   private put(entry: ClassScheduleEntry): void {

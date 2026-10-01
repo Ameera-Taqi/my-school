@@ -68,6 +68,9 @@ public class DataSeeder
         await SeedDepartmentSubjectsAsync();          // 18 each department's subjects (created if missing, linked by name)
         await LocalizeRoleNamesAsync();               // 19 keep role display names Arabic (API RoleName)
         await LocalizeLearnerTerminologyAsync();      // 20 طلاب → متعلمين on existing permission/role labels
+        await SeedClassSwapPermissionsAsync();        // 21 date-only class swap requests
+        await SeedRecordPermissionsAsync();           // 22 personal records and hierarchical approval
+        await SeedTaskAssignmentPermissionsAsync();   // 23 hierarchical task assignment
         _logger.LogInformation("Database seeding completed");
     }
 
@@ -763,6 +766,93 @@ public class DataSeeder
             }
         }
         await _db.SaveChangesAsync();
+    }
+
+    // ---- 21. Class swap permissions -------------------------------------------------------------
+
+    private async Task SeedClassSwapPermissionsAsync()
+    {
+        var defs = new List<PermissionDef>
+        {
+            new("class_swap.view", "تبديل حصة", "تبديل الحصص", "عرض طلبات تبديل الحصص"),
+            new("class_swap.request", "طلب تبديل حصة", "تبديل الحصص", "إنشاء طلب تبديل حصة لتاريخ واحد وإلغاؤه"),
+            new("class_swap.approve", "اعتماد تبديل الحصة", "تبديل الحصص", "اعتماد رئيس الشعبة لطلب تبديل الحصة"),
+            new("class_swap.execute", "تنفيذ تبديل الحصة", "تبديل الحصص", "اعتماد الإدارة وتنفيذ التبديل لتاريخ واحد")
+        };
+        var admin = await FindRoleAsync("ADMIN");
+        foreach (var def in defs)
+        {
+            var permission = await EnsurePermissionAsync(def);
+            if (admin != null) await GrantIfMissingAsync(admin, permission);
+        }
+
+        var teacher = await FindRoleAsync("TEACHER");
+        if (teacher != null) await GrantKeysIfMissingAsync(teacher, ["class_swap.view", "class_swap.request"]);
+
+        foreach (var role in await _db.Roles.Where(r => r.RoleKey.StartsWith("DEPARTMENT_HEAD")).ToListAsync())
+        {
+            await GrantKeysIfMissingAsync(role, ["class_swap.view", "class_swap.request", "class_swap.approve"]);
+        }
+
+        foreach (var roleKey in new[] { "SCHOOL_MANAGER", "ASSISTANT_MANAGER" })
+        {
+            var role = await FindRoleAsync(roleKey);
+            if (role != null) await GrantKeysIfMissingAsync(role, ["class_swap.view", "class_swap.execute"]);
+        }
+    }
+
+    private async Task SeedRecordPermissionsAsync()
+    {
+        var defs = new List<PermissionDef>
+        {
+            new("records.view", "السجلات", "السجلات", "عرض السجلات ضمن النطاق المسموح"),
+            new("records.manage", "إدارة السجلات", "السجلات", "رفع وتعديل وحذف السجلات الخاصة بالمستخدم"),
+            new("records.approve", "اعتماد السجلات", "السجلات", "اعتماد السجلات المحالة حسب الهيكل التنظيمي")
+        };
+        var admin = await FindRoleAsync("ADMIN");
+        foreach (var def in defs)
+        {
+            var permission = await EnsurePermissionAsync(def);
+            if (admin != null) await GrantIfMissingAsync(admin, permission);
+        }
+
+        var teacher = await FindRoleAsync("TEACHER");
+        if (teacher != null) await GrantKeysIfMissingAsync(teacher, ["records.view", "records.manage"]);
+
+        foreach (var role in await _db.Roles.Where(r => r.RoleKey.StartsWith("DEPARTMENT_HEAD")).ToListAsync())
+            await GrantKeysIfMissingAsync(role, ["records.view", "records.manage", "records.approve"]);
+
+        foreach (var roleKey in new[] { "SCHOOL_MANAGER", "ASSISTANT_MANAGER" })
+        {
+            var role = await FindRoleAsync(roleKey);
+            if (role != null) await GrantKeysIfMissingAsync(role, ["records.view", "records.manage", "records.approve"]);
+        }
+
+        if (!await _db.RecordCategories.AnyAsync())
+        {
+            _db.RecordCategories.AddRange(
+                new RecordCategory { Name = "تقرير" },
+                new RecordCategory { Name = "خطة" },
+                new RecordCategory { Name = "محضر" },
+                new RecordCategory { Name = "نموذج" },
+                new RecordCategory { Name = "أخرى" });
+            await _db.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedTaskAssignmentPermissionsAsync()
+    {
+        var teacher = await FindRoleAsync("TEACHER");
+        if (teacher != null) await GrantKeysIfMissingAsync(teacher, ["tasks.view"]);
+
+        foreach (var role in await _db.Roles.Where(r => r.RoleKey.StartsWith("DEPARTMENT_HEAD")).ToListAsync())
+            await GrantKeysIfMissingAsync(role, ["tasks.view", "tasks.create"]);
+
+        foreach (var roleKey in new[] { "SCHOOL_MANAGER", "ASSISTANT_MANAGER", "ADMIN" })
+        {
+            var role = await FindRoleAsync(roleKey);
+            if (role != null) await GrantKeysIfMissingAsync(role, ["tasks.view", "tasks.create"]);
+        }
     }
 
     // ---- helpers ------------------------------------------------------------------------------------

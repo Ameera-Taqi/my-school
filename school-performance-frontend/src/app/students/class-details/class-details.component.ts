@@ -178,6 +178,7 @@ export class ClassDetailsComponent implements OnInit, AfterViewInit {
       title: student.fullName,
       subtitle: `${student.academicStageName ?? ''} · ${student.className ?? ''}`,
       icon: 'school',
+      photoUrl: student.photoUrl,
       fields: [
         { label: 'الرقم المدني', value: student.civilId, mono: true },
         { label: 'تاريخ الميلاد', value: this.formatDate(student.birthDate) },

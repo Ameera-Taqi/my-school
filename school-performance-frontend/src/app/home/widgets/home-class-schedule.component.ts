@@ -13,9 +13,10 @@ import { LanguageService } from '../../core/services/language.service';
 import { AcademicLookupService } from '../../core/services/academic-lookup.service';
 import { ClassScheduleEntry, ScheduleDay, SchoolClass } from '../../core/models';
 import { ScheduleApiService } from '../../class-schedule/services/schedule-api.service';
+import { AttendanceApiService } from '../../attendance/services/attendance-api.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { UiIconComponent } from '../../shared/icons/ui-icon.component';
-import { morningAssemblyRange, periodRange } from '../../core/constants/bell-schedule';
+import { BELL_PERIODS, morningAssemblyRange, periodRange } from '../../core/constants/bell-schedule';
 import { TeacherWeekGridComponent } from '../../teacher-portal/pages/my-lessons-page/teacher-week-grid.component';
 
 const WEEKDAYS: ScheduleDay[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY'];
@@ -107,23 +108,9 @@ export interface TimetableSlotPick {
               @for (row of rows; track row.id) {
                 <tr class="align-top">
                   <th class="sticky start-0 z-[1] border-t border-border bg-white px-3 py-2 text-start">
-                    @if (showAssembly) {
-                      <button
-                        type="button"
-                        class="block w-full rounded-lg bg-transparent px-1 py-1 text-start"
-                        [class.ring-2]="isActive('daily', row.id)"
-                        [class.ring-primary]="isActive('daily', row.id)"
-                        (click)="openDaily(row)">
-                        <span class="block text-[0.88rem] font-bold text-text">{{ row.name }}</span>
-                        @if (row.stage) {
-                          <span class="block text-[0.7rem] font-medium text-faint">{{ row.stage }}</span>
-                        }
-                      </button>
-                    } @else {
-                      <span class="block text-[0.88rem] font-bold text-text">{{ row.name }}</span>
-                      @if (row.stage) {
-                        <span class="block text-[0.7rem] font-medium text-faint">{{ row.stage }}</span>
-                      }
+                    <span class="block text-[0.88rem] font-bold text-text">{{ row.name }}</span>
+                    @if (row.stage) {
+                      <span class="block text-[0.7rem] font-medium text-faint">{{ row.stage }}</span>
                     }
                   </th>
                   @if (showAssembly) {
@@ -144,7 +131,7 @@ export interface TimetableSlotPick {
                         @if (showAssembly) {
                           <button
                             type="button"
-                            class="block w-full rounded-lg bg-[color-mix(in_srgb,var(--subj)_12%,white)] px-2 py-1.5 text-start leading-tight border-s-[3px]"
+                            class="relative block w-full rounded-lg bg-[color-mix(in_srgb,var(--subj)_12%,white)] px-2 py-1.5 pb-3 text-start leading-tight border-s-[3px]"
                             [class.ring-2]="isActive('period', row.id, p)"
                             [class.ring-primary]="isActive('period', row.id, p)"
                             [style.--subj]="lesson.color"
@@ -152,6 +139,12 @@ export interface TimetableSlotPick {
                             (click)="openPeriod(row, p, lesson)">
                             <strong class="block text-[0.78rem] font-bold text-text">{{ lesson.subject }}</strong>
                             <span class="block text-[0.7rem] text-muted">{{ lesson.teacher }}</span>
+                            <span
+                              class="attendance-lamp"
+                              [class.is-sent]="isSubmitted(row.id, p)"
+                              [attr.title]="lampTitle(row.id, p)"
+                              [attr.aria-label]="lampTitle(row.id, p)"
+                            ></span>
                           </button>
                         } @else {
                           <div
@@ -174,10 +167,27 @@ export interface TimetableSlotPick {
         </div>
       }
     </mat-card>
-  `
+  `,
+  styles: [`
+    .attendance-lamp {
+      position: absolute;
+      bottom: 0.28rem;
+      left: 0.35rem;
+      width: 0.48rem;
+      height: 0.48rem;
+      border-radius: 999px;
+      background: #e11d48;
+      box-shadow: 0 0 0 2px #fff, 0 0 6px #e11d48;
+    }
+    .attendance-lamp.is-sent {
+      background: #059669;
+      box-shadow: 0 0 0 2px #fff, 0 0 6px #059669;
+    }
+  `]
 })
 export class HomeClassScheduleComponent implements OnInit {
   private readonly api = inject(ScheduleApiService);
+  private readonly attendanceApi = inject(AttendanceApiService);
   private readonly lookup = inject(AcademicLookupService);
   private readonly auth = inject(AuthService);
   private readonly lang = inject(LanguageService);
@@ -221,6 +231,7 @@ export class HomeClassScheduleComponent implements OnInit {
   rows: { id: number; name: string; stage: string; stageId: number }[] = [];
   daySubtitle = '';
   private readonly cells = new Map<string, ScheduleCell>();
+  private readonly submitted = new Set<string>();
   private entries: ClassScheduleEntry[] = [];
   private day: ScheduleDay | null = 'SUNDAY';
 
@@ -276,10 +287,6 @@ export class HomeClassScheduleComponent implements OnInit {
     return kind !== 'period' || this.activePeriod === period;
   }
 
-  openDaily(row: { id: number; name: string; stage: string; stageId: number }): void {
-    this.emitSlot('daily', row);
-  }
-
   openAssembly(row: { id: number; name: string; stage: string; stageId: number }): void {
     this.emitSlot('assembly', row);
   }
@@ -318,6 +325,47 @@ export class HomeClassScheduleComponent implements OnInit {
     this.day = this.dayOf(date);
     this.daySubtitle = this.buildSubtitle(date);
     this.fillCells();
+    this.reloadSubmitted();
+  }
+
+  /** Teaching periods already saved by a teacher turn the card lamp green. */
+  reloadSubmitted(): void {
+    if (!this.showAssembly) return;
+    const date = this.isoDate(this.chosenDate(this.dateControl?.value ?? null));
+    this.attendanceApi.getSubmittedSlots(date).pipe(catchError(() => of([]))).subscribe(slots => {
+      this.submitted.clear();
+      for (const slot of slots) this.submitted.add(`${slot.classId}-${slot.period}`);
+    });
+  }
+
+  /** Green only after the period has started and the teacher saved attendance. Before that the lamp stays red. */
+  isSubmitted(classId: number, period: number): boolean {
+    return this.periodHasStarted(period) && this.submitted.has(`${classId}-${period}`);
+  }
+
+  /** True when a teacher already saved this slot, even if the period has not started. */
+  hasSavedAttendance(classId: number, period: number): boolean {
+    return this.submitted.has(`${classId}-${period}`);
+  }
+
+  lampTitle(classId: number, period: number): string {
+    if (!this.periodHasStarted(period)) return 'لم يحن موعد الحصة';
+    return this.submitted.has(`${classId}-${period}`) ? 'تم إرسال الحضور' : 'لم يُرسل الحضور';
+  }
+
+  private periodHasStarted(period: number): boolean {
+    const slot = BELL_PERIODS[period - 1];
+    if (!slot) return false;
+    const date = this.chosenDate(this.dateControl?.value ?? null);
+    const [hours, minutes] = slot.start.split(':').map(Number);
+    const start = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes, 0, 0);
+    return start.getTime() <= Date.now();
+  }
+
+  private isoDate(date: Date): string {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 
   private fillCells(): void {

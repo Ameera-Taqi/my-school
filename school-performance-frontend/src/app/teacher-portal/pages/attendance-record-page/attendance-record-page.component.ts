@@ -120,7 +120,8 @@ export class AttendanceRecordPageComponent implements OnInit {
       this.loading = true;
       this.attendanceApi.getStudentAttendance(this.lockedStageId ?? 0, this.lockedClassId, this.isoDate(date), this.activePeriod).subscribe({
         next: (data) => {
-          this.rows = data.map(r => ({ id: r.personId, studentName: r.personName, status: this.normalizeStatus(r.status) }));
+          this.rows = data.map(r => ({ id: r.personId, studentName: r.personName, status: this.normalizeStatus(r.status), lateTime: r.lateTime }));
+          this.syncColumns();
           this.loading = false;
         },
         error: (e) => { this.loading = false; this.toast.fromError(e); }
@@ -136,7 +137,8 @@ export class AttendanceRecordPageComponent implements OnInit {
       })
     ).subscribe({
       next: (data) => {
-        this.rows = data.map(r => ({ id: r.personId, studentName: r.personName, status: this.normalizeStatus(r.status) }));
+        this.rows = data.map(r => ({ id: r.personId, studentName: r.personName, status: this.normalizeStatus(r.status), lateTime: r.lateTime }));
+        this.syncColumns();
         this.loading = false;
       },
       error: (e) => { this.loading = false; this.toast.fromError(e); }
@@ -150,7 +152,20 @@ export class AttendanceRecordPageComponent implements OnInit {
 
   setStatus(row: ClassAttendanceRow, status: AttendanceRecordStatus): void {
     row.status = status;
+    row.lateTime = status === 'LATE' ? this.clockTime() : null;
     this.rows = [...this.rows];
+    this.syncColumns();
+  }
+
+  private syncColumns(): void {
+    this.cols = this.rows.some(row => row.status === 'LATE')
+      ? ['rowNumber', 'studentName', 'status', 'lateTime']
+      : ['rowNumber', 'studentName', 'status'];
+  }
+
+  private clockTime(): string {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   }
 
   countOf(status: AttendanceRecordStatus): number {
@@ -168,7 +183,8 @@ export class AttendanceRecordPageComponent implements OnInit {
       className: this.currentClass?.name,
       date: this.isoDate(date),
       period: this.activePeriod,
-      status: r.status
+      status: r.status,
+      lateTime: r.status === 'LATE' ? r.lateTime : null
     }));
     this.attendanceApi.saveStudentAttendance(records).subscribe({
       next: () => this.toast.success('تم حفظ الحضور'),

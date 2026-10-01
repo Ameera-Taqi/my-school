@@ -22,7 +22,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ClassScheduleEntry, LessonPrep } from '../../../core/models';
 import { ScheduleApiService } from '../../../class-schedule/services/schedule-api.service';
 import { LessonPrepMockService } from '../../services/lesson-prep-mock.service';
+import { PrepApprovalService } from '../../services/prep-approval.service';
 import { LessonPrepFormDialogComponent } from '../../dialogs/lesson-prep-form-dialog.component';
+import { PrepApprovalSubmitDialogComponent, PrepApprovalSubmitResult } from '../../dialogs/prep-approval-submit-dialog.component';
 
 interface StageCard {
   name: string;
@@ -33,6 +35,7 @@ interface LessonSlot {
   lessonNumber: number;
   title: string;
   subject: string;
+  stageName: string;
   fileName: string;
   prep?: LessonPrep;
 }
@@ -84,11 +87,38 @@ interface LessonSlot {
       border-color: var(--col);
       background: var(--color-primary-bg);
     }
+    .prep-toolbar { align-items: center; }
+    .prep-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      height: 42px;
+      margin: 0;
+      padding: 0 0.85rem;
+      border: 1px solid var(--color-border);
+      border-radius: 0.75rem;
+      background: #fff;
+      color: var(--color-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .prep-count input {
+      width: 3.5rem;
+      border: 0;
+      background: transparent;
+      color: var(--color-text);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-align: center;
+    }
+    .prep-count input:focus { outline: none; }
     .stage-card__name { font-size: 1.05rem; font-weight: 800; }
     .stage-card__count { font-size: 0.85rem; font-weight: 700; color: var(--color-muted); }
     .icon-view:not(:disabled) { color: #2563eb; --mdc-icon-button-icon-color: #2563eb; }
     .icon-upload:not(:disabled) { color: var(--color-success); --mdc-icon-button-icon-color: var(--color-success); }
     .icon-edit:not(:disabled) { color: var(--color-warning); --mdc-icon-button-icon-color: var(--color-warning); }
+    .icon-send:not(:disabled) { color: var(--color-primary); --mdc-icon-button-icon-color: var(--color-primary); }
     .icon-delete:not(:disabled) { color: var(--color-danger); --mdc-icon-button-icon-color: var(--color-danger); }
   `
 })
@@ -96,6 +126,7 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
   private readonly auth = inject(AuthService);
   private readonly schedule = inject(ScheduleApiService);
   private readonly service = inject(LessonPrepMockService);
+  private readonly approvals = inject(PrepApprovalService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
@@ -127,17 +158,13 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
     return this.auth.user()?.teacherId ?? null;
   }
 
-  get total(): number {
-    return this.dataSource.data.length;
-  }
-
   get filteredCount(): number {
     return this.dataSource.filteredData.length;
   }
 
   ngOnInit(): void {
     this.dataSource.filterPredicate = (row, filter) =>
-      [String(row.lessonNumber), row.title, row.subject, row.fileName]
+      [String(row.lessonNumber), row.title, row.subject, row.stageName, row.fileName]
         .join(' ')
         .toLowerCase()
         .includes(filter);
@@ -152,13 +179,15 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
   }
 
   selectStage(name: string): void {
-    this.selectedStage = name;
+    this.selectedStage = this.selectedStage === name ? '' : name;
     this.syncSubject();
     this.applyStage();
   }
 
   onSubjectChange(): void {
-    this.plannedCount = this.service.plannedCount(this.selectedSubject, this.selectedStage);
+    this.plannedCount = this.selectedSubject && this.selectedStage
+      ? this.service.plannedCount(this.selectedSubject, this.selectedStage)
+      : 24;
     this.applyStage();
   }
 
@@ -176,15 +205,17 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
   }
 
   openUpload(row: LessonSlot): void {
-    if (!this.selectedStage || !this.selectedSubject) return;
+    const stageName = row.stageName || this.selectedStage;
+    const subject = row.subject || this.selectedSubject;
+    if (!stageName || !subject) return;
     const ref = this.dialog.open(LessonPrepFormDialogComponent, {
       width: '640px',
       maxWidth: '95vw',
       data: {
-        stageName: this.selectedStage,
-        lockedSubject: this.selectedSubject,
+        stageName,
+        lockedSubject: subject,
         lessonNumber: row.lessonNumber,
-        stages: [{ stageName: this.selectedStage, subject: this.selectedSubject }],
+        stages: [{ stageName, subject }],
         initialTitle: row.prep?.title || `الدرس ${row.lessonNumber}`,
         initialDescription: row.prep?.description,
         existingFileName: row.prep?.fileName
@@ -204,6 +235,39 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
 
   download(prep: LessonPrep | undefined): void {
     if (prep) this.service.download(prep);
+  }
+
+  approvalText(row: LessonSlot): string {
+    return row.prep?.id ? this.approvals.summary(row.prep.id) : '';
+  }
+
+  canSend(row: LessonSlot): boolean {
+    const prep = row.prep;
+    if (!prep?.id || !prep.fileName) return false;
+    return !this.approvals.hasPending(prep.id, 'DEPARTMENT') || !this.approvals.hasPending(prep.id, 'ADMINISTRATION');
+  }
+
+  sendForApproval(row: LessonSlot): void {
+    const prep = row.prep;
+    if (!prep?.id) return;
+    const pending = (['DEPARTMENT', 'ADMINISTRATION'] as const).filter(authority => this.approvals.hasPending(prep.id!, authority));
+    const ref = this.dialog.open(PrepApprovalSubmitDialogComponent, {
+      width: '520px',
+      maxWidth: 'calc(100vw - 32px)',
+      panelClass: 'sp-prep-approval-dialog',
+      autoFocus: false,
+      data: { title: `${row.lessonNumber} — ${row.title}`, pending }
+    });
+    ref.afterClosed().subscribe((result: PrepApprovalSubmitResult | undefined) => {
+      if (!result) return;
+      this.approvals.submit(prep, result.authority, result.note).subscribe({
+        next: () => {
+          this.toast.success('أُرسل التحضير للاعتماد');
+          this.applyStage();
+        },
+        error: error => this.toast.fromError(error)
+      });
+    });
   }
 
   remove(row: LessonSlot): void {
@@ -233,8 +297,8 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
         this.entries = entries;
         this.preps = preps;
         this.stages = this.buildStages(entries, preps);
-        if (!this.stages.some(stage => stage.name === this.selectedStage)) {
-          this.selectedStage = this.stages[0]?.name ?? '';
+        if (this.selectedStage && !this.stages.some(stage => stage.name === this.selectedStage)) {
+          this.selectedStage = '';
         }
         this.syncSubject();
         this.applyStage();
@@ -268,15 +332,21 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
 
   private subjectsFor(stageName: string): string[] {
     const fromSchedule = this.entries
-      .filter(entry => entry.stageName === stageName && entry.subject)
+      .filter(entry => entry.stageName?.trim() === stageName && entry.subject)
       .map(entry => entry.subject as string);
     const fromPreps = this.preps
-      .filter(prep => prep.stageName === stageName && prep.subject)
+      .filter(prep => prep.stageName?.trim() === stageName && prep.subject)
       .map(prep => prep.subject);
     return [...new Set([...fromSchedule, ...fromPreps])];
   }
 
   private syncSubject(): void {
+    if (!this.selectedStage) {
+      this.stageSubjects = [];
+      this.selectedSubject = '';
+      this.plannedCount = 24;
+      return;
+    }
     this.stageSubjects = this.subjectsFor(this.selectedStage);
     if (!this.stageSubjects.includes(this.selectedSubject)) {
       this.selectedSubject = this.stageSubjects[0] ?? '';
@@ -288,7 +358,7 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
 
   private stageCountLabel(stageName: string, preps: LessonPrep[]): string {
     const subjects = this.subjectsFor(stageName);
-    const uploaded = preps.filter(prep => prep.stageName === stageName && prep.lessonNumber && prep.fileName).length;
+    const uploaded = preps.filter(prep => prep.stageName?.trim() === stageName && prep.lessonNumber && prep.fileName).length;
     if (subjects.length === 1) {
       const planned = this.service.plannedCount(subjects[0], stageName);
       return `${uploaded} من ${planned}`;
@@ -302,7 +372,7 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
       return;
     }
     const matching = this.preps.filter(prep =>
-      prep.stageName === this.selectedStage
+      prep.stageName?.trim() === this.selectedStage
       && prep.subject === this.selectedSubject
       && prep.lessonNumber);
     const rows: LessonSlot[] = [];
@@ -312,6 +382,7 @@ export class LessonPrepPageComponent implements OnInit, AfterViewInit {
         lessonNumber,
         title: prep?.title || `الدرس ${lessonNumber}`,
         subject: this.selectedSubject,
+        stageName: this.selectedStage,
         fileName: prep?.fileName || '',
         prep
       });

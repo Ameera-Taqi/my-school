@@ -185,6 +185,47 @@ a {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16) !important;
 }
 
+.sp-confirm-dialog .mat-mdc-dialog-component-host,
+.sp-confirm-dialog .mat-mdc-dialog-inner-container,
+.sp-prep-approval-dialog .mat-mdc-dialog-component-host,
+.sp-prep-approval-dialog .mat-mdc-dialog-inner-container,
+.sp-teacher-note-dialog .mat-mdc-dialog-component-host,
+.sp-teacher-note-dialog .mat-mdc-dialog-inner-container,
+.sp-detail-dialog .mat-mdc-dialog-component-host,
+.sp-detail-dialog .mat-mdc-dialog-inner-container {
+  display: block;
+}
+
+.sp-teacher-note-dialog .mat-mdc-dialog-title {
+  padding: 1.5rem 1.75rem 1.1rem !important;
+  margin: 0 !important;
+}
+
+.sp-teacher-note-dialog .mat-mdc-dialog-content {
+  padding: 0.25rem 1.75rem 1.5rem !important;
+  max-height: min(80vh, 720px);
+  overflow: auto;
+}
+
+.sp-teacher-note-dialog .mat-mdc-dialog-actions {
+  min-height: auto;
+  padding: 1.35rem 1.75rem 1.55rem !important;
+}
+
+.sp-teacher-note-dialog .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 0.35rem;
+}
+
+.sp-detail-dialog .mat-mdc-dialog-content {
+  padding: 0.35rem 1.5rem 0.85rem !important;
+  max-height: min(72vh, 640px);
+  overflow: auto;
+}
+
+.sp-detail-dialog .mat-mdc-dialog-actions {
+  min-height: auto;
+}
+
 .mat-mdc-dialog-title {
   font-weight: 800 !important;
   color: var(--sp-primary) !important;

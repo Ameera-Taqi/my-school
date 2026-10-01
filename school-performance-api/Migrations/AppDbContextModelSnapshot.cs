@@ -75,6 +75,9 @@ namespace SchoolPerformance.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<TimeOnly?>("LateTime")
+                        .HasColumnType("time");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -105,12 +108,68 @@ namespace SchoolPerformance.Api.Migrations
 
                     b.HasIndex("RecordedById");
 
+                    b.HasIndex("WingEditedById");
+
                     b.HasIndex("StudentId", "AttendanceDate", "Period")
                         .IsUnique();
 
-                    b.HasIndex("WingEditedById");
-
                     b.ToTable("Attendance", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.AttendanceReminder", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateOnly>("AttendanceDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("SchoolClassId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttendanceDate");
+
+                    b.HasIndex("SchoolClassId");
+
+                    b.HasIndex("TeacherId", "SchoolClassId", "Period", "AttendanceDate")
+                        .IsUnique();
+
+                    b.ToTable("AttendanceReminders", (string)null);
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.CalendarEvent", b =>
@@ -215,6 +274,240 @@ namespace SchoolPerformance.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("ClassSubjectAssignments", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapApproval", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("ActedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("ActedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ApproverTeacherId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Decision")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<long?>("DepartmentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActedByUserId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("RequestId", "Stage", "DepartmentId");
+
+                    b.ToTable("ClassSwapApprovals", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RoleLabel")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ClassSwapHistory", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapNotice", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId", "ReadAt");
+
+                    b.ToTable("ClassSwapNotices", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CounterpartyClassName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("CounterpartyEntryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("CounterpartyPeriod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CounterpartySubject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("CounterpartyTeacherId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("CreatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RequesterClassName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("RequesterEntryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("RequesterPeriod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequesterSubject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("RequesterTeacherId")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateOnly>("SwapDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CounterpartyTeacherId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("RequesterTeacherId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("SwapDate");
+
+                    b.HasIndex("CounterpartyEntryId", "SwapDate");
+
+                    b.HasIndex("RequesterEntryId", "SwapDate");
+
+                    b.ToTable("ClassSwapRequests", (string)null);
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Department", b =>
@@ -421,6 +714,171 @@ namespace SchoolPerformance.Api.Migrations
                     b.ToTable("Permissions", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordCategory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("RecordCategories", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordEvent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("ActionLabel")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewStatus")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("PreviousStatus")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<long>("RecordId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RoleLabel")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RecordEvents", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordFile", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
+
+                    b.Property<long>("RecordId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordId")
+                        .IsUnique();
+
+                    b.ToTable("RecordFiles", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordNotice", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RecordId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordId");
+
+                    b.HasIndex("UserId", "ReadAt");
+
+                    b.ToTable("RecordNotices", (string)null);
+                });
+
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Report", b =>
                 {
                     b.Property<long>("Id")
@@ -587,6 +1045,52 @@ namespace SchoolPerformance.Api.Migrations
                     b.ToTable("ScheduleEntries", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ScheduleOverride", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("Cancelled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("CreatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("EffectivePeriod")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("OverrideDate")
+                        .HasColumnType("date");
+
+                    b.Property<long>("ScheduleEntryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SwapRequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleEntryId");
+
+                    b.HasIndex("SwapRequestId");
+
+                    b.HasIndex("OverrideDate", "ScheduleEntryId")
+                        .IsUnique();
+
+                    b.ToTable("ScheduleOverrides", (string)null);
+                });
+
             modelBuilder.Entity("SchoolPerformance.Api.Entities.SchoolClass", b =>
                 {
                     b.Property<long>("Id")
@@ -621,6 +1125,71 @@ namespace SchoolPerformance.Api.Migrations
                     b.HasIndex("AcademicStageId");
 
                     b.ToTable("SchoolClasses", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.StaffRecord", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ApprovalLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("AuthorityLabel")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DepartmentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<long>("OwnerUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("StaffRecords", (string)null);
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Student", b =>
@@ -659,6 +1228,9 @@ namespace SchoolPerformance.Api.Migrations
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("SchoolClassId")
                         .HasColumnType("bigint");
@@ -724,6 +1296,107 @@ namespace SchoolPerformance.Api.Migrations
                     b.ToTable("Subjects", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskActivity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("ActionLabel")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewStatus")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PreviousStatus")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RoleLabel")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<long>("TaskId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TaskActivities", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskAssignee", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CompletionComment")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<long>("TaskId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TaskId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("TaskAssignees", (string)null);
+                });
+
             modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskItem", b =>
                 {
                     b.Property<long>("Id")
@@ -736,8 +1409,12 @@ namespace SchoolPerformance.Api.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Assignee")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("CancelReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -754,6 +1431,10 @@ namespace SchoolPerformance.Api.Migrations
 
                     b.Property<long?>("MeetingId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -784,6 +1465,43 @@ namespace SchoolPerformance.Api.Migrations
                     b.HasIndex("MeetingId");
 
                     b.ToTable("Tasks", (string)null);
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskNotice", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("TaskId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("UserId", "ReadAt");
+
+                    b.ToTable("TaskNotices", (string)null);
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Teacher", b =>
@@ -1012,22 +1730,41 @@ namespace SchoolPerformance.Api.Migrations
                         .HasForeignKey("RecordedById")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("SchoolPerformance.Api.Entities.User", "WingEditedBy")
-                        .WithMany()
-                        .HasForeignKey("WingEditedById")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("SchoolPerformance.Api.Entities.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "WingEditedBy")
+                        .WithMany()
+                        .HasForeignKey("WingEditedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("RecordedBy");
 
                     b.Navigation("Student");
 
                     b.Navigation("WingEditedBy");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.AttendanceReminder", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.SchoolClass", "SchoolClass")
+                        .WithMany()
+                        .HasForeignKey("SchoolClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SchoolClass");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.CalendarEvent", b =>
@@ -1079,6 +1816,96 @@ namespace SchoolPerformance.Api.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapApproval", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "ActedBy")
+                        .WithMany()
+                        .HasForeignKey("ActedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolPerformance.Api.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolPerformance.Api.Entities.ClassSwapRequest", "Request")
+                        .WithMany("Approvals")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ActedBy");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapHistory", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.ClassSwapRequest", "Request")
+                        .WithMany("History")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapNotice", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.ClassSwapRequest", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapRequest", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.Teacher", "CounterpartyTeacher")
+                        .WithMany()
+                        .HasForeignKey("CounterpartyTeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.Teacher", "RequesterTeacher")
+                        .WithMany()
+                        .HasForeignKey("RequesterTeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CounterpartyTeacher");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("RequesterTeacher");
+                });
+
             modelBuilder.Entity("SchoolPerformance.Api.Entities.InternalRequest", b =>
                 {
                     b.HasOne("SchoolPerformance.Api.Entities.User", "RequestedBy")
@@ -1116,6 +1943,54 @@ namespace SchoolPerformance.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Meeting");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordEvent", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.StaffRecord", "Record")
+                        .WithMany("Events")
+                        .HasForeignKey("RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Record");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordFile", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.StaffRecord", "Record")
+                        .WithOne("File")
+                        .HasForeignKey("SchoolPerformance.Api.Entities.RecordFile", "RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Record");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.RecordNotice", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.StaffRecord", "Record")
+                        .WithMany()
+                        .HasForeignKey("RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Record");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Report", b =>
@@ -1174,6 +2049,25 @@ namespace SchoolPerformance.Api.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ScheduleOverride", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.ScheduleEntry", "ScheduleEntry")
+                        .WithMany()
+                        .HasForeignKey("ScheduleEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.ClassSwapRequest", "SwapRequest")
+                        .WithMany()
+                        .HasForeignKey("SwapRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScheduleEntry");
+
+                    b.Navigation("SwapRequest");
+                });
+
             modelBuilder.Entity("SchoolPerformance.Api.Entities.SchoolClass", b =>
                 {
                     b.HasOne("SchoolPerformance.Api.Entities.AcademicStage", "AcademicStage")
@@ -1183,6 +2077,32 @@ namespace SchoolPerformance.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("AcademicStage");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.StaffRecord", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.RecordCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Student", b =>
@@ -1204,6 +2124,43 @@ namespace SchoolPerformance.Api.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskActivity", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.TaskItem", "Task")
+                        .WithMany("Activities")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskAssignee", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.TaskItem", "Task")
+                        .WithMany("Assignees")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskItem", b =>
@@ -1228,6 +2185,25 @@ namespace SchoolPerformance.Api.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Meeting");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskNotice", b =>
+                {
+                    b.HasOne("SchoolPerformance.Api.Entities.TaskItem", "Task")
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPerformance.Api.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Teacher", b =>
@@ -1296,9 +2272,30 @@ namespace SchoolPerformance.Api.Migrations
                     b.Navigation("TargetRoles");
                 });
 
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.ClassSwapRequest", b =>
+                {
+                    b.Navigation("Approvals");
+
+                    b.Navigation("History");
+                });
+
             modelBuilder.Entity("SchoolPerformance.Api.Entities.Meeting", b =>
                 {
                     b.Navigation("TargetRoles");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.StaffRecord", b =>
+                {
+                    b.Navigation("Events");
+
+                    b.Navigation("File");
+                });
+
+            modelBuilder.Entity("SchoolPerformance.Api.Entities.TaskItem", b =>
+                {
+                    b.Navigation("Activities");
+
+                    b.Navigation("Assignees");
                 });
 #pragma warning restore 612, 618
         }

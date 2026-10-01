@@ -14,6 +14,23 @@ export interface TeacherAttendanceScope {
   teachersCount: number;
 }
 
+export interface SubmittedAttendanceSlot {
+  classId: number;
+  period: number;
+}
+
+export interface AttendanceReminder {
+  id: number;
+  classId: number;
+  className: string;
+  period: number;
+  subject: string;
+  date: string;
+  message: string;
+  teacherName: string;
+  source: string;
+}
+
 export interface AttendanceSummary {
   date: string;
   studentsTotal: number;
@@ -40,6 +57,24 @@ export interface AttendanceSummary {
 export class AttendanceApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/attendance`;
+
+  sendReminder(body: { classId: number; period: number; date: string }): Observable<{ message: string; teacherName: string }> {
+    return this.http.post<{ message: string; teacherName: string }>(`${this.baseUrl}/reminders`, body);
+  }
+
+  myReminders(): Observable<AttendanceReminder[]> {
+    return this.http.get<AttendanceReminder[]>(`${this.baseUrl}/reminders/mine`);
+  }
+
+  markReminderRead(id: number): Observable<void> {
+    return this.http.post(`${this.baseUrl}/reminders/${id}/read`, {}).pipe(map(() => void 0));
+  }
+
+  /** Teaching periods whose attendance a teacher has already saved for this date. */
+  getSubmittedSlots(date: string): Observable<SubmittedAttendanceSlot[]> {
+    const params = new HttpParams().set('date', date);
+    return this.http.get<SubmittedAttendanceSlot[]>(`${this.baseUrl}/students/slots`, { params });
+  }
 
   getStudentAttendance(_stageId: number, classId: number, date: string, period = 0): Observable<AttendanceRecord[]> {
     let params = new HttpParams().set('classId', classId).set('date', date);

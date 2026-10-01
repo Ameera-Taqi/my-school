@@ -36,6 +36,15 @@ const DEFAULT_CLASS_META: Record<string, { subject: string; schedule?: string }>
 };
 
 const DEFAULT_NOTES: TeacherNote[] = [
+  {
+    id: 7,
+    studentName: 'أحمد محمد السعيدي',
+    className: '10-أ',
+    noteType: 'BEHAVIOR',
+    content: 'إنشاء تقرير: لوحظ على المتعلم تكرر الحديث الجانبي أثناء شرح الدرس، مع ضعف الالتزام بتعليمات المعلم في بداية الحصة. يُوصى بمتابعة الصف والتنسيق مع ولي الأمر لتعزيز الانضباط داخل القاعة.',
+    noteDate: '2026-09-30',
+    teacherName: 'أ. مريم الزهراني'
+  },
   { id: 1, studentName: 'أحمد محمد السعيدي', className: '10-أ', noteType: 'BEHAVIOR', content: 'مشاركة متميزة في الحصة وتفاعل إيجابي مع الزملاء.', noteDate: '2026-09-21', teacherName: 'أ. مريم' },
   { id: 2, studentName: 'خالد سعيد البلوشي', className: '10-أ', noteType: 'BEHAVIOR', content: 'تأخر متكرر عن بداية الحصة هذا الأسبوع.', noteDate: '2026-09-20', teacherName: 'أ. مريم' },
   { id: 3, studentName: 'فاطمة علي الحارثي', className: '10-أ', noteType: 'ACADEMIC', content: 'تحسّن واضح في حل المعادلات الخطية.', noteDate: '2026-09-18', teacherName: 'أ. مريم' },
@@ -384,8 +393,25 @@ export class TeacherPortalMockService {
       state.noteId = Math.max(state.noteId, 10);
       state.notesSeeded = true;
       this.save(state);
+    } else {
+      this.ensureDemoReport(state);
     }
     return of([...this.s().notes]).pipe(delay(200));
+  }
+
+  /** Keep a sample teacher report for أحمد محمد السعيدي even if localStorage predates it. */
+  private ensureDemoReport(state: TeacherPortalState): void {
+    const name = 'أحمد محمد السعيدي';
+    const hasReport = state.notes.some(note =>
+      note.studentName.trim() === name && note.content.includes('إنشاء تقرير:'));
+    if (hasReport) return;
+    const demo = DEFAULT_NOTES.find(note =>
+      note.studentName === name && note.content.includes('إنشاء تقرير:'));
+    if (!demo) return;
+    const id = Math.max(state.noteId + 1, demo.id ?? 7);
+    state.noteId = Math.max(state.noteId, id);
+    state.notes = [{ ...demo, id }, ...state.notes];
+    this.save(state);
   }
 
   saveNote(n: TeacherNote): Observable<TeacherNote> {

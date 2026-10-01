@@ -16,8 +16,9 @@ export class ConfirmService {
   open(data: ConfirmDialogData): Observable<boolean> {
     return this.dialog.open(ConfirmDialogComponent, {
       data,
-      width: '420px',
+      width: '400px',
       maxWidth: '95vw',
+      panelClass: 'sp-confirm-dialog',
       direction: this.lang.direction(),
       autoFocus: false,
       restoreFocus: true

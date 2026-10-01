@@ -4,6 +4,8 @@
 **/target/
 **/.angular/
 **/out-tsc/
+**/bin/
+**/obj/
 
 # Environment & secrets
 .env

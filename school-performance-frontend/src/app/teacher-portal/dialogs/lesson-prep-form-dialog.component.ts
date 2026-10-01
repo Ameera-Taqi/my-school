@@ -194,7 +194,7 @@ export class LessonPrepFormDialogComponent {
 
     this.uploading = true;
     const value = this.form.getRawValue();
-    setTimeout(() => {
+    const close = (fileData?: string) => {
       this.dialogRef.close({
         stageName: this.data.lessonNumber ? this.data.stageName : value.stageName,
         className: '',
@@ -203,9 +203,20 @@ export class LessonPrepFormDialogComponent {
         title: value.title.trim(),
         lessonDate: '',
         fileName,
+        ...(fileData ? { fileData } : {}),
         description: value.description.trim()
       });
-    }, 300);
+    };
+    const file = this.selectedFile;
+    const isPdf = !!file && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
+    if (file && isPdf && file.size <= 1_500_000) {
+      const reader = new FileReader();
+      reader.onload = () => close(String(reader.result || ''));
+      reader.onerror = () => close();
+      reader.readAsDataURL(file);
+      return;
+    }
+    close();
   }
 
   private initialStage(): string {

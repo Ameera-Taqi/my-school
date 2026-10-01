@@ -78,6 +78,7 @@ public static class EntityMapper
             GuardianPhone = student.GuardianPhone,
             Status = student.Status.ToString(),
             Notes = student.Notes,
+            PhotoUrl = student.PhotoUrl,
             ClassId = schoolClass?.Id,
             ClassName = schoolClass?.Name,
             AcademicStageId = stage?.Id,

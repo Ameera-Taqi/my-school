@@ -40,6 +40,14 @@ public static class Perms
     public const string AlertsView = "alerts.view";
     public const string ClassScheduleView = "class_schedule.view";
     public const string ClassScheduleManage = "class_schedule.manage";
+    public const string ClassSwapView = "class_swap.view";
+    public const string ClassSwapRequest = "class_swap.request";
+    public const string ClassSwapApprove = "class_swap.approve";
+    public const string ClassSwapExecute = "class_swap.execute";
+
+    public const string RecordsView = "records.view";
+    public const string RecordsManage = "records.manage";
+    public const string RecordsApprove = "records.approve";
 
     public const string TeacherMonitoringView = "teacher_monitoring.view";
     public const string LessonPlansView = "lesson_plans.view";

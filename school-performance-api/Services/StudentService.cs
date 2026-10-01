@@ -206,6 +206,30 @@ public class StudentService
                 : throw new AppException("حالة المتعلم غير صحيحة");
         }
         student.Notes = dto.Notes;
+        student.PhotoUrl = NormalizePhoto(dto.PhotoUrl);
+    }
+
+    private static string? NormalizePhoto(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+        var photo = value.Trim();
+        if (photo.Length > 400_000)
+        {
+            throw new AppException("حجم الصورة كبير جداً. اختر صورة أصغر");
+        }
+        if (photo.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
+        {
+            return photo;
+        }
+        if (photo.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            || photo.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+        {
+            return photo;
+        }
+        throw new AppException("صيغة الصورة غير مدعومة");
     }
 
     private static string NormalizeGender(string? value)

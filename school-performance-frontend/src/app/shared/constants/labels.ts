@@ -12,7 +12,7 @@ export const REQUEST_TYPE_LABELS: Record<string, string> = {
 };
 
 export const PRIORITY_LABELS: Record<string, string> = {
-  LOW: 'منخفضة', MEDIUM: 'متوسطة', HIGH: 'عالية'
+  LOW: 'منخفضة', MEDIUM: 'متوسطة', HIGH: 'عالية', URGENT: 'عاجلة'
 };
 
 export const REQUEST_STATUS_LABELS: Record<string, string> = {
@@ -21,7 +21,7 @@ export const REQUEST_STATUS_LABELS: Record<string, string> = {
 };
 
 export const TASK_STATUS_LABELS: Record<string, string> = {
-  NEW: 'جديدة', IN_PROGRESS: 'قيد التنفيذ', COMPLETED: 'مكتملة', OVERDUE: 'متأخرة'
+  NEW: 'جديدة', IN_PROGRESS: 'قيد التنفيذ', COMPLETED: 'مكتملة', OVERDUE: 'متأخرة', CANCELLED: 'ملغاة'
 };
 
 export const LESSON_PLAN_STATUS_LABELS: Record<string, string> = {

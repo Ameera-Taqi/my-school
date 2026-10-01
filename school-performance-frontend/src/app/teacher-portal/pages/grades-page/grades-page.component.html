@@ -84,11 +84,6 @@
           <td mat-cell *matCellDef="let row" class="whitespace-nowrap font-semibold">{{ row.studentName }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="className">
-          <th mat-header-cell *matHeaderCellDef>الفصل</th>
-          <td mat-cell *matCellDef="let row">{{ row.className }}</td>
-        </ng-container>
-
         @for (col of sheet.columns; track col.id) {
           <ng-container [matColumnDef]="col.id">
             <th mat-header-cell *matHeaderCellDef>

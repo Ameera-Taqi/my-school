@@ -1,20 +1,16 @@
-import { Component, Input, OnChanges, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, Input, OnChanges, OnDestroy, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { LessonPrep } from '../../../core/models';
-import { UiIconComponent } from '../../../shared/icons/ui-icon.component';
+import { LessonPrep, ScheduleDay } from '../../../core/models';
+import { AuthService } from '../../../core/services/auth.service';
+import { ScheduleApiService } from '../../../class-schedule/services/schedule-api.service';
 import { ToastService } from '../../../shared/services/toast.service';
-import { LessonPrepFormDialogComponent } from '../../dialogs/lesson-prep-form-dialog.component';
-import { LessonDeliveryStatus, LessonPrepMockService } from '../../services/lesson-prep-mock.service';
+import { ClassPeriodSlot, LessonPrepMockService } from '../../services/lesson-prep-mock.service';
 
 /** The lesson this class should teach now, shared course content with per-section progress. */
 @Component({
   selector: 'app-class-session-prep',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, UiIconComponent],
+  imports: [MatButtonModule],
   template: `
     <div class="data-card p-4">
       <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
@@ -26,42 +22,53 @@ import { LessonDeliveryStatus, LessonPrepMockService } from '../../services/less
             <h2 class="m-0 mt-1 text-[1.15rem] font-extrabold text-primary">التحضير {{ lessonNumber }} من {{ plannedCount }}</h2>
           }
         </div>
-        <mat-form-field appearance="outline" class="w-40">
-          <mat-label>عدد حصص المنهج</mat-label>
-          <input matInput type="number" min="1" max="200" [(ngModel)]="plannedCount" (change)="saveCount()">
-        </mat-form-field>
+        @if (!finished && !notice && lessonNumber === sequenceLesson) {
+          <button mat-stroked-button type="button" (click)="postpone()">تأجيل الحصة</button>
+        }
       </div>
 
       @if (finished) {
-        <p class="m-0 text-[0.95rem] text-muted">نفّذ هذا الفصل كل الحصص المخططة لهذه المادة. زِد عدد حصص المنهج إذا بقي محتوى جديد.</p>
+        <p class="m-0 text-[0.95rem] text-muted">نفّذ هذا الفصل كل الحصص المخططة لهذه المادة.</p>
       } @else {
         @if (prep) {
-          <div class="rounded-sp border border-border bg-primary-bg px-4 py-3">
-            <strong class="block text-[1rem]">{{ prep.title }}</strong>
-            @if (prep.description) {
-              <p class="mb-2 mt-1 text-[0.9rem] text-muted">{{ prep.description }}</p>
+          <article class="overflow-hidden rounded-sp border border-border">
+            <header class="border-b border-border bg-primary-bg px-4 py-3">
+              <h3 class="m-0 text-[1rem] font-bold">{{ prep.title }}</h3>
+              @if (prep.fileName) {
+                <p class="m-0 mt-1 text-[0.8rem] text-muted"><span dir="ltr">{{ prep.fileName }}</span></p>
+              }
+            </header>
+            @if (pageUrl) {
+              <img class="block w-full bg-white" [src]="pageUrl" [alt]="prep.title">
+            } @else {
+              <div class="bg-white px-5 py-5">
+                <h3 class="m-0 text-[1.15rem] font-extrabold text-primary">تحضير حصة: {{ prep.title }}</h3>
+                <p class="m-0 mt-1 text-[0.8rem] text-primary">التحضير {{ lessonNumber }} من {{ plannedCount }} · {{ prep.subject }} · الصف {{ prep.stageName }}</p>
+                <table class="mt-4 w-full border-collapse text-[0.92rem]">
+                  <tbody>
+                    <tr class="border-b border-border">
+                      <th class="w-28 bg-primary-bg px-3 py-2 text-start font-bold text-primary">الموضوع</th>
+                      <td class="px-3 py-2">{{ prep.description || prep.title }}</td>
+                    </tr>
+                    @if (prep.lessonDate) {
+                      <tr class="border-b border-border">
+                        <th class="bg-primary-bg px-3 py-2 text-start font-bold text-primary">التاريخ</th>
+                        <td class="px-3 py-2">{{ prep.lessonDate }}</td>
+                      </tr>
+                    }
+                    <tr>
+                      <th class="bg-primary-bg px-3 py-2 text-start font-bold text-primary">الملف</th>
+                      <td class="px-3 py-2"><span dir="ltr">{{ prep.fileName }}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             }
-            @if (prep.fileName) {
-              <button type="button" class="btn-action btn-action--view" (click)="download(prep)">
-                <app-ui-icon name="download"></app-ui-icon>
-                {{ prep.fileName }}
-              </button>
-            }
-          </div>
+          </article>
         } @else {
-          <p class="m-0 text-[0.95rem] text-muted">لا يوجد ملف للتحضير {{ lessonNumber }} بعد. ارفعه ليظهر في كل فصول هذه المرحلة.</p>
+          <p class="m-0 text-[0.95rem] text-muted">لا يوجد ملف للتحضير {{ lessonNumber }} بعد.</p>
         }
 
-        <div class="mt-4 flex flex-wrap gap-2">
-          <button mat-stroked-button type="button" color="primary" (click)="upload()">
-            <app-ui-icon name="upload"></app-ui-icon>
-            {{ prep ? 'تحديث التحضير' : 'رفع التحضير' }}
-          </button>
-          @if (!notice) {
-            <button mat-flat-button type="button" color="primary" (click)="mark('DELIVERED')">تم تنفيذ الحصة</button>
-            <button mat-stroked-button type="button" (click)="mark('POSTPONED')">تأجيل الحصة</button>
-          }
-        </div>
         @if (notice) {
           <p class="mb-0 mt-3 text-[0.95rem] font-semibold text-primary">{{ notice }}</p>
         }
@@ -69,80 +76,85 @@ import { LessonDeliveryStatus, LessonPrepMockService } from '../../services/less
     </div>
   `
 })
-export class ClassSessionPrepComponent implements OnChanges {
+export class ClassSessionPrepComponent implements OnChanges, OnDestroy {
   private readonly service = inject(LessonPrepMockService);
-  private readonly dialog = inject(MatDialog);
+  private readonly schedule = inject(ScheduleApiService);
+  private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
+  private slots: ClassPeriodSlot[] = [];
+  private timer = 0;
 
   @Input() className = '';
   @Input() stageName = '';
   @Input() subject = '';
+  @Input() classId: number | null = null;
+  @Input() day: ScheduleDay | null = null;
+  @Input() period: number | null = null;
 
   plannedCount = 24;
   lessonNumber = 1;
+  sequenceLesson = 1;
   prep: LessonPrep | undefined;
+  pageUrl = '';
   notice = '';
 
   get finished(): boolean {
-    return this.lessonNumber > this.plannedCount;
+    return this.sequenceLesson > this.plannedCount;
   }
 
   ngOnChanges(): void {
     this.notice = '';
-    this.reload();
+    this.slots = [];
+    window.clearInterval(this.timer);
+    this.timer = window.setInterval(() => this.refresh(), 20000);
+    this.loadSlots();
   }
 
-  saveCount(): void {
-    this.plannedCount = this.service.setPlannedCount(this.subject, this.stageName, this.plannedCount);
-    this.reload();
+  ngOnDestroy(): void {
+    window.clearInterval(this.timer);
   }
 
-  upload(): void {
-    const ref = this.dialog.open(LessonPrepFormDialogComponent, {
-      width: '640px',
-      maxWidth: '95vw',
-      data: {
-        stageName: this.stageName,
-        lockedSubject: this.subject,
-        lessonNumber: this.lessonNumber,
-        stages: [{ stageName: this.stageName, subject: this.subject }]
-      }
-    });
-    ref.afterClosed().subscribe((result: Omit<LessonPrep, 'id' | 'teacherName'> | undefined) => {
-      if (!result) return;
-      this.service.create({ ...result, teacherName: '' }).subscribe({
-        next: () => {
-          this.toast.success('تم حفظ التحضير');
-          this.reload();
-        },
-        error: error => this.toast.fromError(error)
-      });
-    });
-  }
-
-  download(prep: LessonPrep): void {
-    this.service.download(prep);
-  }
-
-  mark(status: LessonDeliveryStatus): void {
+  postpone(): void {
     const current = this.lessonNumber;
-    const next = this.service.markLesson({
+    this.service.postpone({
       className: this.className,
       subject: this.subject,
       stageName: this.stageName,
-      lessonNumber: current,
-      status
+      slots: this.slots
     });
-    this.notice = status === 'DELIVERED'
-      ? `تم تنفيذ التحضير ${current}. الحصة القادمة لهذا الفصل ستفتح التحضير ${next}.`
-      : `أُجّل التحضير ${current}. سيُحمَّل مرة أخرى في الحصة القادمة لهذا الفصل.`;
-    this.toast.success(status === 'DELIVERED' ? 'تم تسجيل تنفيذ الحصة' : 'تم تأجيل الحصة');
+    this.notice = `أُجّل التحضير ${current}. سيُحمَّل مرة أخرى في الحصة القادمة لهذا الفصل.`;
+    this.toast.success('تم تأجيل الحصة');
   }
 
-  private reload(): void {
+  private loadSlots(): void {
+    const teacherId = this.auth.user()?.teacherId ?? undefined;
+    if ((!teacherId && !this.classId) || !this.className || !this.subject) {
+      this.refresh();
+      return;
+    }
+    this.schedule.getEntries({ teacherId, classId: this.classId ?? undefined }).subscribe({
+      next: entries => {
+        this.slots = entries
+          .filter(entry => entry.className === this.className && entry.subject === this.subject)
+          .map(entry => ({ day: entry.dayOfWeek, period: entry.period }));
+        this.refresh();
+      },
+      error: () => this.refresh()
+    });
+  }
+
+  private refresh(): void {
     if (!this.className || !this.subject) return;
+    const before = this.lessonNumber;
+    this.service.resolve(this.className, this.subject, this.stageName, this.slots);
     this.plannedCount = this.service.plannedCount(this.subject, this.stageName);
-    this.lessonNumber = this.service.nextLesson(this.className, this.subject, this.stageName);
+    this.sequenceLesson = this.service.nextLesson(this.className, this.subject, this.stageName);
+    this.lessonNumber = this.day && this.period
+      ? this.service.lessonForSlot(this.className, this.subject, this.stageName, this.slots, this.day, this.period)
+      : this.sequenceLesson;
     this.prep = this.finished ? undefined : this.service.prepAt(this.subject, this.stageName, this.lessonNumber);
+    const image = this.prep?.previewImage;
+    this.pageUrl = image ? new URL(image, document.baseURI).toString() : '';
+    if (this.lessonNumber !== before) this.notice = '';
   }
 }

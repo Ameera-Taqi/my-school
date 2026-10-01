@@ -16,7 +16,7 @@
 
 @if (isWingSupervisor) {
   <section class="mt-5">
-    <p class="mx-1 mt-0 mb-3 text-[0.85rem] text-muted">اسم الفصل يسجّل الحضور اليومي. طابور الصباح يسجّل المخالفات. الحصة تفتح حضور المعلم لنفس السجل.</p>
+    <p class="mx-1 mt-0 mb-3 text-[0.85rem] text-muted">طابور الصباح يسجّل المخالفات. الحصة تفتح حضور المعلم لنفس السجل.</p>
     <app-home-class-schedule
       mode="school"
       [assembly]="true"
@@ -72,7 +72,7 @@
   @if (loadingStudents) {
     <app-table-skeleton [rows]="6" [columns]="3"></app-table-skeleton>
   } @else if (!studentRecords.length) {
-    <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" [description]="isWingSupervisor ? 'اضغط اسم الفصل أو طابور الصباح أو الحصة في الجدول.' : 'اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور المتعلمين.'"></app-empty-state>
+    <app-empty-state icon="fact_check" title="لا يوجد سجل حضور معروض" [description]="isWingSupervisor ? 'اضغط طابور الصباح أو الحصة في الجدول.' : 'اختر التاريخ والمرحلة والفصل ثم اضغط «عرض» لتسجيل حضور المتعلمين.'"></app-empty-state>
   } @else {
     <div class="border-b border-border px-4 pt-3 pb-2">
       <h3 class="m-0 text-[0.95rem] font-bold text-text">{{ sheetTitle }}</h3>
@@ -93,6 +93,26 @@
           }
         }
       </div>
+      @if (sheetMode === 'period') {
+        <span
+          class="attendance-send ms-auto"
+          [class.is-sent]="periodSubmitted"
+          [attr.title]="periodLampLabel">
+          {{ periodLampLabel }}
+          <span class="attendance-lamp" [class.is-sent]="periodSubmitted" aria-hidden="true"></span>
+        </span>
+      }
+      @if (sheetMode === 'period' && isWingSupervisor && !periodAttendanceSaved) {
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="reminding"
+          matTooltip="إرسال تذكير لمعلم المادة بإرسال الحضور"
+          (click)="remindTeacher()">
+          <app-ui-icon name="notifications"></app-ui-icon>
+          تذكير المعلم
+        </button>
+      }
     </div>
     <div class="table-scroll">
       <table mat-table [dataSource]="studentRecords">
@@ -151,7 +171,7 @@
         <tr mat-row *matRowDef="let row; columns: studentCols;"></tr>
       </table>
     </div>
-    <div class="flex flex-wrap justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
+    <div class="flex flex-wrap items-center justify-end gap-2 border-t border-border bg-[#fafbfe] px-4 py-[0.85rem]">
       @if (('attendance.manage' | hasPermission) || ('wing_supervisor.view' | hasPermission)) {
         <button mat-flat-button color="primary" (click)="saveStudents()">
           <app-ui-icon name="save"></app-ui-icon>
